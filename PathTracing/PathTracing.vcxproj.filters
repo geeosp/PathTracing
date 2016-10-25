@@ -18,10 +18,10 @@
     <ClInclude Include="main.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Vector4.h">
+    <ClInclude Include="model.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="model.h">
+    <ClInclude Include="Algeb.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Vector3.h">
@@ -32,10 +32,10 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Vector4.cpp">
+    <ClCompile Include="model.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="model.cpp">
+    <ClCompile Include="Algeb.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Vector3.cpp">
