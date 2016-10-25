@@ -16,6 +16,13 @@ Vector3::Vector3(const float a, const float b, const float c)
 	z = c;
 	w = 1.0f;
 }
+Vector3::Vector3(const float a, const float b, const float c, const float d)
+{
+	x = a;
+	y = b;
+	z = c;
+	w = d;
+}
 
 
 Vector3::~Vector3()

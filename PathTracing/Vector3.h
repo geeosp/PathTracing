@@ -16,6 +16,8 @@ public:
 	Vector3();
 	Vector3(const float a, const float b, 
 		const float c);
+	Vector3(const float a, const float b,
+		const float c, const float d);
 
 	~Vector3();
 	Vector3& operator=(const Vector3& other);
