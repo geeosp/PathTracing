@@ -20,6 +20,7 @@ public:
 	
 	Vector3 &operator[](const int i);
 
+
 	Matrix4 & operator=(const Matrix4& other);
 	void transpose();
 	
@@ -27,6 +28,9 @@ public:
 	Matrix4 operator -(const Matrix4& other);
 	
 	Vector3 operator*(const Vector3 v);
+	Matrix4 operator*( Matrix4 v);
+	void indentify();
+
 	/*
 	Vector3 operator*(const float f);
 	

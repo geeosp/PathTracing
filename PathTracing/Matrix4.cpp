@@ -80,6 +80,34 @@ Vector3 Matrix4::operator*(const Vector3 v)
 	return resp;
 }
 
+Matrix4 Matrix4::operator*( Matrix4 v)
+{
+	Matrix4 resp;
+	Matrix4 n(*this);
+	
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 4; j++) {
+			resp[i][j] = n[i].dot( Vector3(v[0][j], v[1][j], v[2][j], v[3][j]));
+		}
+	}
+
+
+
+	return resp;
+}
+
+void Matrix4::indentify()
+{
+	float id[] =
+	{
+		1.f, 0.f, 0.f, 0.f,
+			0.f, 1.f, 0.f, 0.f,
+			0.f, 0.f, 1.f, 0.f,
+			0.f, 0.f, 0.f, 1.f
+	};
+	memcpy(&a, id, 16 * sizeof(float));
+}
+
 
 
 
