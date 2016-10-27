@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.canvas.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.shape.*?>
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane fx:id="paneRoot" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="413.0" prefWidth="811.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="geeosp.pathtracing.GUIController">
+   <bottom>
+      <TextField id="output_text" fx:id="tfConsole" editable="false" BorderPane.alignment="CENTER">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </TextField>
+   </bottom>
+   <center>
+      <ImageView fx:id="ivImage" fitHeight="480.0" fitWidth="640.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
+         <viewport>
+            <Rectangle2D height="720.0" minX="640.0" minY="480.0" width="1280.0" />
+         </viewport>
+      </ImageView>
+   </center>
+   <right>
+      <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <children>
+            <TextField fx:id="tfWidth" layoutX="14.0" layoutY="25.0" promptText="Width" />
+            <Label layoutX="173.0" layoutY="29.0" text="px" />
+            <TextField fx:id="tfHeight" layoutX="14.0" layoutY="56.0" promptText="Height" />
+            <Label layoutX="173.0" layoutY="60.0" text="px" />
+            <TextField fx:id="tfRays" layoutX="14.0" layoutY="88.0" promptText="Rays" />
+            <Button layoutX="57.0" layoutY="161.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="95.0" text="Start" />
+         </children>
+      </AnchorPane>
+   </right>
+</BorderPane>

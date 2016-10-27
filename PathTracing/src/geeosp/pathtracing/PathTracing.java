@@ -6,11 +6,11 @@
 package geeosp.pathtracing;
 
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+import java.io.IOException;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.Pane;
+
 import javafx.stage.Stage;
 
 /**
@@ -20,24 +20,14 @@ import javafx.stage.Stage;
 public class PathTracing extends Application {
     
     @Override
-    public void start(Stage primaryStage) {
-        Button btn = new Button();
-        btn.setText("Say 'Hello World'");
-        btn.setOnAction(new EventHandler<ActionEvent>() {
-            
-            @Override
-            public void handle(ActionEvent event) {
-                System.out.println("Hello World!");
-            }
-        });
-        
-        StackPane root = new StackPane();
-        root.getChildren().add(btn);
-        
-        Scene scene = new Scene(root, 300, 250);
-        
-        primaryStage.setTitle("Hello World!");
-        primaryStage.setScene(scene);
+    public void start(Stage primaryStage) throws IOException {
+        primaryStage.setTitle("FXML TableView Example");
+        GUIController guiController = new GUIController();
+        Renderer renderer = new Renderer();
+        guiController.setRenderer(renderer);
+        Pane myPane = (Pane) FXMLLoader.load(guiController.getClass().getResource("GUI.fxml"));
+        Scene myScene = new Scene(myPane);
+        primaryStage.setScene(myScene);
         primaryStage.show();
     }
 
