@@ -58,4 +58,16 @@ public class GUIController implements Initializable {
     public void setRenderer(Renderer render){
         this.renderer = render;
     }
+    
+    public void startRender(){
+      
+        int width = Integer.parseInt(tfWidth.getText());
+        int height = Integer.parseInt(tfHeight.getText());
+        int rays = Integer.parseInt(tfRays.getText());
+        this.renderer.startRender(width, height, rays, ivImage, tfConsole);
+        
+        
+        
+    }
+    
 }

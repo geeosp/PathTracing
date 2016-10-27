@@ -7,6 +7,7 @@ package geeosp.pathtracing;
 
 import javafx.application.Application;
 import java.io.IOException;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
@@ -22,13 +23,19 @@ public class PathTracing extends Application {
     @Override
     public void start(Stage primaryStage) throws IOException {
         primaryStage.setTitle("FXML TableView Example");
-        GUIController guiController = new GUIController();
-        Renderer renderer = new Renderer();
-        guiController.setRenderer(renderer);
-        Pane myPane = (Pane) FXMLLoader.load(guiController.getClass().getResource("GUI.fxml"));
+        FXMLLoader loader = new FXMLLoader(GUIController.class.getResource("GUI.fxml"));
+        Pane myPane = (Pane) loader.load();
         Scene myScene = new Scene(myPane);
         primaryStage.setScene(myScene);
+        
+       GUIController guiController =loader.<GUIController>getController();
+        Renderer renderer = new Renderer();
+        guiController.setRenderer(renderer);
+        
         primaryStage.show();
+        primaryStage.setMinHeight(primaryStage.getHeight()+50);
+        primaryStage.setMinWidth(primaryStage.getWidth()+50);
+        
     }
 
     /**
