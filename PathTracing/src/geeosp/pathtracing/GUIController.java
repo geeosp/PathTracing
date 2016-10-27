@@ -8,6 +8,9 @@ package geeosp.pathtracing;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TextField;
@@ -74,14 +77,25 @@ public class GUIController implements Initializable {
         int width = Integer.parseInt(tfWidth.getText());
         int height = Integer.parseInt(tfHeight.getText());
         int rays = Integer.parseInt(tfRays.getText());
-        
-        this.renderer.toogleRender(width, height, rays, ivImage, tfConsole);
-        
      //   if(renderer.getRunningState()==Renderer.RunningState.Stopped){
         ivImage.setFitHeight(height);
         ivImage.setFitWidth(width);
-            resize();
+        resize();     
+        Task renderTask = new Task<Void>(){
+            @Override
+            protected Void call() throws Exception {
+             //   throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                renderer.toogleRender(width, height, rays, ivImage, tfConsole);
+           return null ;
+            }
+        };
+        Thread renderThread =new Thread(renderTask);
+        renderThread.setDaemon(true);
+        renderThread.start();
+       
+                
      //   }
+    
         
     }
     

@@ -24,16 +24,6 @@
          </BorderPane.margin>
       </TextField>
    </bottom>
-   <center>
-      <ImageView fx:id="ivImage" pickOnBounds="true" preserveRatio="true">
-         <viewport>
-            <Rectangle2D />
-         </viewport>
-         <BorderPane.margin>
-            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-         </BorderPane.margin>
-      </ImageView>
-   </center>
    <right>
       <AnchorPane fx:id="formPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
@@ -42,8 +32,19 @@
             <TextField fx:id="tfHeight" layoutX="14.0" layoutY="56.0" promptText="Height" text="480" />
             <Label layoutX="173.0" layoutY="60.0" text="px" />
             <TextField fx:id="tfRays" layoutX="14.0" layoutY="88.0" promptText="Rays" text="1" />
-            <Button fx:id="btStart" layoutX="57.0" layoutY="161.0" mnemonicParsing="false" onAction="#startRender" prefHeight="25.0" prefWidth="95.0" text="Start" />
+            <Button fx:id="btStart" layoutX="57.0" layoutY="161.0" mnemonicParsing="false" onMouseClicked="#startRender" prefHeight="25.0" prefWidth="95.0" text="Start" />
          </children>
       </AnchorPane>
    </right>
+   <left>
+      <Pane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <children>
+            <ImageView fx:id="ivImage" pickOnBounds="true" preserveRatio="true">
+               <viewport>
+                  <Rectangle2D />
+               </viewport>
+            </ImageView>
+         </children>
+      </Pane>
+   </left>
 </BorderPane>

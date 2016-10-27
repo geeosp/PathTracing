@@ -33,7 +33,17 @@ public class Renderer {
     }
     private RunningState runningState;
     private Thread[] renderThreads;
-    private int numThreads = 4;
+    private int numThreads = 1;
+    private int Progress;
+    private WritableImage wImage;
+
+    public int getProgress() {
+        return Progress;
+    }
+
+    public WritableImage getwImage() {
+        return wImage;
+    }
 
     public RunningState getRunningState() {
         return runningState;
@@ -46,7 +56,7 @@ public class Renderer {
 
     public void stopRender() {
         System.out.println("Stop");
-
+        runningState=RunningState.Stopped;
     }
 
     void toogleRender(int width, int height, int rays, ImageView ivImage, TextField tfConsole) throws IOException {
@@ -70,28 +80,48 @@ public class Renderer {
         }
     }
 
-    void startRender(int width, int height, int rays, ImageView ivImage, TextField tfConsole) throws IOException, InterruptedException {
-        System.out.println("StartRendering");
-        WritableImage wImage = new WritableImage(width, height);
-
-        for (int i = 0; i < numThreads; i++) {
-            renderThreads[i] = new RenderThread(i,renderThreads.length, new RenderBundle( width, height, rays, ivImage, wImage, tfConsole));
-            renderThreads[i].start();
-        }
-        for(int i =0;i<numThreads;i++)
-            renderThreads[i].join();
-
-        ivImage.setImage(wImage);
-        
-        
-        
-        PixelWriter pixelWriter = wImage.getPixelWriter();
-
-        saveFile(width, height, wImage);
-        runningState= RunningState.Stopped;
+    public boolean isRunning() {
+        return runningState == RunningState.Running;
     }
 
-    class RenderBundle{
+    void startRender(int width, int height, int rays, ImageView ivImage, TextField tfConsole) throws IOException, InterruptedException {
+      System.out.println("Starting Rendering");
+            this.renderThreads = new RenderThread[numThreads];
+            
+            wImage = new WritableImage(width, height);
+            for(int i =0;i<width;i++){
+                for(int j=0;j<height;j++){
+                    wImage.getPixelWriter().setColor(i, j, Color.BLACK);
+                }
+            }
+            ivImage.setImage(wImage);
+            
+            for (int i = 0; i < numThreads; i++) {
+                renderThreads[i] = new RenderThread(i, renderThreads.length, new RenderBundle(width, height, rays, ivImage, wImage, tfConsole));
+                renderThreads[i].setDaemon(true);
+                renderThreads[i].start();
+            }
+            for (int i = 0; i < numThreads; i++) {
+
+                try {
+                    renderThreads[i].join();
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Renderer.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+            }
+
+            ivImage.setImage(wImage);
+            PixelWriter pixelWriter = wImage.getPixelWriter();
+            saveFile(width, height, wImage);
+            runningState = RunningState.Stopped;
+            System.out.println("Finished");
+       
+
+    }
+
+    class RenderBundle {
+
         public int width;
         public int height;
         public int rays;
@@ -99,69 +129,53 @@ public class Renderer {
         public TextField tfConsole;
         public WritableImage wImage;
 
-        public RenderBundle(int width, int height, int rays, ImageView ivImage,  WritableImage wImage,TextField tfConsole) {
+        public RenderBundle(int width, int height, int rays, ImageView ivImage, WritableImage wImage, TextField tfConsole) {
             this.width = width;
             this.height = height;
             this.rays = rays;
             this.ivImage = ivImage;
             this.wImage = wImage;
             this.tfConsole = tfConsole;
+            
         }
 
-        
-        
     }
-    
+
     class RenderThread extends Thread {
+
         private int index;
         private int max;
         private RenderBundle renderBundle;
-        
 
         private RenderThread(int index, int max, RenderBundle renderBundle) {
-this.index=index;
-        this.max = max;
-        this.renderBundle = renderBundle;        }
-
-        
-        
-        
+            this.index = index;
+            this.max = max;
+            this.renderBundle = renderBundle;
+        }
 
         public void run() {
             float t = 1.f / renderBundle.width;
-            int  stepWidth = (int)Math.floor(renderBundle.width/max);
-            
-            for(int i = index*stepWidth;i<=(1+index)*stepWidth-1;i++){
-                for(int j=0;j<renderBundle.height;j++){
+            int stepWidth = (int) Math.floor(renderBundle.width / max);
+
+            for (int i = index * stepWidth; i <= (1 + index) * stepWidth - 1; i++) {
+                for (int j = 0; j < renderBundle.height; j++) {
                     Color color = Color.color(i * t, 1.0 - i * t, i * t);
                     savePixel(i, j, color);
                 }
+                
             }
-            
-            
-            
-           
         }
-         public synchronized void savePixel(int posX, int posY, Color color){
-                   renderBundle.wImage.getPixelWriter().setColor(posX, posY, color);
-                   renderBundle.ivImage.setImage(renderBundle.wImage);
-               
-         }
+
+        synchronized void savePixel(int posX, int posY, Color color) {
+            renderBundle.wImage.getPixelWriter().setColor(posX, posY, color);
+            renderBundle.ivImage.setImage(wImage);
+
+        }
     }
 
     public void saveFile(int width, int height, WritableImage wImage) {
         String name = "" + width + "px_" + height + "px_";
         FileChooser fileChooser = new FileChooser();
-
-        /*
-                //Set extension filter
-                FileChooser.ExtensionFilter extFilter = 
-                        new FileChooser.ExtensionFilter("png files (*.png)", "*.png");
-                fileChooser.getExtensionFilters().add(extFilter);
-               
-                //Show save file dialog
-                File file = fileChooser.showSaveDialog(new Stage());
-         */
         File file = new File(name + ".png");
         if (file != null) {
             try {
