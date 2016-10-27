@@ -77,14 +77,14 @@ public class GUIController implements Initializable {
         int width = Integer.parseInt(tfWidth.getText());
         int height = Integer.parseInt(tfHeight.getText());
         int rays = Integer.parseInt(tfRays.getText());
-     //   if(renderer.getRunningState()==Renderer.RunningState.Stopped){
         ivImage.setFitHeight(height);
         ivImage.setFitWidth(width);
+        
         resize();     
         Task renderTask = new Task<Void>(){
             @Override
             protected Void call() throws Exception {
-             //   throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+           //   throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
                 renderer.toogleRender(width, height, rays, ivImage, tfConsole);
            return null ;
             }

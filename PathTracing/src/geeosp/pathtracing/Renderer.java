@@ -33,7 +33,7 @@ public class Renderer {
     }
     private RunningState runningState;
     private Thread[] renderThreads;
-    private int numThreads = 1;
+    private int numThreads = 10;
     private int Progress;
     private WritableImage wImage;
 
@@ -86,7 +86,7 @@ public class Renderer {
 
     void startRender(int width, int height, int rays, ImageView ivImage, TextField tfConsole) throws IOException, InterruptedException {
       System.out.println("Starting Rendering");
-            this.renderThreads = new RenderThread[numThreads];
+         //   this.renderThreads = new RenderThread[numThreads];
             
             wImage = new WritableImage(width, height);
             for(int i =0;i<width;i++){
@@ -94,8 +94,7 @@ public class Renderer {
                     wImage.getPixelWriter().setColor(i, j, Color.BLACK);
                 }
             }
-            ivImage.setImage(wImage);
-            
+                 
             for (int i = 0; i < numThreads; i++) {
                 renderThreads[i] = new RenderThread(i, renderThreads.length, new RenderBundle(width, height, rays, ivImage, wImage, tfConsole));
                 renderThreads[i].setDaemon(true);
@@ -111,7 +110,6 @@ public class Renderer {
 
             }
 
-            ivImage.setImage(wImage);
             PixelWriter pixelWriter = wImage.getPixelWriter();
             saveFile(width, height, wImage);
             runningState = RunningState.Stopped;
@@ -147,7 +145,20 @@ public class Renderer {
         private int max;
         private RenderBundle renderBundle;
 
-        private RenderThread(int index, int max, RenderBundle renderBundle) {
+        public RenderBundle getRenderBundle() {
+            return renderBundle;
+        }
+
+        public void setRenderBundle(RenderBundle renderBundle) {
+            this.renderBundle = renderBundle;
+        }
+
+        public RenderThread(int index, int max, RenderBundle renderBundle) {
+            this.index = index;
+            this.max = max;
+            this.renderBundle = renderBundle;
+        }
+        public void  set(int index, int max, RenderBundle renderBundle) {
             this.index = index;
             this.max = max;
             this.renderBundle = renderBundle;
