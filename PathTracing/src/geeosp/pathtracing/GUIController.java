@@ -5,6 +5,7 @@
  */
 package geeosp.pathtracing;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
@@ -65,7 +66,7 @@ public class GUIController implements Initializable {
         this.renderer = render;
     }
     
-    public void startRender(){
+    public void startRender() throws IOException{
       
         int width = Integer.parseInt(tfWidth.getText());
         int height = Integer.parseInt(tfHeight.getText());
