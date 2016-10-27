@@ -50,7 +50,7 @@ public class Renderer {
 
         }
         
-        
+        saveFile(width, height, wImage);
         
     
 
@@ -65,6 +65,7 @@ public void saveFile(int width, int height, WritableImage wImage){
             String name = ""+width+"px_"+height+"px_";
     FileChooser fileChooser = new FileChooser();
                  
+    /*
                 //Set extension filter
                 FileChooser.ExtensionFilter extFilter = 
                         new FileChooser.ExtensionFilter("png files (*.png)", "*.png");
@@ -72,7 +73,8 @@ public void saveFile(int width, int height, WritableImage wImage){
                
                 //Show save file dialog
                 File file = fileChooser.showSaveDialog(new Stage());
-                 
+      */
+    File file = new File(name+".png");
                 if(file != null){
                     try {
                       
