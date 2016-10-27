@@ -33,6 +33,7 @@ public class Renderer {
         float t = 1.f/width;
         for (int j = 0; j < wImage.getHeight(); j++) {
             for (int i = 0; i < wImage.getWidth(); i++) {
+              
                 Color color = Color.color(i*t,1.0-i*t, i*t);
                 pixelWriter.setColor(i, j, color);
             }
