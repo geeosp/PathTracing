@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.effect.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.canvas.*?>
@@ -31,7 +32,7 @@
       </ImageView>
    </center>
    <right>
-      <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <AnchorPane fx:id="formPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
             <TextField fx:id="tfWidth" layoutX="14.0" layoutY="25.0" promptText="Width" text="640" />
             <Label layoutX="173.0" layoutY="29.0" text="px" />

@@ -31,10 +31,9 @@ public class PathTracing extends Application {
        GUIController guiController =loader.<GUIController>getController();
         Renderer renderer = new Renderer();
         guiController.setRenderer(renderer);
-        
         primaryStage.show();
-        primaryStage.setMinHeight(primaryStage.getHeight()+50);
-        primaryStage.setMinWidth(primaryStage.getWidth()+50);
+        guiController.setStage(primaryStage);
+       // primaryStage.setResizable(false);
         
     }
 

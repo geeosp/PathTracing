@@ -11,9 +11,11 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 
+import javafx.stage.Stage;
 /**
  * FXML Controller class
  *
@@ -39,8 +41,12 @@ public class GUIController implements Initializable {
     @FXML
     private BorderPane paneRoot;
     
-    private Renderer renderer;
+    @FXML
+    private AnchorPane formPane;
     
+    
+    private Renderer renderer;
+    private Stage stage;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -65,9 +71,23 @@ public class GUIController implements Initializable {
         int height = Integer.parseInt(tfHeight.getText());
         int rays = Integer.parseInt(tfRays.getText());
         this.renderer.startRender(width, height, rays, ivImage, tfConsole);
+        ivImage.setFitHeight(height);
+        ivImage.setFitWidth(width);
+        resize();
         
         
+    }
+    
+    public void setStage(Stage stage){
+        this.stage = stage;
+        resize();
+    }
+    private void resize(){
+        this.stage.setMinHeight(ivImage.getFitHeight()+140);
         
+        this.stage.setMinWidth(ivImage.getFitWidth()+formPane.getWidth()+50);
+       // this.stage.setWidth(this.stage.getMinWidth());
+        //this.stage.setHeight(this.stage.getMinHeight());
     }
     
 }
