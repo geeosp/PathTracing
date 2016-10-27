@@ -49,6 +49,9 @@ public class GUIController implements Initializable {
     private Renderer renderer;
     private Stage stage;
     
+    
+    
+    
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         assert ivImage!=null;
@@ -71,22 +74,30 @@ public class GUIController implements Initializable {
         int width = Integer.parseInt(tfWidth.getText());
         int height = Integer.parseInt(tfHeight.getText());
         int rays = Integer.parseInt(tfRays.getText());
-        this.renderer.startRender(width, height, rays, ivImage, tfConsole);
+        
+        this.renderer.toogleRender(width, height, rays, ivImage, tfConsole);
+        
+     //   if(renderer.getRunningState()==Renderer.RunningState.Stopped){
         ivImage.setFitHeight(height);
         ivImage.setFitWidth(width);
-        resize();
-        
+            resize();
+     //   }
         
     }
+    
+    
+    
+    
+    
     
     public void setStage(Stage stage){
         this.stage = stage;
         resize();
     }
     private void resize(){
-        this.stage.setMinHeight(ivImage.getFitHeight()+140);
+        this.stage.setMinHeight(ivImage.getFitHeight()+tfConsole.getHeight()+35);
         
-        this.stage.setMinWidth(ivImage.getFitWidth()+formPane.getWidth()+50);
+        this.stage.setMinWidth(ivImage.getFitWidth()+formPane.getWidth());
        // this.stage.setWidth(this.stage.getMinWidth());
         //this.stage.setHeight(this.stage.getMinHeight());
     }

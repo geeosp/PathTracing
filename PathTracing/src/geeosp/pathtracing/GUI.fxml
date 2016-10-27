@@ -15,10 +15,13 @@
 
 <BorderPane fx:id="paneRoot" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="400.0" minWidth="800.0" prefHeight="413.0" prefWidth="811.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="geeosp.pathtracing.GUIController">
    <bottom>
-      <TextField id="output_text" fx:id="tfConsole" editable="false" BorderPane.alignment="CENTER">
+      <TextField id="output_text" fx:id="tfConsole" editable="false" prefHeight="30.0" BorderPane.alignment="CENTER">
          <font>
             <Font size="15.0" />
          </font>
+         <BorderPane.margin>
+            <Insets top="5.0" />
+         </BorderPane.margin>
       </TextField>
    </bottom>
    <center>
