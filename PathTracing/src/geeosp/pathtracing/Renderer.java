@@ -9,6 +9,7 @@ import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.embed.swing.SwingFXUtils;
@@ -33,12 +34,14 @@ public class Renderer {
     }
     private RunningState runningState;
     private Thread[] renderThreads;
-    private int numThreads = 10;
-    private int Progress;
+    
+  
     private WritableImage wImage;
-
+    private AtomicInteger pixelsRendered;
+    private int totalPixels;
     public int getProgress() {
-        return Progress;
+        return pixelsRendered.intValue();
+
     }
 
     public WritableImage getwImage() {
@@ -51,7 +54,6 @@ public class Renderer {
 
     public Renderer() {
         this.runningState = RunningState.Stopped;
-        this.renderThreads = new RenderThread[numThreads];
     }
 
     public void stopRender() {
@@ -59,41 +61,25 @@ public class Renderer {
         runningState=RunningState.Stopped;
     }
 
-    void toogleRender(int width, int height, int rays, ImageView ivImage, TextField tfConsole) throws IOException {
-        switch (runningState) {
-            case Running:
-                stopRender();
-                this.runningState = RunningState.Stopped;
-
-                break;
-            case Stopped:
-                this.runningState = RunningState.Running;
-                 {
-                    try {
-                        startRender(width, height, rays, ivImage, tfConsole);
-                    } catch (InterruptedException ex) {
-                        Logger.getLogger(Renderer.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-                break;
-
-        }
-    }
-
     public boolean isRunning() {
         return runningState == RunningState.Running;
     }
 
-    void startRender(int width, int height, int rays, ImageView ivImage, TextField tfConsole) throws IOException, InterruptedException {
+    void startRender(int width, int height, int rays,int numThreads,  ImageView ivImage, TextField tfConsole) throws IOException, InterruptedException {
       System.out.println("Starting Rendering");
-         //   this.renderThreads = new RenderThread[numThreads];
+      this.runningState = RunningState.Running;
+      this.pixelsRendered=new AtomicInteger(0);
+      this.totalPixels = height*width;
+                   
+      this.renderThreads = new RenderThread[numThreads];
             
-            wImage = new WritableImage(width, height);
+            this.wImage = new WritableImage(width, height);
             for(int i =0;i<width;i++){
                 for(int j=0;j<height;j++){
-                    wImage.getPixelWriter().setColor(i, j, Color.BLACK);
+              this.      wImage.getPixelWriter().setColor(i, j, Color.BLACK);
                 }
             }
+            
                  
             for (int i = 0; i < numThreads; i++) {
                 renderThreads[i] = new RenderThread(i, renderThreads.length, new RenderBundle(width, height, rays, ivImage, wImage, tfConsole));
@@ -110,14 +96,12 @@ public class Renderer {
 
             }
 
-            PixelWriter pixelWriter = wImage.getPixelWriter();
             saveFile(width, height, wImage);
             runningState = RunningState.Stopped;
             System.out.println("Finished");
        
 
     }
-
     class RenderBundle {
 
         public int width;
@@ -171,6 +155,8 @@ public class Renderer {
             for (int i = index * stepWidth; i <= (1 + index) * stepWidth - 1; i++) {
                 for (int j = 0; j < renderBundle.height; j++) {
                     Color color = Color.color(i * t, 1.0 - i * t, i * t);
+                        
+                    
                     savePixel(i, j, color);
                 }
                 
@@ -179,14 +165,18 @@ public class Renderer {
 
         synchronized void savePixel(int posX, int posY, Color color) {
             renderBundle.wImage.getPixelWriter().setColor(posX, posY, color);
-            renderBundle.ivImage.setImage(wImage);
+       pixelsRendered.incrementAndGet();
+     //renderBundle.ivImage.setImage(wImage);
+      
+         
 
         }
     }
-
+    
     public void saveFile(int width, int height, WritableImage wImage) {
-        String name = "" + width + "px_" + height + "px_";
-        FileChooser fileChooser = new FileChooser();
+        
+        String name = "/out/" + width + "px_" + height + "px_";
+        //FileChooser fileChooser = new FileChooser();
         File file = new File(name + ".png");
         if (file != null) {
             try {

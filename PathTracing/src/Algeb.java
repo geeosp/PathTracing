@@ -27,7 +27,7 @@ public class Algeb {
 		for (int i = 0; i < a.length; i++) {
 			d += (a[i] - b[i]) * (a[i] - b[i]);
 		}
-		return Math.sqrt(d);
+		return (Math.sqrt(d));
 
 	}
 
