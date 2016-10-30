@@ -22,13 +22,13 @@ public class ObjModel extends Model {
     }
 
     public ObjModel(double[] position, double[] rotation, double[] scale,ArrayList<Double[]> vertices, ArrayList<Double[]> arestas ) {
-        super(position, rotation, scale);
+        super(position, rotation, scale, Model.Type.OBJECT);
         this.vertices = vertices;
         this.arestas = arestas;
        this.normals =  calculateNormals();
     }
     public ObjModel(double[] position, double[] rotation, double[] scale,ArrayList<Double[]> vertices, ArrayList<Double[]> arestas , ArrayList<Double[]> normals ) {
-        super(position, rotation, scale);
+        super(position, rotation, scale,Model.Type.OBJECT);
         this.vertices = vertices;
         this.arestas = arestas;
         this.normals = normals;

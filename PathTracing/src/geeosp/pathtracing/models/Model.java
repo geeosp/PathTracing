@@ -17,7 +17,16 @@ public abstract class Model {
 protected double[] position;
 protected double[] rotation;
 protected double[] scale;
+public enum Type{
+    LIGHT,
+    OBJECT
+}
+
+protected Type type;
 public abstract Hit getNearestIntersectionPoint(double[] origin, double [] direction);
+
+
+
 
     public double[] getPosition() {
         return position;
@@ -43,10 +52,11 @@ public abstract Hit getNearestIntersectionPoint(double[] origin, double [] direc
         this.scale = scale;
     }
 
-    public Model(double[] position, double[] rotation, double[] scale) {
+    public Model(double[] position, double[] rotation, double[] scale, Type type) {
         this.position = position;
         this.rotation = rotation;
         this.scale = scale;
+        this.type=this.type;
     }
     
     

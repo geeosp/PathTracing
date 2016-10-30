@@ -28,7 +28,7 @@ public class RenderFrameController implements Initializable {
 
     void setRender(Renderer renderer) {
         this.renderer = renderer;
-//     throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//     throw new Unsuppo0rtedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     void startRendering(int width, int height, int rays, int threads) throws IOException, InterruptedException {
@@ -36,31 +36,18 @@ public class RenderFrameController implements Initializable {
             @Override
             protected Object call() throws Exception {
                 //
-                renderer.startRender(width, height, rays, threads, ivRender, tfOutput);
+                renderer.set(width, height, rays, threads, ivRender, tfOutput);
+                renderer.startRender();
                 return null;
             }
         };
         Thread t = new Thread(task);
         t.setDaemon(true);
         t.start();
-        Task task2 = new Task() {
-            @Override
-            protected Object call() throws Exception {
-                while (renderer.isRunning()) {
-                    ivRender.setImage(renderer.getwImage());
-                    tfOutput.setText("" + renderer.getProgress());
-                    System.out.println("updating image");
-                }
-                return null;
-            }
-        };
-        Thread t2 = new Thread(task2);
-        //t2.setDaemon(true);
-        t2.start();
-        t.join();
-        ivRender.setImage(renderer.getwImage());
+       
+ //       t.join();
+       // ivRender.setImage(renderer.getwImage());
 
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     /**
@@ -89,10 +76,7 @@ public class RenderFrameController implements Initializable {
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
                 ivRender.setFitWidth(newValue.intValue());
                 rootPane.setMinHeight(ivRender.getFitHeight() + tfOutput.getHeight()+50);
-
             }
-
         });
     }
-
 }
