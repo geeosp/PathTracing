@@ -5,31 +5,30 @@
  */
 package geeosp.pathtracing;
 
+import geeosp.pathtracing.scene.RenderScene;
+import geeosp.pathtracing.scene.SceneLoader;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Calendar;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 import javax.imageio.ImageIO;
-import sun.java2d.pipe.RenderBuffer;
 
 /**
  *
  * @author Geovane
  */
 public class Renderer {
+
+    private final Object lock = new Object();
 
     public enum RunningState {
         Running,
@@ -39,6 +38,7 @@ public class Renderer {
     private Thread[] renderThreads;
     private AtomicInteger pixelsRendered;
     private RenderBundle renderBundle;
+
     public int getProgress() {
         return 100 * pixelsRendered.intValue() / (renderBundle.height * renderBundle.width);
 
@@ -64,29 +64,33 @@ public class Renderer {
     public void set(int width, int height, int rays, int numThreads, ImageView ivImage, TextField tfConsole) {
         this.renderBundle = new RenderBundle(width, height, rays, ivImage, tfConsole);
         this.renderThreads = new RenderThread[numThreads];
-        this.pixelsRendered=new AtomicInteger(0);
+        this.pixelsRendered = new AtomicInteger(0);
+
+        RenderScene scene = SceneLoader.load();
+        System.out.println(scene);
+
     }
 
     void startRender() throws IOException, InterruptedException {
         System.out.println("Starting Rendering");
+
         this.runningState = RunningState.Running;
         for (int i = 0; i < this.renderBundle.width; i++) {
             for (int j = 0; j < this.renderBundle.height; j++) {
                 this.renderBundle.writeImage.getPixelWriter().setColor(i, j, Color.BLACK);
             }
         }
-        Thread.sleep(100);
+        // Thread.sleep(100);
 
         for (int i = 0; i < renderThreads.length; i++) {
             renderThreads[i] = new RenderThread(i, renderThreads.length, this.renderBundle);
             renderThreads[i].setDaemon(true);
             renderThreads[i].start();
         }
-       
-        UpdateThread updateThread = new UpdateThread(this.renderBundle.textFieldConsole, this.renderBundle.imageViewGui);
-        updateThread.setDaemon(true);
-        updateThread.start();
-       
+
+        //      UpdateThread updateThread = new UpdateThread(this.renderBundle.textFieldConsole, this.renderBundle.imageViewGui);
+        //    updateThread.setDaemon(true);
+        //updateThread.start();
         for (int i = 0; i < this.renderThreads.length; i++) {
 
             try {
@@ -97,13 +101,14 @@ public class Renderer {
 
         }
 
-       //updateThread.join();
+        //updateThread.join();
         saveFile(this.renderBundle.width, this.renderBundle.height, this.renderBundle.writeImage);
         runningState = RunningState.Stopped;
         System.out.println("Finished");
 
     }
 
+    /*
     class UpdateThread extends Thread {
 
         TextField tfConsole;
@@ -118,20 +123,17 @@ public class Renderer {
         public void run() {
             while (isRunning()) {
 
+                lock.tryLock();
                 try {
-                    sleep(new Random().nextInt(150)+100);
-//                System.out.println("updatingImage");
-            renderBundle.imageViewGui.setImage(renderBundle.writeImage);
-                tfConsole.setText("" + getProgress());
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(Renderer.class.getName()).log(Level.SEVERE, null, ex);
+                    renderBundle.imageViewGui.setImage(renderBundle.writeImage);
+                    tfConsole.setText("" + getProgress());
+                } finally {
+                    lock.unlock();
                 }
-                
-                
             }
         }
 
-    }
+    }*/
 
     class RenderThread extends Thread {
 
@@ -155,18 +157,24 @@ public class Renderer {
 
             for (int i = index * stepWidth; i <= (1 + index) * stepWidth - 1; i++) {
                 for (int j = 0; j < renderBundle.height; j++) {
-                    Color color = Color.color(Math.max(.4-i*t,0), Math.max(i * t-.5, 0), .5);
+                    Color color = Color.color(Math.max(.4 - i * t, 0), Math.max(i * t - .5, 0), .5);
+                    boolean ok = false;
+                    
                     savePixel(i, j, color);
-                }
+                    ok = true;
 
+                }
             }
         }
 
         void savePixel(int posX, int posY, Color color) {
-            renderBundle.writeImage.getPixelWriter().setColor(posX, posY, color);
-            pixelsRendered.incrementAndGet();
-            //renderBundle.imageViewGui.setImage(renderBundle.writeImage);
-
+            synchronized (lock) {
+                renderBundle.writeImage.getPixelWriter().setColor(posX, posY, color);
+                pixelsRendered.incrementAndGet();
+                renderBundle.imageViewGui.setImage(renderBundle.writeImage);
+                  // renderBundle.textFieldConsole.setText("" + getProgress());
+                
+            }
         }
     }
 
@@ -183,7 +191,7 @@ public class Renderer {
                 ImageIO.write(renderedImage, "jpg", file);
 
             } catch (IOException ex) {
-                //  Logger.getLogger(JavaFX_DrawOnCanvas.class.getName()).log(Level.SEVERE, null, ex);
+                //Logger.getLogger(JavaFX_DrawOnCanvas.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
