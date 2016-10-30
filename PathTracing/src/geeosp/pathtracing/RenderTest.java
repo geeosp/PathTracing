@@ -23,12 +23,13 @@ public class RenderTest extends Application {
     @Override
     public void start(Stage primaryStage1) throws IOException {
         int errors = 0;
+        
         for (int i = 0; i < 1; i++) {
-            try {
+//            try {
                 int width = 1280;
                 int height = 720;
                 int rays = 100;
-                int threads = 4;
+                int threads = 16;
                 Stage primaryStage = new Stage();
                 primaryStage.setTitle("Render");
                 FXMLLoader loader = new FXMLLoader(RenderFrameController.class.getResource("RenderFrame.fxml"));
@@ -42,15 +43,21 @@ public class RenderTest extends Application {
 
                 guiController.setRender(renderer);
 
+         
+                
+                
+                
+                
+                
                 primaryStage.show();
                 try {
                     guiController.startRendering(width, height, rays, threads);
                 } catch (InterruptedException ex) {
                     Logger.getLogger(RenderTest.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            } catch (Exception e) {
-                errors++;
-            }
+  //          } catch (Exception e) {
+           //     errors++;
+    //        }
         }
             System.out.println("Erros: "+errors);
     }
