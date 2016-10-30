@@ -15,16 +15,15 @@ import javafx.scene.image.WritableImage;
  */
  class RenderBundle {
 
-        public int width;
-        public int height;
-        public int rays;
-        public String configPath;
-        public String modelsPath;
+        public final int width;
+        public final  int height;
+        public final int rays;
+       // public final String configPath;
+       // public final String modelsPath;
 
-        public ImageView imageViewGui;
-        public TextField textFieldConsole;
-        public WritableImage writeImage;
-
+        public final ImageView imageViewGui;
+        public final TextField textFieldConsole;
+        public final WritableImage writeImage;
         public RenderBundle(int width, int height, int rays, ImageView ivImage, TextField tfConsole) {
             this.width = width;
             this.height = height;

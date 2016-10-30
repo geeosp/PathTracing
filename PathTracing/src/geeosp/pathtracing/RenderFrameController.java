@@ -32,6 +32,11 @@ public class RenderFrameController implements Initializable {
     }
 
     void startRendering(int width, int height, int rays, int threads) throws IOException, InterruptedException {
+        ivRender.setFitHeight(height);
+        ivRender.setFitWidth(width);
+        rootPane.setMinSize(width, height);
+        rootPane.setPrefSize(width, height);
+        
         Task task = new Task() {
             @Override
             protected Object call() throws Exception {
@@ -71,6 +76,7 @@ public class RenderFrameController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+       /*
         rootPane.widthProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
@@ -78,5 +84,6 @@ public class RenderFrameController implements Initializable {
                 rootPane.setMinHeight(ivRender.getFitHeight() + tfOutput.getHeight()+50);
             }
         });
+        */
     }
 }

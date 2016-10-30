@@ -9,6 +9,7 @@ import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -37,8 +38,7 @@ public class Renderer {
     private RunningState runningState;
     private Thread[] renderThreads;
     private AtomicInteger pixelsRendered;
-    RenderBundle renderBundle;
-
+    private RenderBundle renderBundle;
     public int getProgress() {
         return 100 * pixelsRendered.intValue() / (renderBundle.height * renderBundle.width);
 
@@ -75,16 +75,18 @@ public class Renderer {
                 this.renderBundle.writeImage.getPixelWriter().setColor(i, j, Color.BLACK);
             }
         }
+        Thread.sleep(100);
 
         for (int i = 0; i < renderThreads.length; i++) {
             renderThreads[i] = new RenderThread(i, renderThreads.length, this.renderBundle);
             renderThreads[i].setDaemon(true);
             renderThreads[i].start();
         }
+       
         UpdateThread updateThread = new UpdateThread(this.renderBundle.textFieldConsole, this.renderBundle.imageViewGui);
         updateThread.setDaemon(true);
         updateThread.start();
-       /*
+       
         for (int i = 0; i < this.renderThreads.length; i++) {
 
             try {
@@ -94,8 +96,8 @@ public class Renderer {
             }
 
         }
-*/
-       updateThread.join();
+
+       //updateThread.join();
         saveFile(this.renderBundle.width, this.renderBundle.height, this.renderBundle.writeImage);
         runningState = RunningState.Stopped;
         System.out.println("Finished");
@@ -117,15 +119,15 @@ public class Renderer {
             while (isRunning()) {
 
                 try {
-                    sleep(50);
+                    sleep(new Random().nextInt(150)+100);
+//                System.out.println("updatingImage");
+            renderBundle.imageViewGui.setImage(renderBundle.writeImage);
+                tfConsole.setText("" + getProgress());
                 } catch (InterruptedException ex) {
                     Logger.getLogger(Renderer.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 
                 
-//                System.out.println("updatingImage");
-            renderBundle.imageViewGui.setImage(renderBundle.writeImage);
-                tfConsole.setText("" + getProgress());
             }
         }
 
@@ -153,7 +155,7 @@ public class Renderer {
 
             for (int i = index * stepWidth; i <= (1 + index) * stepWidth - 1; i++) {
                 for (int j = 0; j < renderBundle.height; j++) {
-                    Color color = Color.color(i * t, 1.0 - i * t, i * t);
+                    Color color = Color.color(Math.max(.4-i*t,0), Math.max(i * t-.5, 0), .5);
                     savePixel(i, j, color);
                 }
 
