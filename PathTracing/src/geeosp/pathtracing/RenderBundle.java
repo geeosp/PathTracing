@@ -13,25 +13,31 @@ import javafx.scene.image.WritableImage;
  *
  * @author geeo
  */
- class RenderBundle {
+class RenderBundle {
 
-        public final int width;
-        public final  int height;
-        public final int rays;
-       // public final String configPath;
-       // public final String modelsPath;
+    public final int width;
+    public final int height;
+    public final int rays;
+    // public final String configPath;
+    // public final String modelsPath;
 
-        public final ImageView imageViewGui;
-        public final TextField textFieldConsole;
-        public final WritableImage writeImage;
-        public RenderBundle(int width, int height, int rays, ImageView ivImage, TextField tfConsole) {
-            this.width = width;
-            this.height = height;
-            this.rays = rays;
-            this.imageViewGui = ivImage;
-            this.writeImage = new WritableImage(width, height);
-            this.textFieldConsole = tfConsole;
+    public final ImageView imageViewGui;
+    public final WritableImage writeImage;
 
-        }
+    public RenderBundle(int width, int height, int rays, ImageView ivImage, TextField tfConsole) {
+        this.width = width;
+        this.height = height;
+        this.rays = rays;
+        this.imageViewGui = ivImage;
+        this.writeImage = new WritableImage(width, height);
 
     }
+
+    public RenderBundle(int width, int height, int rays, ImageView ivImage) {
+        this.width = width;
+        this.height = height;
+        this.rays = rays;
+        this.imageViewGui = ivImage;
+        this.writeImage = new WritableImage(width, height);
+    }
+}
