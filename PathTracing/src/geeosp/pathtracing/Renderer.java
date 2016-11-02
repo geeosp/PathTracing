@@ -33,9 +33,20 @@ public class Renderer {
 
     private final Object lock = new Object();
 
+    public Renderer() {
+        this.runningState = RunningState.Stopped;
+    }
     Renderer(int width, int height, int rays, int threads, ImageView imageView) {
         set(width, height, rays, threads, imageView);
 
+    }
+
+    Renderer(RenderScene renderScene, ImageView imageView) {
+        set(renderScene.size[0], 
+                renderScene.size[1],
+                renderScene.npaths,
+                renderScene.nthreads, imageView);
+    
     }
 
     public enum RunningState {
@@ -59,9 +70,6 @@ public class Renderer {
         return runningState;
     }
 
-    public Renderer() {
-        this.runningState = RunningState.Stopped;
-    }
 
     public void stopRender() {
         System.out.println("Stop");

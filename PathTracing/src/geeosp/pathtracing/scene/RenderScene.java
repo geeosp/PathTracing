@@ -16,7 +16,7 @@ import java.util.ArrayList;
 public class RenderScene {
 
     public double[] eye;
-    public double[][] universeWindow;
+    public double[][] ortho;
     public double[] backgroundColor;
     public double ambientColor;
     public ArrayList<Model> models;
@@ -25,11 +25,15 @@ public class RenderScene {
     public double tonemapping;
     public int seed;
     public String outfile;
-    double[] monitorWindow;
+    public int[] size;
+    public int nthreads;
 
     public RenderScene() {
         models = new ArrayList<>();
         light = new ArrayList<>();
+       // nthreads = 1;
+        npaths = 100;
+        eye = new double[]{0, 0, -1};
     }
 
     @Override
@@ -37,13 +41,14 @@ public class RenderScene {
         String ret = "";
         ret += outfile.toString() + " \n"
                 + "\neye:\n " + Algeb.VectorToString(eye)
-                + "\northo:\n " + Algeb.MatrixToString(universeWindow)
-                + "\nsize:\n" + Algeb.VectorToString(monitorWindow)
+                + "\northo:\n " + Algeb.MatrixToString(ortho)
+                + "\nsize:\n" + Algeb.VectorToString(size)
                 + "\nbackground:\n" + Algeb.VectorToString(backgroundColor)
                 + "\nambient:\n" + " " + ambientColor
                 + "\nseed:\n" + " " + seed
                 + "\ntonemapping\n" + " " + tonemapping
-                + "\nnpaths\n  " + npaths;
+                + "\nnpaths\n  " + npaths
+                + "\nthreads\n  " + nthreads;
 
         return ret;
     }

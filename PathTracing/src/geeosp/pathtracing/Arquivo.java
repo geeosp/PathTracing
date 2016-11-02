@@ -329,7 +329,6 @@ public class Arquivo {
     * Escreve um double no arquivo.
     *
     * @param d     n�mero que ser� escrito no arquivo
-    * @exception IOException   em caso de erro de I/O
     *
     */
     public void print(double d) {

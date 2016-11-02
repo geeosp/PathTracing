@@ -5,6 +5,8 @@
  */
 package geeosp.pathtracing;
 
+import geeosp.pathtracing.scene.RenderScene;
+import geeosp.pathtracing.scene.SceneLoader;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,21 +29,18 @@ public class RenderTest extends Application {
 
        // for (int i = 0; i < 1; i++) {
             try {
-                int width = 640;
-                int height = 480;
-                int rays = 100;
-                int threads = 16;
+                RenderScene renderScene = SceneLoader.load();
+                System.out.println(renderScene);
               // Stage primaryStage1 = new Stage();
                 ImageView imageView = new ImageView();
-                imageView.setFitHeight(height);
-                imageView.setFitWidth(width);
+                imageView.setFitWidth(renderScene.size[0]);
+                imageView.setFitHeight(renderScene.size[1]);
                 Pane pane = new Pane(imageView);
-                Scene scene  = new Scene(pane, width, height);
+                Scene scene  = new Scene(pane, renderScene.size[0], renderScene.size[1]);
                 primaryStage1.setScene(scene);
                 primaryStage1.show();
                 primaryStage1.setResizable(false);
-                Renderer renderer = new Renderer(width, height, rays, threads, imageView);
-                renderer.set(width, height, rays, threads, imageView);
+                Renderer renderer = new Renderer(renderScene, imageView);
                 renderer.startRender();
                 
                 

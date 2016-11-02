@@ -31,6 +31,10 @@ public class SceneLoader {
                         scene.outfile += arq.readString();
                     }
                     break;
+                case "nthreads":
+                    scene.nthreads = arq.readInt();
+                    break;
+                    
                 case "eye":
                     double x,
                      y,
@@ -52,14 +56,14 @@ public class SceneLoader {
                     y0 = arq.readDouble();
                     x1 = arq.readDouble();
                     y1 = arq.readDouble();
-                    scene.universeWindow = new double[][]{
+                    scene.ortho = new double[][]{
                         {x0, y0}, {x1, y1}
                     };
                     break;
                 case "size":
                     int w = arq.readInt();
                     int h = arq.readInt();
-                    scene.monitorWindow = new double[]{w, h};
+                    scene.size = new int[]{w, h};
                     break;
                 case "background":
                     double r,
