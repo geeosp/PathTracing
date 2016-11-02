@@ -6,12 +6,8 @@
 package geeosp.pathtracing;
 
 import geeosp.pathtracing.scene.RenderScene;
-import geeosp.pathtracing.scene.SceneLoader;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
@@ -27,52 +23,19 @@ public class RenderTest extends Application {
     public void start(Stage primaryStage1) throws IOException, InterruptedException {
         int errors = 0;
 
-       // for (int i = 0; i < 1; i++) {
-            try {
-                RenderScene renderScene = SceneLoader.load();
-                System.out.println(renderScene);
-              // Stage primaryStage1 = new Stage();
-                ImageView imageView = new ImageView();
-                imageView.setFitWidth(renderScene.size[0]);
-                imageView.setFitHeight(renderScene.size[1]);
-                Pane pane = new Pane(imageView);
-                Scene scene  = new Scene(pane, renderScene.size[0], renderScene.size[1]);
-                primaryStage1.setScene(scene);
-                primaryStage1.show();
-                primaryStage1.setResizable(false);
-                Renderer renderer = new Renderer(renderScene, imageView);
-                renderer.startRender();
-                
-                
-                
-                /*
-            Stage primaryStage = new Stage();
-            primaryStage.setTitle("Render");
-            FXMLLoader loader = new FXMLLoader(RenderFrameController.class.getResource("RenderFrame.fxml"));
+        RenderScene renderScene = RenderScene.load();
+        System.out.println(renderScene);
+        ImageView imageView = new ImageView();
+        imageView.setFitWidth(renderScene.getSizeWidth());
+        imageView.setFitHeight(renderScene.getSizeHeight());
+        Pane pane = new Pane(imageView);
+        Scene scene = new Scene(pane, renderScene.getSizeWidth(), renderScene.getSizeHeight());
+        primaryStage1.setScene(scene);
+        primaryStage1.show();
+        primaryStage1.setResizable(false);
+        Renderer renderer = new Renderer(renderScene, imageView);
+        renderer.startRender();
 
-            Pane myPane = (Pane) loader.load();
-            Scene myScene = new Scene(myPane, width, height);
-            primaryStage.setScene(myScene);
-
-            RenderFrameController guiController = loader.<RenderFrameController>getController();
-            Renderer renderer = new Renderer();
-
-            
-            
-            
-            
-            guiController.setRender(renderer);
-
-            primaryStage.show();
-       
-            guiController.startRendering(width, height, rays, threads);
-           
-            // Logger.getLogger(RenderTest.class.getName()).log(Level.SEVERE, null, ex);
-                 */
-            } catch (Exception e) {
-                errors++;
-            }
-    //    }
         System.out.println("Erros: " + errors);
     }
 

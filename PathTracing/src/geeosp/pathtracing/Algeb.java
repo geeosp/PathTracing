@@ -21,7 +21,7 @@ public class Algeb {
         return sub;
     }
 
-    static double distancia(double[] a, double[] b) {
+    public static double distancia(double[] a, double[] b) {
         double d = 0;
         for (int i = 0; i < a.length; i++) {
             d += (a[i] - b[i]) * (a[i] - b[i]);
@@ -30,7 +30,16 @@ public class Algeb {
 
     }
 
-    public static double prodEscalar(double[] a, double[] b) {// produto escalar
+    public static double distanciaSqr(double[] a, double[] b) {
+        double d = 0;
+        for (int i = 0; i < a.length; i++) {
+            d += (a[i] - b[i]) * (a[i] - b[i]);
+        }
+        return d;
+
+    }
+
+    public static double dot(double[] a, double[] b) {// produto escalar
         // a.b
         double resp = 0;
         for (int i = 0; i < a.length; i++) {
@@ -47,7 +56,7 @@ public class Algeb {
         return k;
     }
 
-    public static double[] prodVetorial(double[] a, double[] b) {
+    public static double[] cross(double[] a, double[] b) {
         double[] resp = new double[a.length];
         resp[0] = a[1] * b[2] - a[2] * b[1];
         resp[1] = a[2] * b[0] - a[0] * b[2];
@@ -117,16 +126,15 @@ public class Algeb {
 
     public static String MatrixToString(double[][] v) {
         String ret = "";
-        
-        for(int i  = 0;i< v.length;i++){
-            ret+="  ";
-            for(int j=0;j<v[i].length;j++){
-                ret+=""+v[i][j]+"  ";
+
+        for (int i = 0; i < v.length; i++) {
+            ret += "  ";
+            for (int j = 0; j < v[i].length; j++) {
+                ret += "" + v[i][j] + "  ";
             }
-            ret+="\n";
+            ret += "\n";
         }
-        
-        
+
         return ret;
 
     }
@@ -157,4 +165,24 @@ public class Algeb {
         }
         return retorno;
     }
+     public static double[] barCoef(double[] P, double[] P1,
+                    double[] P2, double[] P3) {
+                    double[] PP1 = sub(P, P1);
+                    double[] P2P1 =sub(P2, P1);
+                    double[] P2P3 =sub(P2, P3);
+                    double[] PP3 = sub(P, P3);
+                    double[] P3P1 =sub(P3, P1);
+                    double [] vPP1 = new double[]{PP1[0], PP1[1], 0};
+                    double [] vP2P1 = new double[]{P2P1[0], P2P1[1], 0};
+                    double [] vP2P3 = new double[]{P2P3[0], P2P3[1], 0};
+                    double [] vPP3 = new double[]{PP3[0], PP3[1], 0};
+                    double [] vP3P1 = new double[]{P3P1[0], P3P1[1], 0};
+                   
+                    double A1 = getNorma(cross(vPP1, vP2P1));
+                    double A2 = getNorma(cross(vPP3, vP2P3));
+                    double A3 = getNorma(cross(vPP1, vP3P1));
+                    double total = A1 + A2 + A3;
+                    return new double[] { (A2 / total), (A3 / total), (A1 / total) };
+            }
+
 }

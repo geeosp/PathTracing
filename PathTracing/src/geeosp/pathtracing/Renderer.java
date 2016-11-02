@@ -6,17 +6,13 @@
 package geeosp.pathtracing;
 
 import geeosp.pathtracing.scene.RenderScene;
-import geeosp.pathtracing.scene.SceneLoader;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-;
 import javafx.embed.swing.SwingFXUtils;
-import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
@@ -27,49 +23,42 @@ import javax.imageio.ImageIO;
  *
  * @author Geovane
  */
-
-
 public class Renderer {
 
     private final Object lock = new Object();
 
-    public Renderer() {
-        this.runningState = RunningState.Stopped;
-    }
-    Renderer(int width, int height, int rays, int threads, ImageView imageView) {
-        set(width, height, rays, threads, imageView);
-
-    }
-
-    Renderer(RenderScene renderScene, ImageView imageView) {
-        set(renderScene.size[0], 
-                renderScene.size[1],
-                renderScene.npaths,
-                renderScene.nthreads, imageView);
-    
-    }
-
-    public enum RunningState {
-        Running,
-        Stopped
-    }
     private RunningState runningState;
     private Thread[] renderThreads;
     private AtomicInteger pixelsRendered;
     private AtomicInteger threadsFinished;
 
     private RenderBundle renderBundle;
+
+    RenderScene scene;
     private double[][][] pixels;
 
+    public Renderer() {
+        this.runningState = RunningState.Stopped;
+    }
+
+    Renderer(RenderScene renderScene, ImageView imageView) {
+        this.scene = renderScene;
+        this.renderBundle = new RenderBundle(renderScene.getSizeWidth(), renderScene.getSizeHeight(), renderScene.getNpaths(), imageView);
+        this.renderThreads = new RenderThread[renderScene.getNthreads()];
+        this.pixelsRendered = new AtomicInteger(0);
+        this.pixels = new double[renderScene.getSizeWidth()][renderScene.getSizeHeight()][4];
+        this.threadsFinished = new AtomicInteger(renderScene.getNthreads());
+
+    }
+
     public int getProgress() {
-        return 100 * pixelsRendered.intValue() / (renderBundle.height * renderBundle.width);
+        return 100 * pixelsRendered.intValue() / (scene.getSizeWidth() * scene.getSizeHeight());
 
     }
 
     public RunningState getRunningState() {
         return runningState;
     }
-
 
     public void stopRender() {
         System.out.println("Stop");
@@ -80,44 +69,77 @@ public class Renderer {
         return runningState == RunningState.Running;
     }
 
-    public void set(int width, int height, int rays, int numThreads, ImageView ivImage, TextField tfConsole) {
-        this.renderBundle = new RenderBundle(width, height, rays, ivImage, tfConsole);
-        this.renderThreads = new RenderThread[numThreads];
-        this.pixelsRendered = new AtomicInteger(0);
-        this.pixels = new double[width][height][4];
-        RenderScene scene = SceneLoader.load();
-        System.out.println(scene);
-        this.threadsFinished = new AtomicInteger(numThreads);
-    }
-
-    public void set(int width, int height, int rays, int numThreads, ImageView ivImage) {
-        this.renderBundle = new RenderBundle(width, height, rays, ivImage);
-        this.renderThreads = new RenderThread[numThreads];
-        this.pixelsRendered = new AtomicInteger(0);
-        this.pixels = new double[width][height][4];
-        RenderScene scene = SceneLoader.load();
-        System.out.println(scene);
-        this.threadsFinished = new AtomicInteger(numThreads);
-
-    }
-
     void startRender() throws IOException, InterruptedException {
         System.out.println("Starting Rendering");
 
         this.runningState = RunningState.Running;
-        for (int i = 0; i < this.renderBundle.width; i++) {
-            for (int j = 0; j < this.renderBundle.height; j++) {
-                savePixel(i, j, new double[]{1, 1, 1, 1}, false);
+        for (int i = 0; i < scene.getSizeWidth(); i++) {
+            for (int j = 0; j < scene.getSizeHeight(); j++) {
+                savePixel(i, j, scene.getBackgroundColor(), false);
                 //    this.renderBundle.writeImage.getPixelWriter().setColor(i, j, Color.BLACK);
             }
         }
-
-        for (int i = 0; i < renderThreads.length; i++) {
-            renderThreads[i] = new RenderThread(i, renderThreads.length, this.renderBundle);
-            renderThreads[i].setDaemon(false);
-            renderThreads[i].start();
+        if (scene.getNthreads() > 1) {
+            for (int i = 0; i < renderThreads.length; i++) {
+                renderThreads[i] = new RenderThread(i, renderThreads.length, this.renderBundle);
+                renderThreads[i].setDaemon(false);
+                renderThreads[i].start();
+            }
+        } else {
+            startRenderNoThreads();
         }
+    }
 
+    void startRenderNoThreads() throws IOException, InterruptedException {
+        //System.out.println("Starting Rendering");
+
+        this.runningState = RunningState.Running;
+        for (int i = 0; i < scene.getSizeWidth(); i++) {
+            for (int j = 0; j < scene.getSizeHeight(); j++) {
+                savePixel(i, j, scene.getBackgroundColor(), false);
+            }
+        }
+        float t = 1.f / scene.getSizeHeight();
+        RenderAlgorithm algorithm = new PathTracingAlgorithm();
+        for (int i = 0; i < scene.getSizeWidth(); i++) {
+            for (int j = 0; j < scene.getSizeHeight(); j++) {
+                double[] color;
+                color = algorithm.calulatePixel(i, j, scene);
+                //color = new double[]{.4, .5, .2, 1};
+                savePixel(i, j, color, true);
+            }
+        }
+        System.err.println("Finished");
+
+    }
+
+    synchronized void savePixel(int x, int y, double[] color, boolean update) {
+
+        pixels[x][y] = color;
+        renderBundle.writeImage.getPixelWriter().setColor(x, y, new Color(color[0], color[1], color[2], color[3]));
+        if (update) {
+            pixelsRendered.incrementAndGet();
+            //      System.out.println("Progress: " + getProgress());
+            renderBundle.imageViewGui.setImage(renderBundle.writeImage);
+        }
+    }
+
+    public void saveFile(int width, int height, WritableImage wImage) throws IOException {
+        File dir = new File("out");
+        dir.mkdir();
+        String name = "out/" + width + "px_" + height + "px_";
+        //FileChooser fileChooser = new FileChooser();
+        File file = new File(name + ".png");
+        if (file != null) {
+            RenderedImage renderedImage = SwingFXUtils.fromFXImage(wImage, null);
+            ImageIO.write(renderedImage, "png", file);
+
+        }
+    }
+
+    public enum RunningState {
+        Running,
+        Stopped
     }
 
     class RenderThread extends Thread {
@@ -137,50 +159,25 @@ public class Renderer {
         }
 
         public void run() {
-            float t = 1.f / renderBundle.width;
-            int stepWidth = (int) Math.floor(renderBundle.width / max);
-
+            float t = 1.f / scene.getSizeHeight();
+            int stepWidth = (int) Math.floor(scene.getSizeWidth() / max);
+            RenderAlgorithm algorithm = new PathTracingAlgorithm();
             for (int i = index * stepWidth; i <= (1 + index) * stepWidth - 1; i++) {
-                for (int j = 0; j < renderBundle.height; j++) {
-                    double[] color = new double[]{Math.max(.4 - i * t, 0), Math.max(i * t - .5, 0), .5, 1};
-                    //calculate color here;
+                for (int j = 0; j < scene.getSizeHeight(); j++) {
+                    double[] color = algorithm.calulatePixel(i, j, scene);
 
                     savePixel(i, j, color, true);
                 }
             }
             if (threadsFinished.decrementAndGet() == 0) {
                 try {
-                    saveFile(this.renderBundle.width, this.renderBundle.height, this.renderBundle.writeImage);
+                    saveFile(scene.getSizeWidth(), scene.getSizeHeight(), this.renderBundle.writeImage);
                 } catch (IOException ex) {
                     Logger.getLogger(Renderer.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 runningState = RunningState.Stopped;
                 System.out.println("Finished");
             }
-        }
-    }
-
-    synchronized void savePixel(int x, int y, double[] color, boolean update) {
-
-        pixels[x][y] = color;
-        renderBundle.writeImage.getPixelWriter().setColor(x, y, new Color(color[0], color[1], color[2], color[3]));
-        if (update) {
-            pixelsRendered.incrementAndGet();
-            System.out.println("Progress: " + getProgress());
-            renderBundle.imageViewGui.setImage(renderBundle.writeImage);
-        }
-    }
-
-    public void saveFile(int width, int height, WritableImage wImage) throws IOException {
-        File dir = new File("out");
-        dir.mkdir();
-        String name = "out/" + width + "px_" + height + "px_";
-        //FileChooser fileChooser = new FileChooser();
-        File file = new File(name + ".png");
-        if (file != null) {
-            RenderedImage renderedImage = SwingFXUtils.fromFXImage(wImage, null);
-            ImageIO.write(renderedImage, "png", file);
-
         }
     }
 }

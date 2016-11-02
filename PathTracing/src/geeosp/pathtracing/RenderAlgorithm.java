@@ -3,17 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package geeosp.pathtracing.test.scene;
+package geeosp.pathtracing;
 
 import geeosp.pathtracing.scene.RenderScene;
-import geeosp.pathtracing.scene.SceneLoader;
 
 /**
  *
  * @author geeo
  */
-public class TestLoader {
-
-    public static void main(String[] args) {
-       }
+public abstract class RenderAlgorithm {
+   
+    public abstract  double[] calulatePixel(int i, int y, RenderScene scene);
+    
 }

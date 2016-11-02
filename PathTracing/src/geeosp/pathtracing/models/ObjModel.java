@@ -5,6 +5,7 @@
  */
 package geeosp.pathtracing.models;
 
+import geeosp.pathtracing.Algeb;
 import geeosp.pathtracing.Arquivo;
 import geeosp.pathtracing.scene.Settings;
 import java.util.ArrayList;
@@ -17,13 +18,22 @@ public class ObjModel extends Model {
 
     private double[][] vertices;
     private int[][] triangles;
-    private double[][] normals;
+    private double[][] normalsVertices;
+    private double[][] normalsTriangle;
     private double[] color;
     private double[] coeficients;
 
-    public ObjModel(String objectName, double[] objectColor) {
+    public ObjModel(String objectName, double[] objectMaterial) {
         super(objectName, new double[3], new double[3], new double[]{1, 1, 1}, Type.OBJECT);
-        ///hrow new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        this.color = new double[]{objectMaterial[0], objectMaterial[1], objectMaterial[2], 1.0};
+        this.coeficients = new double[]{
+            objectMaterial[3],
+            objectMaterial[4],
+            objectMaterial[5],
+            objectMaterial[6],
+            objectMaterial[7]
+
+        };
         System.out.println(objectName);
         Arquivo arq = new Arquivo(Settings.modelsFolder + objectName, "dumb.txt");
         ArrayList<double[]> vs = new ArrayList<>();
@@ -40,7 +50,7 @@ public class ObjModel extends Model {
                 case "f":
 
                     int[] f = new int[]{
-                        arq.readInt(), arq.readInt(), arq.readInt()
+                        arq.readInt() - 1, arq.readInt() - 1, arq.readInt() - 1
                     };
                     fs.add(f);
                     break;
@@ -73,53 +83,84 @@ public class ObjModel extends Model {
 
         }
 
-        //calculateNormals();
+        calculateNormals();
         arq.close();
+
+    }
+
+    public void calculateNormals() {
+        double[] p1, p2, p3, v1, v2, nt;
+        normalsTriangle = new double[triangles.length][4];
+        normalsVertices = new double[vertices.length][4];
+        System.out.println(vertices.length);
+        System.out.println(triangles.length);
+        for (int i = 0; i < triangles.length; i++) {
+            p1 = vertices[triangles[i][0]];
+            p2 = vertices[triangles[i][1]];
+            p3 = vertices[triangles[i][2]];
+
+            v1 = Algeb.sub(p2, p1);
+            v2 = Algeb.sub(p3, p1);
+            nt = Algeb.cross(v1, v2);
+            nt = Algeb.normalize(nt);
+            normalsTriangle[i] = nt;
+
+            for (int j = 0; j < 3; j++) {
+                normalsVertices[triangles[i][j]] = Algeb.soma(nt, normalsVertices[triangles[i][j]]);
+            }
+
+        }
+
+        for (int i = 0; i < normalsVertices.length; i++) {
+            normalsVertices[i] = Algeb.normalize(normalsVertices[i]);
+        }
 
     }
 
     @Override
     public Hit getNearestIntersectionPoint(double[] origin, double[] direction) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+        double hitDistanceSqr = Double.POSITIVE_INFINITY;
+        Hit hit = new Hit(new double[4], new double[4], color, true);
+        double t;
 
-    public ObjModel(String name, double[] position, double[] rotation, double[] scale, double[][] vertices, int[][] arestas) {
-        super(name, position, rotation, scale, Model.Type.OBJECT);
-        this.vertices = vertices;
-        this.triangles = arestas;
-        this.normals = calculateNormals();
-        this.name = name;
-    }
+        direction = Algeb.normalize(direction);
+        double[] p, p1, p2, p3, v1, v2, n;
+        for (int i = 0; i < triangles.length; i++) {
+            p1 = vertices[triangles[i][0]];
+            p2 = vertices[triangles[i][1]];
+            p3 = vertices[triangles[i][2]];
+            v1 = Algeb.sub(p2, p1);
+            v2 = Algeb.sub(p3, p1);
+            n = Algeb.normalize(Algeb.cross(v1, v2));
 
-    public ObjModel(String name, double[] position, double[] rotation, double[] scale, double[][] vertices, int[][] arestas, double[][] normals) {
-        super(name, position, rotation, scale, Model.Type.OBJECT);
-        this.vertices = vertices;
-        this.triangles = arestas;
-        this.normals = normals;
+            /*
+            if (Algeb.dot(direction, direction) != Algeb.dot(direction, n)) {//desconsidera se o plano for paralelo a reta
+                try {
+                    t = (Algeb.dot(n, p1) - Algeb.dot(n, origin)) / Algeb.dot(n, direction);
+                    p = Algeb.soma(origin, Algeb.prodByEscalar(t, direction));
+                    double[] coef = Algeb.barCoef(p, p1, p2, p3);
+                    boolean ok = true;
+                    for (i = 0; i < 3; i++) {//verify if the point belongs to the triangle
+                        if (coef[i] < 0 || coef[i] > 1) {
+                            ok = false;
+                        }
+                        if (ok) {
 
-    }
-
-    public double[][] calculateNormals() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    void load(String path) {
-        Arquivo arq = new Arquivo(path, "lixoObj.txt");
-        int Np = arq.readInt();
-        int Nt = arq.readInt();
-        this.vertices = new double[Np][3];
-        this.triangles = new int[Nt][3];
-
-        for (int i = 0; i < Np; i++) {
-            for (int j = 0; j < 3; j++) {
-                vertices[i][j] = arq.readDouble();
-            }
+                            double d = Algeb.distanciaSqr(p, origin);
+                            if (d < hitDistanceSqr) {
+                                hitDistanceSqr = d;
+                                hit.hitPoint = p;
+                                hit.hitNormal = n;
+                                hit.isHit=true;
+                            }
+                        }
+                    }
+                } catch (ArithmeticException e) {//divisao by zero
+                    System.out.println("geeosp.pathtracing.models.ObjModel.getNearestIntersectionPoint(): DivisionByZero");
+                }
+            }*/
         }
-        for (int i = 0; i < Nt; i++) {
-            for (int j = 0; j < 3; j++) {
-                triangles[i][j] = arq.readInt() - 1;
-            }
-        }
+        return hit;
     }
 
 }
