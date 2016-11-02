@@ -54,6 +54,7 @@ public abstract Hit getNearestIntersectionPoint(double[] origin, double [] direc
     }
 
     public Model(String name, double[] position, double[] rotation, double[] scale, Type type) {
+this.name = name;
         this.position = position;
         this.rotation = rotation;
         this.scale = scale;

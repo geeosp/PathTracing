@@ -37,6 +37,9 @@ public class RenderTest extends Application {
         renderer.startRender();
 
         System.out.println("Erros: " + errors);
+        /*
+         */
+
     }
 
     public static void main(String[] args) {

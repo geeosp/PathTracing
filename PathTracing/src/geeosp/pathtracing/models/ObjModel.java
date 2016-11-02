@@ -120,7 +120,7 @@ public class ObjModel extends Model {
     @Override
     public Hit getNearestIntersectionPoint(double[] origin, double[] direction) {
         double hitDistanceSqr = Double.POSITIVE_INFINITY;
-        Hit hit = new Hit(new double[4], new double[4], color, true);
+        Hit hit = new Hit(new double[4], new double[4], color, false);
         double t;
 
         direction = Algeb.normalize(direction);
@@ -133,32 +133,34 @@ public class ObjModel extends Model {
             v2 = Algeb.sub(p3, p1);
             n = Algeb.normalize(Algeb.cross(v1, v2));
 
-            /*
             if (Algeb.dot(direction, direction) != Algeb.dot(direction, n)) {//desconsidera se o plano for paralelo a reta
+
                 try {
                     t = (Algeb.dot(n, p1) - Algeb.dot(n, origin)) / Algeb.dot(n, direction);
                     p = Algeb.soma(origin, Algeb.prodByEscalar(t, direction));
                     double[] coef = Algeb.barCoef(p, p1, p2, p3);
                     boolean ok = true;
-                    for (i = 0; i < 3; i++) {//verify if the point belongs to the triangle
-                        if (coef[i] < 0 || coef[i] > 1) {
-                            ok = false;
-                        }
-                        if (ok) {
-
-                            double d = Algeb.distanciaSqr(p, origin);
-                            if (d < hitDistanceSqr) {
-                                hitDistanceSqr = d;
-                                hit.hitPoint = p;
-                                hit.hitNormal = n;
-                                hit.isHit=true;
-                            }
+                   for (int k = 0; k < 3; k++) {//verify if the point belongs to the triangle
+                     if (coef[k] < 0 || coef[k] > 1) {
+                           ok = false;
                         }
                     }
+            
+                    if (ok) {
+                        double d = Algeb.distanciaSqr(p, origin);
+                        if (d < hitDistanceSqr) {
+                            hitDistanceSqr = d;
+                            hit.hitPoint = p;
+                            hit.hitNormal = n;
+                            hit.isHit = true;
+                        }
+                    }
+
                 } catch (ArithmeticException e) {//divisao by zero
                     System.out.println("geeosp.pathtracing.models.ObjModel.getNearestIntersectionPoint(): DivisionByZero");
                 }
-            }*/
+            }
+
         }
         return hit;
     }

@@ -9,6 +9,7 @@ import geeosp.pathtracing.Algeb;
 import geeosp.pathtracing.Arquivo;
 import geeosp.pathtracing.models.Model;
 import geeosp.pathtracing.models.ObjModel;
+import geeosp.pathtracing.models.SphereModel;
 import java.util.ArrayList;
 
 /**
@@ -36,7 +37,7 @@ public class RenderScene {
         // nthreads = 1;
         npaths = 100;
         eye = new double[]{0, 0, -1};
-        
+
     }
 
     @Override
@@ -52,7 +53,9 @@ public class RenderScene {
                 + "\ntonemapping\n" + " " + tonemapping
                 + "\nnpaths\n  " + npaths
                 + "\nthreads\n  " + nthreads;
-
+        for (int i = 0; i < models.size(); i++) {
+            ret += "\n" + models;
+        }
         return ret;
     }
 
@@ -142,7 +145,7 @@ public class RenderScene {
                     z = arq.readDouble();
                     assert (z > 0);
                     scene.eye = new double[]{
-                        x, y, z,1.0
+                        x, y, z, 1.0
                     };
                     break;
                 case "ortho":
@@ -171,11 +174,10 @@ public class RenderScene {
                     g = arq.readDouble();
                     b = arq.readDouble();
                     scene.backgroundColor = new double[]{
-                        r, g, b,1.0
+                        r, g, b, 1.0
                     };
                     break;
                 case "ambient"://ambient la
-                    System.out.println("oi");
                     scene.ambientColor = arq.readDouble();
                     break;
                 case "seed":
@@ -188,6 +190,29 @@ public class RenderScene {
                     scene.npaths = arq.readInt();
                     break;
 
+                case "sphere":
+                    double center[] = new double[]{
+                        arq.readDouble(),
+                        arq.readDouble(),
+                        arq.readDouble(),
+                        1
+
+                    };
+                    double radius = arq.readDouble();
+                    double[] sphereMaterial = new double[]{
+                        arq.readDouble(),//r
+                        arq.readDouble(),//g
+                        arq.readDouble(),//b
+                        arq.readDouble(),//ka
+                        arq.readDouble(),//kd
+                        arq.readDouble(),//ks
+                        arq.readDouble(),//kt
+                        arq.readDouble()//refractionindice
+                    };
+                    scene.models.add(new SphereModel(center, radius, sphereMaterial));
+
+                    break;
+                /*
                 case "object":
                     String objectName = arq.readString();
                     double[] objectMaterial = new double[]{
@@ -203,7 +228,6 @@ public class RenderScene {
                     scene.models.add(new ObjModel(objectName, objectMaterial));
 
                     break;
-                /*
 
                 case "lights":
 
@@ -222,6 +246,7 @@ public class RenderScene {
             }
         }
         arq.close();
+
         return scene;
     }
 

@@ -33,7 +33,7 @@ public class Renderer {
     private AtomicInteger threadsFinished;
 
     private RenderBundle renderBundle;
-
+    int currentProgress;
     RenderScene scene;
     private double[][][] pixels;
 
@@ -105,7 +105,6 @@ public class Renderer {
             for (int j = 0; j < scene.getSizeHeight(); j++) {
                 double[] color;
                 color = algorithm.calulatePixel(i, j, scene);
-                //color = new double[]{.4, .5, .2, 1};
                 savePixel(i, j, color, true);
             }
         }
@@ -119,8 +118,11 @@ public class Renderer {
         renderBundle.writeImage.getPixelWriter().setColor(x, y, new Color(color[0], color[1], color[2], color[3]));
         if (update) {
             pixelsRendered.incrementAndGet();
-            //      System.out.println("Progress: " + getProgress());
-            renderBundle.imageViewGui.setImage(renderBundle.writeImage);
+            if (currentProgress != getProgress()) {
+                System.out.println("Progress: " + currentProgress);
+                renderBundle.imageViewGui.setImage(renderBundle.writeImage);
+                currentProgress=getProgress();
+            }
         }
     }
 
@@ -165,7 +167,6 @@ public class Renderer {
             for (int i = index * stepWidth; i <= (1 + index) * stepWidth - 1; i++) {
                 for (int j = 0; j < scene.getSizeHeight(); j++) {
                     double[] color = algorithm.calulatePixel(i, j, scene);
-
                     savePixel(i, j, color, true);
                 }
             }
