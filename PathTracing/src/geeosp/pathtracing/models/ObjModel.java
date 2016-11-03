@@ -14,27 +14,18 @@ import java.util.ArrayList;
  *
  * @author geeo
  */
-public class ObjModel extends Model {
+public abstract class ObjModel extends Model {
 
-    private double[][] vertices;
-    private int[][] triangles;
-    private double[][] normalsVertices;
-    private double[][] normalsTriangle;
-    private double[] color;
-    private double[] coeficients;
-    private double zero = 0.001;
+    protected double[][] vertices;
+    protected int[][] triangles;
+    protected double[][] normalsVertices;
+    protected double[][] normalsTriangle;
 
-    public ObjModel(String objectName, double[] objectMaterial) {
-        super(objectName, new double[3], new double[3], new double[]{1, 1, 1}, Type.OBJECT);
-        this.color = new double[]{objectMaterial[0], objectMaterial[1], objectMaterial[2], 1.0};
-        this.coeficients = new double[]{
-            objectMaterial[3],
-            objectMaterial[4],
-            objectMaterial[5],
-            objectMaterial[6],
-            objectMaterial[7]
+    private final double zero = 0.001;
 
-        };
+    public ObjModel(String objectName, Model.Type type) {
+        super(objectName, new double[3], new double[3], new double[]{1, 1, 1}, type);
+
         System.out.println(objectName);
         Arquivo arq = new Arquivo(Settings.modelsFolder + objectName, "dumb.txt");
         ArrayList<double[]> vs = new ArrayList<>();
@@ -120,7 +111,7 @@ public class ObjModel extends Model {
 
     @Override
     public Hit getNearestIntersectionPoint(double[] origin, double[] direction) {
-        Hit hit = new Hit(new double[4], new double[4], color, false);
+        Hit hit = new Hit(new double[4], new double[4], new double[] {1, 1, 1, 0}, false);
         double dist = Double.MAX_VALUE;
         direction = Algeb.normalize(direction);
         for (int t = 0; t < triangles.length; t++) {
@@ -149,7 +140,7 @@ public class ObjModel extends Model {
                     if (dist > Algeb.distanciaSqr(p, origin)) {
                         hit.hitPoint = p;
                         hit.isHit = true;
-                        hit.color = color;
+                        hit.color = getColor(origin, p);
                         hit.hitNormal = normalsTriangle[t];
                     }
                 } else {
@@ -162,15 +153,14 @@ public class ObjModel extends Model {
         return hit;
     }
 
+    public abstract double[] getColor(double []origin, double [] target);
+
     @Override
     public String toString() {
-        String s = super.name
-                + "\n color: " + color[0] + " " + color[1] + " " + color[2] + " " + color[3]
-                + "\n coeficients: " + coeficients[0] + " " + coeficients[1] + " " + coeficients[2] + " " + coeficients[3] + " " + coeficients[4] + " "
+        String s = super.toString()
                 + "\n vertices: " + Algeb.MatrixToString(vertices)
                 + "\n triangles: " + Algeb.MatrixToString(triangles);
         return s;
 
     }
-
 }

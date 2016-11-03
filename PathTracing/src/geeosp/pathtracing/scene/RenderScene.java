@@ -8,7 +8,8 @@ package geeosp.pathtracing.scene;
 import geeosp.pathtracing.Algeb;
 import geeosp.pathtracing.Arquivo;
 import geeosp.pathtracing.models.Model;
-import geeosp.pathtracing.models.ObjModel;
+import geeosp.pathtracing.models.ObjDifuseModel;
+import geeosp.pathtracing.models.ObjLight;
 import geeosp.pathtracing.models.SphereModel;
 import java.util.ArrayList;
 
@@ -224,15 +225,24 @@ public class RenderScene {
                         arq.readDouble(),//kt
                         arq.readDouble()//refractionindice
                     };
-                    scene.models.add(new ObjModel(objectName, objectMaterial));
+                    scene.models.add(new ObjDifuseModel(objectName, objectMaterial));
 
                     break;
+
+                case "light":
+                    objectName = arq.readString();
+                    objectMaterial = new double[]{
+                        arq.readDouble(),//r
+                        arq.readDouble(),//g
+                        arq.readDouble(),//b
+                        arq.readDouble(),//Intensity
+                    };
+                    ObjLight light = new ObjLight(objectName, objectMaterial);
+                    scene.models.add(light);
+                    scene.lights.add(light);
+                    break;
+
                 /*
-
-                case "lights":
-
-                    break;
-
                 case "objectquadric":
 
                     break;

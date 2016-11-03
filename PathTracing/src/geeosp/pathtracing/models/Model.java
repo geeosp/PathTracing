@@ -9,25 +9,21 @@ package geeosp.pathtracing.models;
  *
  * @author geeo
  */
-
-
 public abstract class Model {
-    
-    
-protected double[] position;
-protected double[] rotation;
-protected double[] scale;
-protected String name="";
-public enum Type{
-    LIGHT,
-    OBJECT
-}
 
-protected Type type;
-public abstract Hit getNearestIntersectionPoint(double[] origin, double [] direction);
+    protected double[] position;
+    protected double[] rotation;
+    protected double[] scale;
+    protected String name = "";
 
+    public enum Type {
+        LIGHT,
+        OBJECT
+    }
 
+    protected Type type;
 
+    public abstract Hit getNearestIntersectionPoint(double[] origin, double[] direction);
 
     public double[] getPosition() {
         return position;
@@ -54,16 +50,11 @@ public abstract Hit getNearestIntersectionPoint(double[] origin, double [] direc
     }
 
     public Model(String name, double[] position, double[] rotation, double[] scale, Type type) {
-this.name = name;
+        this.name = name;
         this.position = position;
         this.rotation = rotation;
         this.scale = scale;
-        this.type=this.type;
+        this.type = type;
     }
-    
-    
-    
-     
-    
-    
+
 }
