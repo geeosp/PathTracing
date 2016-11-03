@@ -37,11 +37,7 @@ public class PathTracingAlgorithm extends RenderAlgorithm {
         };
         direction = Algeb.sub(onScreen, scene.getEye());
         direction = Algeb.normalize(direction);
-        /*calculate direction
-        
-        
-        
-         */
+
         for (int t = 0; t < scene.getModels().size(); t++) {
             Model a = scene.getModels().get(t);
             Hit temp = a.getNearestIntersectionPoint(scene.getEye(), direction);

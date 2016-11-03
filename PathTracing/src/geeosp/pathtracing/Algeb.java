@@ -139,6 +139,21 @@ public class Algeb {
 
     }
 
+    public static String MatrixToString(int[][] v) {
+        String ret = "";
+
+        for (int i = 0; i < v.length; i++) {
+            ret += "  ";
+            for (int j = 0; j < v[i].length; j++) {
+                ret += "" + v[i][j] + "  ";
+            }
+            ret += "\n";
+        }
+
+        return ret;
+
+    }
+
     // recebe a matriz de mudanca de base(MMB) e a matriz de pontos(MP)
     // faz: [v]a = [M]a ^b * [v]b Multiplica a MMB pela (MP)
     public static double[][] mudancaDeCoordenada(double[][] pontos,
@@ -165,24 +180,19 @@ public class Algeb {
         }
         return retorno;
     }
-     public static double[] barCoef(double[] P, double[] P1,
-                    double[] P2, double[] P3) {
-                    double[] PP1 = sub(P, P1);
-                    double[] P2P1 =sub(P2, P1);
-                    double[] P2P3 =sub(P2, P3);
-                    double[] PP3 = sub(P, P3);
-                    double[] P3P1 =sub(P3, P1);
-                    double [] vPP1 = new double[]{PP1[0], PP1[1], 0};
-                    double [] vP2P1 = new double[]{P2P1[0], P2P1[1], 0};
-                    double [] vP2P3 = new double[]{P2P3[0], P2P3[1], 0};
-                    double [] vPP3 = new double[]{PP3[0], PP3[1], 0};
-                    double [] vP3P1 = new double[]{P3P1[0], P3P1[1], 0};
-                   
-                    double A1 = getNorma(cross(vPP1, vP2P1));
-                    double A2 = getNorma(cross(vPP3, vP2P3));
-                    double A3 = getNorma(cross(vPP1, vP3P1));
-                    double total = A1 + A2 + A3;
-                    return new double[] { (A2 / total), (A3 / total), (A1 / total) };
-            }
+
+    public static double[] barCoef(double[] p, double[] p1, double[] p2, double[] p3) {
+        double[] p1p = sub(p, p1);
+        double[] p2p = sub(p, p2);
+        double[] p3p = sub(p, p3);
+        double[] p1p2 = sub(p2, p1);
+        double[] p2p3 = sub(p3, p2);
+        double[] p3p1 = sub(p1, p3);
+        double A1 = getNorma(cross(p1p, p1p2));
+        double A2 = getNorma(cross(p2p, p2p3));
+        double A3 = getNorma(cross(p3p, p3p1));
+        double total = A1 + A2 + A3;
+        return new double[]{(A2 / total), (A3 / total), (A1 / total)};
+    }
 
 }

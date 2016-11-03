@@ -119,7 +119,7 @@ public class Renderer {
         if (update) {
             pixelsRendered.incrementAndGet();
             if (currentProgress != getProgress()) {
-                System.out.println("Progress: " + currentProgress);
+               // System.out.println("Progress: " + currentProgress);
                 renderBundle.imageViewGui.setImage(renderBundle.writeImage);
                 currentProgress=getProgress();
             }

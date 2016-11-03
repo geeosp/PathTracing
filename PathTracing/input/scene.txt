@@ -9,7 +9,7 @@
 eye 0.0 0.0 5.7
 
 size 480 480
-ortho -1 -1 1 1
+ortho -5 -5 5 5
 background 0.0 0.0 0.0
 ambient 0.5
 
@@ -31,11 +31,11 @@ seed 9
 
 #object <name.obj> red green blue ka kd ks kt n
 
-sphere 0 0 -50 .5 .4 0.0 .85 0.3 0.7 0 0 5
+sphere 0 0 -5 .5 .4 0.0 .85 0.3 0.7 0 0 5
 
 
 # left wall RED
-#object leftwall.obj 1.0 0.0 0.0 0.3 0.7 0 0 5
+object leftwall.obj .4 0.0 0.0 0.3 0.7 0 0 5
 
 # right wall GREEN
 #object rightwall.obj 0.0 1.0 0.0 0.3 0.7 0 0 5

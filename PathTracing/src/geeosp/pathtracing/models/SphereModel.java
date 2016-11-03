@@ -20,53 +20,47 @@ public class SphereModel extends Model {
 
     @Override
     public Hit getNearestIntersectionPoint(double[] origin, double[] direction) {
-        double hitDistanceSqr = Double.POSITIVE_INFINITY;
         Hit hit = new Hit(new double[4], new double[4], color, false);
-        double t;
-        double[] p;
         direction = Algeb.normalize(direction);
-        double[] ominusc = Algeb.sub(origin, center);
-
-        double delta = (Algeb.dot(direction, ominusc));
-        delta *= delta;
-        delta -= (Algeb.dot(ominusc, ominusc) - radius * radius);
-        if (delta < 0) {
-
-        } else if (delta == 0) {
-            t = -Algeb.dot(direction, ominusc) / Algeb.dot(direction, direction);
+        double a = 1;
+        double[] co = Algeb.sub(origin, center);
+        double b = 2 * Algeb.dot(direction, co);
+        double c = Algeb.dot(co, co) - radius * radius;
+        double delta = b * b - 4 * a * c;
+        double t;
+        double[] p = null;
+        if (delta == 0) {
+            t = -.5 * b / a;
             p = Algeb.soma(origin, Algeb.prodByEscalar(t, direction));
-            hit.hitPoint = p;
-            hit.color = color;
-            hit.hitNormal = Algeb.normalize(Algeb.sub(p, center));
-            hit.isHit = true;
-        } else {
-            t = -Algeb.dot(direction, ominusc) / Algeb.dot(direction, direction);
+
+        } else if (delta > 0) {
+            double sqrDelta = Math.sqrt(delta);
             double[] p1, p2;
-            p1 = Algeb.soma(origin, Algeb.prodByEscalar(t + Math.sqrt(delta), direction));
+            t = (-b + sqrDelta) / (2 * a);
+            p1 = Algeb.soma(origin, Algeb.prodByEscalar(t, direction));
+            t = (-b - sqrDelta) / (2 * a);
+            p2 = Algeb.soma(origin, Algeb.prodByEscalar(t, direction));
 
-            p2 = Algeb.soma(origin, Algeb.prodByEscalar(t - Math.sqrt(delta), direction));
-
-            if (Algeb.distancia(p1, origin) > Algeb.distancia(p2, origin)) {
-                p = p2;
-            } else {
+            if (Algeb.distancia(p1, origin) < Algeb.distancia(p2, origin)) {
                 p = p1;
+            } else {
+                p = p2;
             }
-
-            hit.hitPoint = p;
-            hit.color = color;
-            hit.hitNormal = Algeb.normalize(Algeb.sub(p, center));
             hit.isHit = true;
-
+            hit.hitPoint = p;
+            hit.hitNormal = Algeb.normalize(Algeb.sub(p, center));
+            hit.color = color;
+          
         }
         return hit;
-        // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+
+       }
 
     public SphereModel(double[] center, double radius, double[] objectMaterial) {
         super("sphere", new double[3], new double[3], new double[]{1, 1, 1}, Type.OBJECT);
         this.color = new double[]{objectMaterial[0], objectMaterial[1], objectMaterial[2], 1.0};
         this.center = center;
-        this.radius  = radius;
+        this.radius = radius;
         this.coeficients = new double[]{
             objectMaterial[3],
             objectMaterial[4],
@@ -84,7 +78,7 @@ public class SphereModel extends Model {
                 + "\n radius: " + radius
                 + "\n color: " + color[0] + " " + color[1] + " " + color[2] + " " + color[3]
                 + "\n coeficients: " + coeficients[0] + " " + coeficients[1] + " " + coeficients[2] + " " + coeficients[3] + " " + coeficients[4] + " ";
-        return  s; //To change body of generated methods, choose Tools | Templates.
+        return s; //To change body of generated methods, choose Tools | Templates.
     }
 
 }

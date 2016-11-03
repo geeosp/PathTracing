@@ -52,7 +52,7 @@ public class RenderScene {
                 + "\nseed:\n" + " " + seed
                 + "\ntonemapping\n" + " " + tonemapping
                 + "\nnpaths\n  " + npaths
-                + "\nthreads\n  " + nthreads;
+                + "\nthreads\n  " + nthreads + "\n";
         for (int i = 0; i < models.size(); i++) {
             ret += "\n" + models;
         }
@@ -212,7 +212,6 @@ public class RenderScene {
                     scene.models.add(new SphereModel(center, radius, sphereMaterial));
 
                     break;
-                /*
                 case "object":
                     String objectName = arq.readString();
                     double[] objectMaterial = new double[]{
@@ -228,6 +227,7 @@ public class RenderScene {
                     scene.models.add(new ObjModel(objectName, objectMaterial));
 
                     break;
+                /*
 
                 case "lights":
 

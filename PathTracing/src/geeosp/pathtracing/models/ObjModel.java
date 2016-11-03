@@ -119,50 +119,60 @@ public class ObjModel extends Model {
 
     @Override
     public Hit getNearestIntersectionPoint(double[] origin, double[] direction) {
-        double hitDistanceSqr = Double.POSITIVE_INFINITY;
         Hit hit = new Hit(new double[4], new double[4], color, false);
-        double t;
-
+        double dist = Double.MAX_VALUE;
         direction = Algeb.normalize(direction);
-        double[] p, p1, p2, p3, v1, v2, n;
-        for (int i = 0; i < triangles.length; i++) {
-            p1 = vertices[triangles[i][0]];
-            p2 = vertices[triangles[i][1]];
-            p3 = vertices[triangles[i][2]];
+        for (int t = 0; t < triangles.length; t++) {
+            double[] p1, p2, p3, v1, v2, n, p;
+            p1 = vertices[triangles[t][0]];
+            p2 = vertices[triangles[t][1]];
+            p3 = vertices[triangles[t][2]];
             v1 = Algeb.sub(p2, p1);
             v2 = Algeb.sub(p3, p1);
             n = Algeb.normalize(Algeb.cross(v1, v2));
 
-            if (Algeb.dot(direction, direction) != Algeb.dot(direction, n)) {//desconsidera se o plano for paralelo a reta
-
-                try {
-                    t = (Algeb.dot(n, p1) - Algeb.dot(n, origin)) / Algeb.dot(n, direction);
-                    p = Algeb.soma(origin, Algeb.prodByEscalar(t, direction));
-                    double[] coef = Algeb.barCoef(p, p1, p2, p3);
-                    boolean ok = true;
-                   for (int k = 0; k < 3; k++) {//verify if the point belongs to the triangle
-                     if (coef[k] < 0 || coef[k] > 1) {
-                           ok = false;
-                        }
+            if (Algeb.dot(n, n) != Algeb.dot(n, direction)) {
+                double[] p1p0 = Algeb.sub(origin, p1);
+                double s = Algeb.dot(n, p1p0) / Algeb.dot(n, direction);
+                p = Algeb.soma(origin, Algeb.prodByEscalar(s, direction));
+                double[] coeficients = Algeb.barCoef(p, p1, p2, p3);
+                boolean ok = true;
+                for (int i = 0; i < coeficients.length; i++) {
+                    if (coeficients[i] < 0 || coeficients[i] > 1) {
+                        ok = false;
                     }
-            
-                    if (ok) {
-                        double d = Algeb.distanciaSqr(p, origin);
-                        if (d < hitDistanceSqr) {
-                            hitDistanceSqr = d;
-                            hit.hitPoint = p;
-                            hit.hitNormal = n;
-                            hit.isHit = true;
-                        }
-                    }
-
-                } catch (ArithmeticException e) {//divisao by zero
-                    System.out.println("geeosp.pathtracing.models.ObjModel.getNearestIntersectionPoint(): DivisionByZero");
                 }
+                if (ok) {
+                    if (dist > Algeb.distanciaSqr(p, origin)) {
+                            hit.hitPoint = p;
+                            hit.isHit=true;
+                            hit.color=color;
+                            hit.hitNormal=normalsTriangle[t];
+                    }
+                }else{
+                    System.out.println("coeficientes baricentricos: "+Algeb.VectorToString(coeficients));
+                    
+                }
+
+            } else {
+                //reta paralela ao plano
+
             }
 
         }
+
         return hit;
+    }
+
+    @Override
+    public String toString() {
+        String s = super.name
+                + "\n color: " + color[0] + " " + color[1] + " " + color[2] + " " + color[3]
+                + "\n coeficients: " + coeficients[0] + " " + coeficients[1] + " " + coeficients[2] + " " + coeficients[3] + " " + coeficients[4] + " "
+                + "\n vertices: " + Algeb.MatrixToString(vertices)
+                + "\n triangles: " + Algeb.MatrixToString(triangles);
+        return s;
+
     }
 
 }
