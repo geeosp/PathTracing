@@ -115,7 +115,7 @@ public class Renderer {
     synchronized void savePixel(int x, int y, double[] color, boolean update) {
 
         pixels[x][y] = color;
-        renderBundle.writeImage.getPixelWriter().setColor(x, y, new Color(color[0], color[1], color[2], color[3]));
+        renderBundle.writeImage.getPixelWriter().setColor(x,pixels[0].length-y-1, new Color(pixels[x][y][0], pixels[x][y][1], pixels[x][y][2],pixels[x][y][3]));
         if (update) {
             pixelsRendered.incrementAndGet();
             if (currentProgress != getProgress()) {
