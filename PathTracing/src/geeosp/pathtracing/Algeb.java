@@ -181,18 +181,46 @@ public class Algeb {
         return retorno;
     }
 
+    
+    public static double[] barCoef(double[] p,double[] v0, double[] v1, double[] v2){
+        double u, v;
+        double [] v0v1, v0v2;
+        v0v1 = sub(v1,v0);
+        v0v2 = sub(v2, v0);
+        double [] n = cross(v0v1, v0v2);
+        double area2 =getNorma(n);
+        double[] e1= sub(v2,v1);
+        double []vp1 = sub(p, v1);
+        double [] c= cross(e1, vp1);
+        
+        u = getNorma(c)/area2;
+        if(dot(n, c)<0){
+            u=-u;
+        }
+        double[] e2 = sub(v0,v2);
+        double[] vp2 = sub(p, v2);
+        c = cross(e2, vp2);
+        v = getNorma(c)/area2;
+        if(dot(n, c)<0){
+            v=-v;
+        }
+        return new double[]{1-u-v, u, v};
+    }
+    
+    /*
     public static double[] barCoef(double[] p, double[] p1, double[] p2, double[] p3) {
-        double[] p1p = sub(p, p1);
+        /*double[] p1p = sub(p, p1);
         double[] p2p = sub(p, p2);
         double[] p3p = sub(p, p3);
         double[] p1p2 = sub(p2, p1);
         double[] p2p3 = sub(p3, p2);
         double[] p3p1 = sub(p1, p3);
-        double A1 = getNorma(cross(p1p, p1p2));
-        double A2 = getNorma(cross(p2p, p2p3));
-        double A3 = getNorma(cross(p3p, p3p1));
+        double A1 = dot(p1p, p1p2);
+        double A2 = dot(p2p, p2p3);
+        double A3 = dot(p3p, p3p1);
         double total = A1 + A2 + A3;
         return new double[]{(A2 / total), (A3 / total), (A1 / total)};
-    }
-
+    
+}
+*/
 }

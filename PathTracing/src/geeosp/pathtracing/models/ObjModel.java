@@ -22,6 +22,7 @@ public class ObjModel extends Model {
     private double[][] normalsTriangle;
     private double[] color;
     private double[] coeficients;
+    private double zero = 0.001;
 
     public ObjModel(String objectName, double[] objectMaterial) {
         super(objectName, new double[3], new double[3], new double[]{1, 1, 1}, Type.OBJECT);
@@ -123,20 +124,22 @@ public class ObjModel extends Model {
         double dist = Double.MAX_VALUE;
         direction = Algeb.normalize(direction);
         for (int t = 0; t < triangles.length; t++) {
-            double[] p1, p2, p3, v1, v2, n, p;
+            double[] p1, p2, p3, e1, e2, n, p;
             p1 = vertices[triangles[t][0]];
             p2 = vertices[triangles[t][1]];
             p3 = vertices[triangles[t][2]];
-            v1 = Algeb.sub(p2, p1);
-            v2 = Algeb.sub(p3, p1);
-            n = Algeb.normalize(Algeb.cross(v1, v2));
-
-            if (Algeb.dot(n, n) != Algeb.dot(n, direction)) {
+            e1 = Algeb.sub(p2, p1);
+            e2 = Algeb.sub(p3, p1);
+            n = Algeb.cross(e1, e2);
+            n = Algeb.normalize(n);
+            if (Algeb.dot(n, n) - Algeb.dot(n, direction) > zero) {
                 double[] p1p0 = Algeb.sub(origin, p1);
-                double s = Algeb.dot(n, p1p0) / Algeb.dot(n, direction);
+                double s = -Algeb.dot(n, p1p0) / Algeb.dot(n, direction);
                 p = Algeb.soma(origin, Algeb.prodByEscalar(s, direction));
-                double[] coeficients = Algeb.barCoef(p, p1, p2, p3);
+
                 boolean ok = true;
+
+                double[] coeficients = Algeb.barCoef(p, p1, p2, p3);
                 for (int i = 0; i < coeficients.length; i++) {
                     if (coeficients[i] < 0 || coeficients[i] > 1) {
                         ok = false;
@@ -144,23 +147,18 @@ public class ObjModel extends Model {
                 }
                 if (ok) {
                     if (dist > Algeb.distanciaSqr(p, origin)) {
-                            hit.hitPoint = p;
-                            hit.isHit=true;
-                            hit.color=color;
-                            hit.hitNormal=normalsTriangle[t];
+                        hit.hitPoint = p;
+                        hit.isHit = true;
+                        hit.color = color;
+                        hit.hitNormal = normalsTriangle[t];
                     }
-                }else{
-                    System.out.println("coeficientes baricentricos: "+Algeb.VectorToString(coeficients));
-                    
+                } else {
+                    //   System.out.println("coeficientes baricentricos: " + Algeb.VectorToString(coeficients));
+
                 }
 
-            } else {
-                //reta paralela ao plano
-
             }
-
         }
-
         return hit;
     }
 
