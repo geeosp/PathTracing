@@ -97,6 +97,24 @@ public class Algeb {
         return retorno;
     }
 
+    public static double[][] multMatrixMatrix(double[][] a, double[][] b) {
+        if (a[0].length != b.length) {
+            throw new RuntimeException("Dimensões inconsistentes. Impossível multiplicar as matrizes");
+        }
+        double[][] ret = new double[a.length][b[0].length];
+
+        for (int i = 0; i < a.length; i++) {
+            for (int j = 0; j < b[0].length; j++) {
+                double[] bcolumn = new double[b.length];
+                for (int k = 0; k < bcolumn.length; k++) {
+                    bcolumn[k] = b[j][i];
+                }
+                ret[i][j] = dot(a[i], bcolumn);
+            }
+        }
+        return ret;
+    }
+
     public static double getNorma(double[] v) {
         double k = 0;
         for (int i = 0; i < v.length; i++) {
@@ -181,32 +199,31 @@ public class Algeb {
         return retorno;
     }
 
-    
-    public static double[] barCoef(double[] p,double[] v0, double[] v1, double[] v2){
+    public static double[] barCoef(double[] p, double[] v0, double[] v1, double[] v2) {
         double u, v;
-        double [] v0v1, v0v2;
-        v0v1 = sub(v1,v0);
+        double[] v0v1, v0v2;
+        v0v1 = sub(v1, v0);
         v0v2 = sub(v2, v0);
-        double [] n = cross(v0v1, v0v2);
-        double area2 =getNorma(n);
-        double[] e1= sub(v2,v1);
-        double []vp1 = sub(p, v1);
-        double [] c= cross(e1, vp1);
-        
-        u = getNorma(c)/area2;
-        if(dot(n, c)<0){
-            u=-u;
+        double[] n = cross(v0v1, v0v2);
+        double area2 = getNorma(n);
+        double[] e1 = sub(v2, v1);
+        double[] vp1 = sub(p, v1);
+        double[] c = cross(e1, vp1);
+
+        u = getNorma(c) / area2;
+        if (dot(n, c) < 0) {
+            u = -u;
         }
-        double[] e2 = sub(v0,v2);
+        double[] e2 = sub(v0, v2);
         double[] vp2 = sub(p, v2);
         c = cross(e2, vp2);
-        v = getNorma(c)/area2;
-        if(dot(n, c)<0){
-            v=-v;
+        v = getNorma(c) / area2;
+        if (dot(n, c) < 0) {
+            v = -v;
         }
-        return new double[]{1-u-v, u, v};
+        return new double[]{1 - u - v, u, v};
     }
-    
+
     /*
     public static double[] barCoef(double[] p, double[] p1, double[] p2, double[] p3) {
         /*double[] p1p = sub(p, p1);
@@ -222,5 +239,5 @@ public class Algeb {
         return new double[]{(A2 / total), (A3 / total), (A1 / total)};
     
 }
-*/
+     */
 }
