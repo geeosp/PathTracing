@@ -13,6 +13,6 @@ import geeosp.pathtracing.scene.RenderScene;
  */
 public abstract class RenderAlgorithm {
    
-    public abstract  double[] calulatePixel(int i, int y, RenderScene scene);
+    public  abstract  double[] calulatePixel(int i, int y, RenderScene scene);
     
 }

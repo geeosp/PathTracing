@@ -18,8 +18,8 @@ public class PathTracingAlgorithm extends RenderAlgorithm {
     public PathTracingAlgorithm() {
     }
 
-    @Override
-    public double[] calulatePixel(int i, int j, RenderScene scene) {
+    
+    public  double[] calulatePixel(int i, int j, RenderScene scene) {
         Hit hit = new Hit();
         double[] direction = new double[4];
         double x0 = scene.getOrtho()[0][0];

@@ -10,6 +10,7 @@ import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.embed.swing.SwingFXUtils;
@@ -31,24 +32,25 @@ public class Renderer {
     private Thread[] renderThreads;
     private AtomicInteger pixelsRendered;
     private AtomicInteger threadsFinished;
-
+    private long time;
     private RenderBundle renderBundle;
     int currentProgress;
     RenderScene scene;
     private double[][][] pixels;
+    private RenderAlgorithm algorithm;
 
     public Renderer() {
         this.runningState = RunningState.Stopped;
     }
 
-    Renderer(RenderScene renderScene, ImageView imageView) {
+    Renderer(RenderScene renderScene, ImageView imageView, RenderAlgorithm algorithm) {
         this.scene = renderScene;
         this.renderBundle = new RenderBundle(renderScene.getSizeWidth(), renderScene.getSizeHeight(), renderScene.getNpaths(), imageView);
         this.renderThreads = new RenderThread[renderScene.getNthreads()];
         this.pixelsRendered = new AtomicInteger(0);
         this.pixels = new double[renderScene.getSizeWidth()][renderScene.getSizeHeight()][4];
         this.threadsFinished = new AtomicInteger(renderScene.getNthreads());
-
+        this.algorithm = algorithm;
     }
 
     public int getProgress() {
@@ -72,6 +74,7 @@ public class Renderer {
     void startRender() throws IOException, InterruptedException {
         System.out.println("Starting Rendering");
 
+        time = System.currentTimeMillis();
         this.runningState = RunningState.Running;
         for (int i = 0; i < scene.getSizeWidth(); i++) {
             for (int j = 0; j < scene.getSizeHeight(); j++) {
@@ -88,6 +91,7 @@ public class Renderer {
         } else {
             startRenderNoThreads();
         }
+
     }
 
     void startRenderNoThreads() throws IOException, InterruptedException {
@@ -100,7 +104,6 @@ public class Renderer {
             }
         }
         float t = 1.f / scene.getSizeHeight();
-        RenderAlgorithm algorithm = new PathTracingAlgorithm();
         for (int i = 0; i < scene.getSizeWidth(); i++) {
             for (int j = 0; j < scene.getSizeHeight(); j++) {
                 double[] color;
@@ -108,25 +111,31 @@ public class Renderer {
                 savePixel(i, j, color, true);
             }
         }
-        System.err.println("Finished");
+        time = System.currentTimeMillis() - time;
+        try {
+            saveFile(scene.getSizeWidth(), scene.getSizeHeight(), this.renderBundle.writeImage);
+        } catch (IOException ex) {
+            Logger.getLogger(Renderer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        System.err.println("Finished: " + (time / 1000.0) + " seconds");
 
     }
 
     synchronized void savePixel(int x, int y, double[] color, boolean update) {
 
         pixels[x][y] = color;
-        renderBundle.writeImage.getPixelWriter().setColor(x,pixels[0].length-y-1, new Color(pixels[x][y][0], pixels[x][y][1], pixels[x][y][2],pixels[x][y][3]));
+            renderBundle.writeImage.getPixelWriter().setColor(x, pixels[0].length - y - 1, new Color(pixels[x][y][0], pixels[x][y][1], pixels[x][y][2], pixels[x][y][3]));
         if (update) {
             pixelsRendered.incrementAndGet();
             if (currentProgress != getProgress()) {
-               // System.out.println("Progress: " + currentProgress);
+                //       System.out.println("Progress: " + currentProgress);
                 renderBundle.imageViewGui.setImage(renderBundle.writeImage);
-                currentProgress=getProgress();
+                currentProgress = getProgress();
             }
         }
     }
 
-    public void saveFile(int width, int height, WritableImage wImage) throws IOException {
+    public static void saveFile(int width, int height, WritableImage wImage) throws IOException {
         File dir = new File("out");
         dir.mkdir();
         String name = "out/" + width + "px_" + height + "px_";
@@ -163,7 +172,7 @@ public class Renderer {
         public void run() {
             float t = 1.f / scene.getSizeHeight();
             int stepWidth = (int) Math.floor(scene.getSizeWidth() / max);
-            RenderAlgorithm algorithm = new PathTracingAlgorithm();
+
             for (int i = index * stepWidth; i <= (1 + index) * stepWidth - 1; i++) {
                 for (int j = 0; j < scene.getSizeHeight(); j++) {
                     double[] color = algorithm.calulatePixel(i, j, scene);
@@ -171,13 +180,15 @@ public class Renderer {
                 }
             }
             if (threadsFinished.decrementAndGet() == 0) {
+                time = System.currentTimeMillis() - time;
                 try {
                     saveFile(scene.getSizeWidth(), scene.getSizeHeight(), this.renderBundle.writeImage);
                 } catch (IOException ex) {
                     Logger.getLogger(Renderer.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 runningState = RunningState.Stopped;
-                System.out.println("Finished");
+                System.err.println("Finished: " + (time / 1000.0) + " seconds");
+
             }
         }
     }
