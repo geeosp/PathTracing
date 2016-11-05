@@ -31,7 +31,8 @@ public class ObjLight extends ObjModel {
     @Override
     public double[] getColor(double[] origin, double[] target) {
        // throw new UnsupportedOperationException();
-        return Algeb.prodByEscalar(intensity, color);
+       double dist = Algeb.getNorma(Algeb.sub(origin, target));
+        return Algeb.prodByEscalar(intensity/(dist*dist), color);
     }
 
 }

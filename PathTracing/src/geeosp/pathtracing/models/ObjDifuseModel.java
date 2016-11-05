@@ -5,11 +5,6 @@
  */
 package geeosp.pathtracing.models;
 
-import geeosp.pathtracing.Algeb;
-import geeosp.pathtracing.Arquivo;
-import geeosp.pathtracing.scene.Settings;
-import java.util.ArrayList;
-
 /**
  *
  * @author geeo

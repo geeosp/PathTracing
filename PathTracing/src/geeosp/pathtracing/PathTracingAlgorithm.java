@@ -37,10 +37,10 @@ public class PathTracingAlgorithm extends RenderAlgorithm {
         int n = scene.getNpaths();
         int k = findRightK(n);
         n = 2 * k * k;
-        System.out.println(n);
+        //   System.out.println(n);
         brdf = new double[n + 1][4];
-        double[] ref = new double[]{1, 0, 0, 0};
-
+        double[] ref = Algeb.normalize(new double[]{1, 1, 1, 0});
+        System.out.println(Algeb.VectorToString(ref));
         double dw = PI / k;
         double dy = PI / k;
 
@@ -49,10 +49,10 @@ public class PathTracingAlgorithm extends RenderAlgorithm {
             for (double y = dy; y < PI; y += dy) {
                 double a1 = rand.nextDouble() / n;
                 double a2 = rand.nextDouble() / n;
-                brdf[i] = Algeb.multMatrizVetor(rotation(w + a1, y + a2), ref);
-                System.err.println(Algeb.MatrixToString(rotation(w+a1, y+a2)));
+                brdf[i] = Algeb.normalize(Algeb.multMatrizVetor(rotation(w + a1, y + a2), ref));//Algeb.normalize(ref);
+                //    System.err.println(Algeb.MatrixToString(rotation(w+a1, y+a2)));
+                System.out.println(Algeb.VectorToString(brdf[i]));
                 i++;
-            //    System.out.println(Algeb.VectorToString(brdf[i]));
             }
         }
 
@@ -112,53 +112,50 @@ public class PathTracingAlgorithm extends RenderAlgorithm {
                     double ks = model.getCoeficients()[2];
                     double kt = model.getCoeficients()[3];
                     double ktot = kd + ks + kt;
-                    color = new double[]{ka*hit.color[0], ka*hit.color[1], ka*hit.color[2], hit.color[3]};
-                    
-                    
+                    //  color = new double[]{ka * hit.color[0], ka * hit.color[1], ka * hit.color[2], hit.color[3]};
+
                     for (int r = 0; r < brdf.length; r++) {
-                        double test = rand.nextDouble() * ktot;
+                        double random = rand.nextDouble() * ktot;
                         double[] ray = brdf[r];
-                        /*
+
                         if (Algeb.dot(ray, hit.hitNormal) < 0) {
                             ray = Algeb.prodByEscalar(-1, ray);
                         }
 
-                        if (test < kd) {
-                            Hit other = getNextHit(hit.hitPoint, ray, scene);
-                            if (other.isHit()) {
-                                color = Algeb.soma(color, Algeb.prodByEscalar(kd, other.color));
+                        Hit other = getNextHit(hit.hitPoint, ray, scene);
+                        if (other.isHit()) {
+                            switch (other.model.getType()) {
+                                case LIGHT:
+                                    color = Algeb.soma(color, ((ObjLight) other.model).getColor(other.hitPoint, hit.hitPoint));
+                                    break;
+                                case OBJECT:
 
+                                    break;
                             }
-                        } else if (test < kd + ks) {
-                            Hit other = getNextHit(hit.hitPoint, ray, scene);
-                            if (other.isHit()) {
-                                color = Algeb.soma(color, Algeb.prodByEscalar(ks, other.color));
 
-                            }
-                        } else if (test < kd + ks + kt) {
-                            color = Algeb.soma(color, new double[4]);
                         }
-*/
-                    }
-                     
-                    //    color = ((ObjDifuseModel) hit.model).getColor(scene.getEye(), hit.hitPoint);
-                    break;
-            }
 
+                        //    color = ((ObjDifuseModel) hit.model).getColor(scene.getEye(), hit.hitPoint);
+                        break;
+                    }
+
+            }
         }
         return color;
         // return hit.color;
 
     }
 
-    double[] reflect(double[] incident, double[] normal) {
+    double[] reflect(double[] incident, double[] normal
+    ) {
         double[] x = Algeb.projec(incident, normal);
         double[] reflect = Algeb.soma(incident, Algeb.prodByEscalar(-2, x));
         return reflect;
 
     }
 
-    Hit getNextHit(double[] origin, double[] direction, RenderScene scene) {
+    Hit getNextHit(double[] origin, double[] direction, RenderScene scene
+    ) {
         Hit hit = new Hit();
         for (int t = 0; t < scene.getModels().size(); t++) {
             Model a = scene.getModels().get(t);

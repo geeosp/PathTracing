@@ -24,19 +24,22 @@ public class RenderTest extends Application {
         int errors = 0;
 
         RenderScene renderScene = RenderScene.load();
-        System.out.println(renderScene);
+        //System.out.println(renderScene);
         ImageView imageView = new ImageView();
         imageView.setFitWidth(renderScene.getSizeWidth());
         imageView.setFitHeight(renderScene.getSizeHeight());
         Pane pane = new Pane(imageView);
         Scene scene = new Scene(pane, renderScene.getSizeWidth(), renderScene.getSizeHeight());
+       
+        
+        
         primaryStage1.setScene(scene);
         primaryStage1.show();
         primaryStage1.setResizable(false);
         Renderer renderer = new Renderer(renderScene, imageView, new PathTracingAlgorithm());
         renderer.startRender();
 
-        System.out.println("Erros: " + errors);
+       // System.out.println("Erros: " + errors);
         /*
          */
 

@@ -26,7 +26,7 @@ public abstract class ObjModel extends Model {
     public ObjModel(String objectName, Model.Type type) {
         super(objectName, new double[3], new double[3], new double[]{1, 1, 1}, type);
 
-        System.out.println(objectName);
+       // System.out.println(objectName);
         Arquivo arq = new Arquivo(Settings.modelsFolder + objectName, "dumb.txt");
         ArrayList<double[]> vs = new ArrayList<>();
         ArrayList<int[]> fs = new ArrayList<>();
@@ -84,8 +84,8 @@ public abstract class ObjModel extends Model {
         double[] p1, p2, p3, v1, v2, nt;
         normalsTriangle = new double[triangles.length][4];
         normalsVertices = new double[vertices.length][4];
-        System.out.println(vertices.length);
-        System.out.println(triangles.length);
+     //   System.out.println(vertices.length);
+       // System.out.println(triangles.length);
         for (int i = 0; i < triangles.length; i++) {
             p1 = vertices[triangles[i][0]];
             p2 = vertices[triangles[i][1]];

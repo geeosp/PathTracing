@@ -10,7 +10,7 @@ background 0 0.0 0.0
 sphere .4 1 -8 .4 1.0 1.0 1.0 0.3 0.7 1 .8 5
 
 
-ambient 0.1
+ambient .1
 
 npaths 32
 
@@ -22,7 +22,7 @@ seed 9
 
 
 # Luz branca retangulo no centro do teto
-light luzcornell.obj 1. 1 1 1
+light luzcornell.obj 1. 1 1 0.1
 
 
 
