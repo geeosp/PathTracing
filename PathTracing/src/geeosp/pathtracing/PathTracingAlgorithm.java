@@ -7,6 +7,8 @@ package geeosp.pathtracing;
 
 import geeosp.pathtracing.models.Hit;
 import geeosp.pathtracing.models.Model;
+import geeosp.pathtracing.models.DifuseModel;
+import geeosp.pathtracing.models.ObjLight;
 import geeosp.pathtracing.scene.RenderScene;
 import java.util.Random;
 
@@ -36,22 +38,24 @@ public class PathTracingAlgorithm extends RenderAlgorithm {
         int k = findRightK(n);
         n = 2 * k * k;
         System.out.println(n);
-        brdf = new double[n + 10][4];
+        brdf = new double[n + 1][4];
         double[] ref = new double[]{1, 0, 0, 0};
 
         double dw = PI / k;
         double dy = PI / k;
 
         int i = 0;
-        for (double w = 0; w < 2 * PI; w += dw) {
-            for (double y = 0; y < PI; y += dy) {
+        for (double w = dw; w < 2 * PI; w += dw) {
+            for (double y = dy; y < PI; y += dy) {
                 double a1 = rand.nextDouble() / n;
                 double a2 = rand.nextDouble() / n;
                 brdf[i] = Algeb.multMatrizVetor(rotation(w + a1, y + a2), ref);
+                System.err.println(Algeb.MatrixToString(rotation(w+a1, y+a2)));
                 i++;
+            //    System.out.println(Algeb.VectorToString(brdf[i]));
             }
         }
-        System.out.println(i);
+
     }
 
     double[][] rotation(double u, double v) {
@@ -90,18 +94,83 @@ public class PathTracingAlgorithm extends RenderAlgorithm {
         direction = Algeb.sub(onScreen, scene.getEye());
         direction = Algeb.normalize(direction);
 
+        hit = getNextHit(scene.getEye(), direction, scene);
+
+        double[] color = new double[]{0, 0, 0, 1};
+
+        if (hit.isHit()) {
+
+            switch (hit.model.getType()) {
+                case LIGHT:
+                    color = ((ObjLight) hit.model).getColor(scene.getEye(), hit.hitPoint);
+                    break;
+                case OBJECT:
+                    Random rand = new Random();
+                    DifuseModel model = (DifuseModel) hit.model;
+                    double ka = model.getCoeficients()[0];
+                    double kd = model.getCoeficients()[1];
+                    double ks = model.getCoeficients()[2];
+                    double kt = model.getCoeficients()[3];
+                    double ktot = kd + ks + kt;
+                    color = new double[]{ka*hit.color[0], ka*hit.color[1], ka*hit.color[2], hit.color[3]};
+                    
+                    
+                    for (int r = 0; r < brdf.length; r++) {
+                        double test = rand.nextDouble() * ktot;
+                        double[] ray = brdf[r];
+                        /*
+                        if (Algeb.dot(ray, hit.hitNormal) < 0) {
+                            ray = Algeb.prodByEscalar(-1, ray);
+                        }
+
+                        if (test < kd) {
+                            Hit other = getNextHit(hit.hitPoint, ray, scene);
+                            if (other.isHit()) {
+                                color = Algeb.soma(color, Algeb.prodByEscalar(kd, other.color));
+
+                            }
+                        } else if (test < kd + ks) {
+                            Hit other = getNextHit(hit.hitPoint, ray, scene);
+                            if (other.isHit()) {
+                                color = Algeb.soma(color, Algeb.prodByEscalar(ks, other.color));
+
+                            }
+                        } else if (test < kd + ks + kt) {
+                            color = Algeb.soma(color, new double[4]);
+                        }
+*/
+                    }
+                     
+                    //    color = ((ObjDifuseModel) hit.model).getColor(scene.getEye(), hit.hitPoint);
+                    break;
+            }
+
+        }
+        return color;
+        // return hit.color;
+
+    }
+
+    double[] reflect(double[] incident, double[] normal) {
+        double[] x = Algeb.projec(incident, normal);
+        double[] reflect = Algeb.soma(incident, Algeb.prodByEscalar(-2, x));
+        return reflect;
+
+    }
+
+    Hit getNextHit(double[] origin, double[] direction, RenderScene scene) {
+        Hit hit = new Hit();
         for (int t = 0; t < scene.getModels().size(); t++) {
             Model a = scene.getModels().get(t);
             Hit temp = a.getNearestIntersectionPoint(scene.getEye(), direction);
-            if (temp.isHit) {
+            if (temp.isHit()) {
                 double tempDist = Algeb.distancia(temp.hitPoint, scene.getEye());
                 if (tempDist < Algeb.distancia(hit.hitPoint, scene.getEye())) {
                     hit = temp;
                 }
             }
         }
-
-        return hit.color;
+        return hit;
     }
 
 }

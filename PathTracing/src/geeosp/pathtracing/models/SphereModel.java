@@ -11,7 +11,7 @@ import geeosp.pathtracing.Algeb;
  *
  * @author geeo
  */
-public class SphereModel extends Model {
+public class SphereModel extends Model implements DifuseModel {
 
     double center[];
     double radius;
@@ -46,15 +46,15 @@ public class SphereModel extends Model {
             } else {
                 p = p2;
             }
-            hit.isHit = true;
+
             hit.hitPoint = p;
             hit.hitNormal = Algeb.normalize(Algeb.sub(p, center));
             hit.color = color;
-          
+            hit.model = this;
         }
         return hit;
 
-       }
+    }
 
     public SphereModel(double[] center, double radius, double[] objectMaterial) {
         super("sphere", new double[3], new double[3], new double[]{1, 1, 1}, Type.OBJECT);
@@ -79,6 +79,11 @@ public class SphereModel extends Model {
                 + "\n color: " + color[0] + " " + color[1] + " " + color[2] + " " + color[3]
                 + "\n coeficients: " + coeficients[0] + " " + coeficients[1] + " " + coeficients[2] + " " + coeficients[3] + " " + coeficients[4] + " ";
         return s; //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public double[] getCoeficients() {
+        return this.coeficients;
     }
 
 }

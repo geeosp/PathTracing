@@ -111,7 +111,7 @@ public abstract class ObjModel extends Model {
 
     @Override
     public Hit getNearestIntersectionPoint(double[] origin, double[] direction) {
-        Hit hit = new Hit(new double[4], new double[4], new double[] {1, 1, 1, 0}, false);
+        Hit hit = new Hit(new double[4], new double[4], new double[]{1, 1, 1, 0}, false);
         double dist = Double.MAX_VALUE;
         direction = Algeb.normalize(direction);
         for (int t = 0; t < triangles.length; t++) {
@@ -139,9 +139,9 @@ public abstract class ObjModel extends Model {
                 if (ok) {
                     if (dist > Algeb.distanciaSqr(p, origin)) {
                         hit.hitPoint = p;
-                        hit.isHit = true;
                         hit.color = getColor(origin, p);
                         hit.hitNormal = normalsTriangle[t];
+                        hit.model = this;
                     }
                 } else {
                     //   System.out.println("coeficientes baricentricos: " + Algeb.VectorToString(coeficients));
@@ -153,7 +153,7 @@ public abstract class ObjModel extends Model {
         return hit;
     }
 
-    public abstract double[] getColor(double []origin, double [] target);
+    public abstract double[] getColor(double[] origin, double[] target);
 
     @Override
     public String toString() {

@@ -74,6 +74,10 @@ public class Renderer {
 
     void startRender() throws IOException, InterruptedException {
         System.out.println("Starting Rendering");
+        
+        
+        
+        
 
         time = System.currentTimeMillis();
         this.runningState = RunningState.Running;
@@ -89,10 +93,10 @@ public class Renderer {
                 renderThreads[i].setDaemon(false);
                 renderThreads[i].start();
             }
-        } else {
+     } else {
             startRenderNoThreads();
-        }
-
+       }
+//
     }
 
     void startRenderNoThreads() throws IOException, InterruptedException {
@@ -104,11 +108,10 @@ public class Renderer {
                 savePixel(i, j, scene.getBackgroundColor(), false);
             }
         }
-        float t = 1.f / scene.getSizeHeight();
         for (int i = 0; i < scene.getSizeWidth(); i++) {
             for (int j = 0; j < scene.getSizeHeight(); j++) {
-                double[] color;
-                color = algorithm.calulatePixel(i, j, scene);
+                double[] color=new double[4];
+              //  color = algorithm.calulatePixel(i, j, scene);
                 savePixel(i, j, color, true);
             }
         }
@@ -118,9 +121,16 @@ public class Renderer {
         } catch (IOException ex) {
             Logger.getLogger(Renderer.class.getName()).log(Level.SEVERE, null, ex);
         }
+        updateImage();
         System.err.println("Finished: " + (time / 1000.0) + " seconds");
 
     }
+    
+    void updateImage(){
+        
+         renderBundle.imageViewGui.setImage(renderBundle.writeImage);
+    }  
+    
 
     public static void saveFile(int width, int height, WritableImage wImage) throws IOException {
         File dir = new File("out");
@@ -160,6 +170,9 @@ public class Renderer {
         private int max;
         private final RenderBundle renderBundle;
 
+        
+        
+        
         public RenderBundle getRenderBundle() {
             return renderBundle;
         }
@@ -176,7 +189,8 @@ public class Renderer {
 
             for (int i = index * stepWidth; i <= (1 + index) * stepWidth - 1; i++) {
                 for (int j = 0; j < scene.getSizeHeight(); j++) {
-                    double[] color = algorithm.calulatePixel(i, j, scene);
+                    double[]color = new double[4]; 
+                        color = algorithm.calulatePixel(i, j, scene);
                     this.savePixelConcurrent(i, j, color, true);
                 }
             }
@@ -194,14 +208,35 @@ public class Renderer {
         }
 
         synchronized void savePixelConcurrent(int x, int y, double[] color, boolean update) {
+           //System.err.println(Algeb.VectorToString(color));
 
-            pixels[x][y] = color;
+           /*
+           double[] temp = color;
+           double max=0;
+           for(int i =0;i<3;i++){
+               if (color[i]>max){
+                   max=color[i];
+               }
+           }
+           for(int i =0;i<3;i++){
+               if (color[i]>max){
+                   color[i]=color[i]/max;
+               }
+           }
+           if(color[3]>1)color[3]=1;
+           */
+           
+           
+           
+           
+           pixels[x][y] = color;
+           
             renderBundle.writeImage.getPixelWriter().setColor(x, pixels[0].length - y - 1, new Color(pixels[x][y][0], pixels[x][y][1], pixels[x][y][2], pixels[x][y][3]));
             if (update) {
 
                 pixelsRendered.incrementAndGet();
                 if (currentProgress != getProgress()) {
-                  //  System.out.println("Progress: " + currentProgress);
+                System.out.println("Progress: " + currentProgress);
                     ImageView iv = renderBundle.imageViewGui;
                     if (iv != null) {
                         WritableImage wi = renderBundle.writeImage;
@@ -221,5 +256,6 @@ public class Renderer {
                 }
             }
         }
+        
     }
 }

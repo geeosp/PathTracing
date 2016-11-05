@@ -5,6 +5,8 @@
  */
 package geeosp.pathtracing.models;
 
+import geeosp.pathtracing.Algeb;
+
 /**
  *
  * @author geeo
@@ -28,7 +30,8 @@ public class ObjLight extends ObjModel {
 
     @Override
     public double[] getColor(double[] origin, double[] target) {
-        return this.color;
+       // throw new UnsupportedOperationException();
+        return Algeb.prodByEscalar(intensity, color);
     }
 
 }

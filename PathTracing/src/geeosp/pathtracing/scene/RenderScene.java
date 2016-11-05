@@ -31,6 +31,7 @@ public class RenderScene {
     private String outfile;
     private int[] size;
     private int nthreads;
+    private int rayDepth;
 
     public RenderScene() {
         models = new ArrayList<>();
@@ -38,7 +39,7 @@ public class RenderScene {
         // nthreads = 1;
         npaths = 100;
         eye = new double[]{0, 0, -1};
-
+        rayDepth = 5;
     }
 
     @Override
@@ -53,7 +54,9 @@ public class RenderScene {
                 + "\nseed:\n" + " " + seed
                 + "\ntonemapping\n" + " " + tonemapping
                 + "\nnpaths\n  " + npaths
-                + "\nthreads\n  " + nthreads + "\n";
+                + "\nrayDepth\n  " + rayDepth
+                + "\nthreads\n  " + nthreads
+                + "\n";
         for (int i = 0; i < models.size(); i++) {
             ret += "\n" + models;
         }
@@ -70,6 +73,14 @@ public class RenderScene {
 
     public double[] getBackgroundColor() {
         return backgroundColor;
+    }
+
+    public int getRayDepth() {
+        return rayDepth;
+    }
+
+    public void setRayDepth(int rayDepth) {
+        this.rayDepth = rayDepth;
     }
 
     public double getAmbientColor() {
@@ -175,7 +186,7 @@ public class RenderScene {
                     g = arq.readDouble();
                     b = arq.readDouble();
                     scene.backgroundColor = new double[]{
-                        r, g, b, 1.0
+                        r, g, b,1
                     };
                     break;
                 case "ambient"://ambient la
@@ -191,6 +202,9 @@ public class RenderScene {
                     scene.npaths = arq.readInt();
                     break;
 
+                case "raydepht":
+                    scene.npaths = arq.readInt();
+                    break;
                 case "sphere":
                     double center[] = new double[]{
                         arq.readDouble(),

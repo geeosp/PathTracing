@@ -14,10 +14,26 @@ import java.util.ArrayList;
  *
  * @author geeo
  */
-public class ObjDifuseModel extends ObjModel {
+public class ObjDifuseModel extends ObjModel implements DifuseModel{
 
     private double[] color;
     private double[] coeficients;
+
+    public double[] getColor() {
+        return color;
+    }
+
+    public void setColor(double[] color) {
+        this.color = color;
+    }
+
+    public double[] getCoeficients() {
+        return coeficients;
+    }
+
+    public void setCoeficients(double[] coeficients) {
+        this.coeficients = coeficients;
+    }
 
     public ObjDifuseModel(String objectName, double[] objectMaterial) {
         super(objectName, Type.OBJECT);
