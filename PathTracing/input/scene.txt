@@ -1,18 +1,18 @@
 nthreads 8
 
-eye 0.0 0.0 6
+eye 0.0 0.0 5.7
 size 540 540
 ortho -1 -1 1 1
-background 0 0.0 0.0
+background 0 0 0
 
 # sphere cx cy cx r red green blue ka kd ks kt n
 
 sphere .4 1 -8 .4 1.0 1.0 1.0 0.3 0.7 1 .8 5
 
 
-ambient .1
+ambient .8
 
-npaths 32
+npaths 600
 
 tonemapping 1.0
 
@@ -22,7 +22,7 @@ seed 9
 
 
 # Luz branca retangulo no centro do teto
-light luzcornell.obj 1. 1 1 0.1
+light luzcornell.obj 1. .4 1 .6
 
 
 
@@ -35,11 +35,11 @@ object leftwall.obj 1.0 0.0 0.0 0.3 0.7 0 0 5
 # right wall GREEN
 object rightwall.obj 0.0 1.0 0.0 0.3 0.7 0 0 5
 
-# floor BLUE
-object floor.obj 0.0 0.0 1.0 0.3 0.7 0 0 5
+# floor white
+object floor.obj 1 0.0 1 0.3 0.7 0 0 5
 
-# back wall YELLOW
-object back.obj 1.0 1.0 0.0 0.3 0.7 0 0 5
+# back wall WHITE
+object back.obj 1.0 1.0 1.0 0.3 0.7 0 0 5
 
 # ceiling MAGENTA
 object ceiling.obj 1.0 0.0 1.0 0.3 0.7 0 0 5
@@ -47,8 +47,8 @@ object ceiling.obj 1.0 0.0 1.0 0.3 0.7 0 0 5
 # cube 1 CYAN
 object cube1.obj 0.0 1.0 1.0 0.3 0.7 0 0 5
 
-# cube 2 WHITE
-object cube2.obj 1.0 1.0 1.0 0.3 0.7 0 0 5
+# cube 2 YELLOW
+object cube2.obj 1.0 1.0 0.0 0.3 0.7 0 0 5
 
 
 

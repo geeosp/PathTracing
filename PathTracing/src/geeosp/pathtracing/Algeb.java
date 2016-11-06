@@ -21,7 +21,7 @@ public class Algeb {
         return sub;
     }
 
-    public static double distancia(double[] a, double[] b) {
+    public static double distance(double[] a, double[] b) {
         double d = 0;
         for (int i = 0; i < a.length; i++) {
             d += (a[i] - b[i]) * (a[i] - b[i]);
@@ -30,7 +30,7 @@ public class Algeb {
 
     }
 
-    public static double distanciaSqr(double[] a, double[] b) {
+    public static double distanceSqr(double[] a, double[] b) {
         double d = 0;
         for (int i = 0; i < a.length; i++) {
             d += (a[i] - b[i]) * (a[i] - b[i]);
@@ -48,7 +48,7 @@ public class Algeb {
         return resp;
     }
 
-    public static double[] prodByEscalar(double escalar, double[] vetor) {
+    public static double[] dotByScale(double escalar, double[] vetor) {
         double[] k = new double[vetor.length];
         for (int i = 0; i < vetor.length; i++) {
             k[i] = escalar * vetor[i];
@@ -64,7 +64,7 @@ public class Algeb {
         return resp;
     }
 
-    public static double[] projec(double[] u, double[] v) {
+    public static double[] projection(double[] u, double[] v) {
         double[] proj = new double[u.length];
         double a = 0, b = 0, k;
         double size = u.length;
@@ -85,7 +85,7 @@ public class Algeb {
         return proj;
     }
 
-    public static double[] multMatrizVetor(double[][] M, double[] V) {
+    public static double[] matrixVectorProduct(double[][] M, double[] V) {
         int aux;
         double[] retorno = new double[V.length];
         for (int linha = 0; linha < M.length; linha++) {
@@ -97,7 +97,7 @@ public class Algeb {
         return retorno;
     }
 
-    public static double[][] multMatrixMatrix(double[][] a, double[][] b) {
+    public static double[][] matrixMatrixProduct(double[][] a, double[][] b) {
         if (a[0].length != b.length) {
             throw new RuntimeException("Dimensões inconsistentes. Impossível multiplicar as matrizes");
         }
@@ -184,7 +184,7 @@ public class Algeb {
             for (int j = 0; j < 3; j++) {
                 V[j] = pontos[i][j];
             }
-            R = multMatrizVetor(MM, sub(V, C));
+            R = matrixVectorProduct(MM, sub(V, C));
             MatMud[i] = R;
         }
 
@@ -224,20 +224,4 @@ public class Algeb {
         return new double[]{1 - u - v, u, v};
     }
 
-    /*
-    public static double[] barCoef(double[] p, double[] p1, double[] p2, double[] p3) {
-        /*double[] p1p = sub(p, p1);
-        double[] p2p = sub(p, p2);
-        double[] p3p = sub(p, p3);
-        double[] p1p2 = sub(p2, p1);
-        double[] p2p3 = sub(p3, p2);
-        double[] p3p1 = sub(p1, p3);
-        double A1 = dot(p1p, p1p2);
-        double A2 = dot(p2p, p2p3);
-        double A3 = dot(p3p, p3p1);
-        double total = A1 + A2 + A3;
-        return new double[]{(A2 / total), (A3 / total), (A1 / total)};
-    
-}
-     */
 }

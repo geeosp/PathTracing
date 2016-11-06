@@ -201,21 +201,10 @@ public class Renderer {
 
         synchronized void savePixelConcurrent(int x, int y, double[] color, boolean update) {
             //System.err.println(Algeb.VectorToString(color));
-
-            double[] temp = color;
-            double max = 0;
-            for (int i = 0; i < 3; i++) {
-                if (color[i] > max) {
-                    max = color[i];
+            for (int i = 0; i < 4; i++) {
+                if (color[i] > 1) {
+                    color[i] = 1;
                 }
-            }
-            for (int i = 0; i < 3; i++) {
-          
-                    color[i] = color[i] / max;
-               
-            }
-            if (color[3] > 1) {
-                color[3] = 1;
             }
 
             pixels[x][y] = color;

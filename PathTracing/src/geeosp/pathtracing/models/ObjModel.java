@@ -126,7 +126,7 @@ public abstract class ObjModel extends Model {
             if (Algeb.dot(n, n) - Algeb.dot(n, direction) > zero) {
                 double[] p1p0 = Algeb.sub(origin, p1);
                 double s = -Algeb.dot(n, p1p0) / Algeb.dot(n, direction);
-                p = Algeb.soma(origin, Algeb.prodByEscalar(s, direction));
+                p = Algeb.soma(origin, Algeb.dotByScale(s, direction));
 
                 boolean ok = true;
 
@@ -137,10 +137,10 @@ public abstract class ObjModel extends Model {
                     }
                 }
                 if (ok) {
-                    if (dist > Algeb.distanciaSqr(p, origin)) {
-                        hit.hitPoint = p;
+                    if (dist > Algeb.distanceSqr(p, origin)) {
+                        hit.point = p;
                         hit.color = getColor(origin, p);
-                        hit.hitNormal = normalsTriangle[t];
+                        hit.normal = normalsTriangle[t];
                         hit.model = this;
                     }
                 } else {

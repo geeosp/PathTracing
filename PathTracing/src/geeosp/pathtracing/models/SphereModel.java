@@ -31,24 +31,24 @@ public class SphereModel extends Model implements DifuseModel {
         double[] p = null;
         if (delta == 0) {
             t = -.5 * b / a;
-            p = Algeb.soma(origin, Algeb.prodByEscalar(t, direction));
+            p = Algeb.soma(origin, Algeb.dotByScale(t, direction));
 
         } else if (delta > 0) {
             double sqrDelta = Math.sqrt(delta);
             double[] p1, p2;
             t = (-b + sqrDelta) / (2 * a);
-            p1 = Algeb.soma(origin, Algeb.prodByEscalar(t, direction));
+            p1 = Algeb.soma(origin, Algeb.dotByScale(t, direction));
             t = (-b - sqrDelta) / (2 * a);
-            p2 = Algeb.soma(origin, Algeb.prodByEscalar(t, direction));
+            p2 = Algeb.soma(origin, Algeb.dotByScale(t, direction));
 
-            if (Algeb.distancia(p1, origin) < Algeb.distancia(p2, origin)) {
+            if (Algeb.distance(p1, origin) < Algeb.distance(p2, origin)) {
                 p = p1;
             } else {
                 p = p2;
             }
 
-            hit.hitPoint = p;
-            hit.hitNormal = Algeb.normalize(Algeb.sub(p, center));
+            hit.point = p;
+            hit.normal = Algeb.normalize(Algeb.sub(p, center));
             hit.color = color;
             hit.model = this;
         }
