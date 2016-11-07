@@ -8,7 +8,9 @@ package geeosp.pathtracing;
 import geeosp.pathtracing.models.Hit;
 import geeosp.pathtracing.models.Model;
 import geeosp.pathtracing.models.DifuseModel;
+import geeosp.pathtracing.models.ObjDifuseModel;
 import geeosp.pathtracing.models.ObjLight;
+import geeosp.pathtracing.models.ObjModel;
 import geeosp.pathtracing.scene.RenderScene;
 import java.util.Random;
 import javafx.scene.paint.Color;
@@ -39,38 +41,39 @@ public class PathTracingAlgorithm extends RenderAlgorithm {
         int k = findRightK(n);
         n = 2 * k * k;
         //   System.out.println(n);
-        brdf = new double[n + 1][4];
+        brdf = new double[n][4];
         double[] ref = Algeb.normalize(new double[]{1, 1, 1, 0});
-        System.out.println(Algeb.VectorToString(ref));
-        double dw = PI / k;
-        double dy = PI / k;
+        double dk = k;
+        double dw = PI / dk;
+        double dy = PI / dk;
 
         int i = 0;
-        for (double w = dw; w < 2 * PI; w += dw) {
-            for (double y = dy; y < PI; y += dy) {
-                double a1 = rand.nextDouble() / n;
-                double a2 = rand.nextDouble() / n;
+        for (double y = 0; y < 2*PI; y += dy) {
+            for (double w = 0; w <  PI; w += dw) {
+                double a1 = 0;//-dw+rand.nextDouble()*dw;
+                double a2 = 0;//-dy+ rand.nextDouble() *dy;
                 brdf[i] = Algeb.normalize(Algeb.matrixVectorProduct(rotation(w + a1, y + a2), ref));//Algeb.normalize(ref);
-                //    System.err.println(Algeb.MatrixToString(rotation(w+a1, y+a2)));
-                System.out.println(Algeb.VectorToString(brdf[i]));
+                System.err.println(i);
                 i++;
+                
             }
         }
+        System.out.println(Algeb.MatrixToString(brdf));
 
     }
 
-    double[][] rotation(double u, double v) {
+    double[][] rotation(double x, double y) {
 
         double[][] r1 = new double[][]{
-            {Math.cos(v), Math.sin(v), 0, 0},
-            {-Math.sin(v), Math.cos(v), 0, 0},
-            {0, 0, 1, 0},
+            {1,0,0,0},
+            {0,Math.cos(x), -Math.sin(x), 0},
+            {0,Math.sin(x), Math.cos(x), 0},
             {0, 0, 0, 1}
         };
         double[][] r2 = new double[][]{
-            {1, 0, 0, 0},
-            {0, Math.cos(u), Math.sin(u), 0},
-            {0, -Math.sin(u), Math.cos(u), 0},
+            {Math.cos(y),0, Math.sin(y), 0},
+            {0, 1, 0, 0},
+            { -Math.sin(y), 0,Math.cos(y), 0},
             {0, 0, 0, 1}
         };
         return Algeb.matrixMatrixProduct(r1, r2);
@@ -98,26 +101,34 @@ public class PathTracingAlgorithm extends RenderAlgorithm {
         double[] color = new double[4];
         color[3] = 1;
         if (hit.isHit()) {
+            double dot = Algeb.dot(direction, hit.normal);
+
             switch (hit.model.getType()) {
                 case LIGHT:
-                    double dot = Algeb.dot(direction, hit.normal);
-                    if (dot < 0) {
-                        dot = -dot;
-                    }
-                    color = Algeb.dotByScale(dot, ((ObjLight) hit.model).getColor(scene.getEye(), hit.point));
+
+                    color = ((ObjLight) hit.model).getColor(scene.getEye(), hit.point);
+                    color[3] = 1;
+
                     break;
                 case OBJECT:
                     DifuseModel difuseModel = (DifuseModel) hit.model;
                     for (int r = 0; r < brdf.length; r++) {
                         Random rand = new Random();
                         double ka = ((DifuseModel) hit.model).getCoeficients()[0];
-                        double kd = ((DifuseModel) hit.model).getCoeficients()[1];
                         double ks = ((DifuseModel) hit.model).getCoeficients()[2];
+                        double kd = ((DifuseModel) hit.model).getCoeficients()[1];
                         double ktot = ka + kd + ks;
+
+                        Hit test = getNextHit(hit.point, brdf[r], scene);
                         double random = rand.nextDouble() * ktot;
                         double[] fator = new double[4];
                         if (random < ka) {
-                            fator = Algeb.dotByScale(ka, Algeb.dotByScale(scene.getAmbientColor() / brdf.length, hit.color));
+                            fator = Algeb.dotByScale(ka * scene.getAmbientColor() / brdf.length, hit.color);
+                        } else if (random < ka + kd) {
+                        //    fator = Algeb.dotByScale(1, runAlgorithm(hit.point, test, RayType.DIFUSE, scene, 0));
+                        } else if (random < ka + kd + ks) {
+                            //    fator = Algeb.dotByScale(kd/ brdf.length, runAlgorithm(hit.point, test, RayType.SPECULAR, scene, 5));
+
                         }
                         color = Algeb.soma(color, fator);
 
@@ -136,8 +147,12 @@ public class PathTracingAlgorithm extends RenderAlgorithm {
 
     double[] reflect(double[] incident, double[] normal
     ) {
+        if (Algeb.dot(incident, normal) < 0) {
+            incident = Algeb.dotByScale(-1, incident);
+        }
+
         double[] x = Algeb.projection(incident, normal);
-        double[] reflect = Algeb.soma(incident, Algeb.dotByScale(-2, x));
+        double[] reflect = Algeb.soma(incident, Algeb.dotByScale(-2, Algeb.sub(incident, x)));
         return reflect;
 
     }
@@ -162,37 +177,44 @@ public class PathTracingAlgorithm extends RenderAlgorithm {
         DIFUSE, SPECULAR, TRANSMITED
     };
 
-    double[] runAlgorithm(double[] origin, Hit hit, RayType rayType, int deep, boolean firstHit) {
-        double[] color = new double[4];
-        //vector from hitpoint to origin 
-        double[] incident = Algeb.normalize(Algeb.sub(origin, hit.point));
-        double dotProduct = Algeb.dot(incident, hit.normal);
-        if (dotProduct < 0) {
-            dotProduct *= -1;
-            hit.normal = Algeb.dotByScale(-1, hit.normal);
-        }
-        if (!firstHit) {
-            switch (hit.model.getType()) {
-                case LIGHT:
+    double[] runAlgorithm(double[] origin, Hit hit, RayType rayType, RenderScene scene, int deep) {
+        double[] color = scene.getBackgroundColor();
+        if (deep == 0) {
+            if (hit.isHit()) {
+                color = hit.model.getColor(origin, hit.point);
+            } else {
 
-                    color = ((ObjLight) hit.model).getColor(origin, hit.point);
-                    color = Algeb.dotByScale(Algeb.dot(hit.normal, Algeb.sub(origin, hit.point)), color);
-                    break;
+                color = scene.getBackgroundColor();
             }
-        } else {
+        } else if (hit.isHit()) {
+            if (hit.model.getType() == Model.Type.LIGHT) {
+                color = hit.model.getColor(origin, hit.point);
+            } else {//n é uma luz
+                double[] incident = Algeb.normalize(Algeb.sub(origin, hit.point));
+                DifuseModel model = (DifuseModel) hit.model;
+                if (Algeb.dot(incident, hit.normal) < 0) {
+                    incident = Algeb.dotByScale(-1, incident);
+                }
+                double[] reflectedRay = reflect(incident, hit.normal);
+                //  reflectedRay = new double[]{0,1,0,0};
+                Hit next = getNextHit(hit.point, reflectedRay, scene);
+                switch (rayType) {
+                    case DIFUSE:
 
-            switch (hit.model.getType()) {
-                case LIGHT:
+                        //    color = hit.color;
+                        double[] reflectedColor = runAlgorithm(hit.point, next, rayType, scene, deep - 1);
+                        double kd = model.getCoeficients()[1];
+                        double[] temp = Algeb.dotByScale(kd, reflectedColor);
+                        color = Algeb.soma(Algeb.dotByScale(kd, color), temp);
+                        break;
+                    case SPECULAR:
 
-                    color = ((ObjLight) hit.model).getColor(origin, hit.point);
-                    color = Algeb.dotByScale(Algeb.dot(hit.normal, Algeb.sub(origin, hit.point)), color);
-                    break;
-
+                        break;
+                }
             }
-
+        } else {//hit nothing
+            color = scene.getBackgroundColor();
         }
-
         return color;
     }
-
 }

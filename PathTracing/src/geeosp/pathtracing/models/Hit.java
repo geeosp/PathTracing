@@ -18,7 +18,7 @@ public class Hit {
     public double[] color;
     public Model model;
 
-    public Hit(double[] hitPoint, double[] hitNormal, double[] color, boolean isHit) {
+    public Hit(double[] hitPoint, double[] hitNormal, double[] color, Model model) {
         this.point = hitPoint;
         this.normal = Algeb.normalize(hitNormal);
         this.color = color;

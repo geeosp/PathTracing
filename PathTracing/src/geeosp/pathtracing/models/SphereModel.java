@@ -20,7 +20,7 @@ public class SphereModel extends Model implements DifuseModel {
 
     @Override
     public Hit getNearestIntersectionPoint(double[] origin, double[] direction) {
-        Hit hit = new Hit(new double[4], new double[4], color, false);
+        Hit hit = new Hit();
         direction = Algeb.normalize(direction);
         double a = 1;
         double[] co = Algeb.sub(origin, center);
@@ -84,6 +84,11 @@ public class SphereModel extends Model implements DifuseModel {
     @Override
     public double[] getCoeficients() {
         return this.coeficients;
+    }
+
+    @Override
+    public double[] getColor(double[] origin, double[] target) {
+        return this.color;
     }
 
 }

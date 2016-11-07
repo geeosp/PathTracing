@@ -20,6 +20,8 @@ public abstract class Model {
         LIGHT,
         OBJECT
     }
+    
+    public abstract double[] getColor(double[] origin, double[] target);
 
     protected Type type;
 

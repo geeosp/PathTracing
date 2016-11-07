@@ -14,7 +14,11 @@ import geeosp.pathtracing.Algeb;
 public class ObjLight extends ObjModel {
 
     double[] color;
+
     //  double intensity;
+    public ObjLight() {
+        super("", Type.LIGHT);
+    }
 
     public ObjLight(String objectName, double[] material) {
         super(objectName, Type.LIGHT);
@@ -30,8 +34,13 @@ public class ObjLight extends ObjModel {
 
     @Override
     public double[] getColor(double[] origin, double[] target) {
+        double [] ret = color;
+        /*
         double dist = Algeb.distance(origin, target);
-        return color;
+        ret =Algeb.dotByScale(1/dist, color);
+        ret[3]=1;
+        */
+        return ret;
     }
 
 }

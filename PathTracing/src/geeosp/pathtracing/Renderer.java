@@ -214,7 +214,7 @@ public class Renderer {
 
                 pixelsRendered.incrementAndGet();
                 if (currentProgress != getProgress()) {
-                    System.out.println("Progress: " + currentProgress);
+                 //   System.out.println("Progress: " + currentProgress);
                     ImageView iv = renderBundle.imageViewGui;
                     if (iv != null) {
                         WritableImage wi = renderBundle.writeImage;

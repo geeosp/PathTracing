@@ -9,10 +9,10 @@ background 0 0 0
 
 sphere .4 1 -8 .4 1.0 1.0 1.0 0.3 0.7 1 .8 5
 
+ambient 1
 
-ambient .8
+npaths 3
 
-npaths 600
 
 tonemapping 1.0
 
@@ -22,7 +22,7 @@ seed 9
 
 
 # Luz branca retangulo no centro do teto
-light luzcornell.obj 1. .4 1 .6
+light luzcornell.obj 1. 1 1 1
 
 
 
@@ -36,7 +36,7 @@ object leftwall.obj 1.0 0.0 0.0 0.3 0.7 0 0 5
 object rightwall.obj 0.0 1.0 0.0 0.3 0.7 0 0 5
 
 # floor white
-object floor.obj 1 0.0 1 0.3 0.7 0 0 5
+object floor.obj 1 1 1 0.3 0.7 0 0 5
 
 # back wall WHITE
 object back.obj 1.0 1.0 1.0 0.3 0.7 0 0 5

@@ -14,7 +14,7 @@ import java.util.ArrayList;
  *
  * @author geeo
  */
-public abstract class ObjModel extends Model {
+public abstract class ObjModel extends Model  {
 
     protected double[][] vertices;
     protected int[][] triangles;
@@ -26,7 +26,7 @@ public abstract class ObjModel extends Model {
     public ObjModel(String objectName, Model.Type type) {
         super(objectName, new double[3], new double[3], new double[]{1, 1, 1}, type);
 
-       // System.out.println(objectName);
+        // System.out.println(objectName);
         Arquivo arq = new Arquivo(Settings.modelsFolder + objectName, "dumb.txt");
         ArrayList<double[]> vs = new ArrayList<>();
         ArrayList<int[]> fs = new ArrayList<>();
@@ -84,8 +84,8 @@ public abstract class ObjModel extends Model {
         double[] p1, p2, p3, v1, v2, nt;
         normalsTriangle = new double[triangles.length][4];
         normalsVertices = new double[vertices.length][4];
-     //   System.out.println(vertices.length);
-       // System.out.println(triangles.length);
+        //   System.out.println(vertices.length);
+        // System.out.println(triangles.length);
         for (int i = 0; i < triangles.length; i++) {
             p1 = vertices[triangles[i][0]];
             p2 = vertices[triangles[i][1]];
@@ -100,6 +100,7 @@ public abstract class ObjModel extends Model {
             for (int j = 0; j < 3; j++) {
                 normalsVertices[triangles[i][j]] = Algeb.soma(nt, normalsVertices[triangles[i][j]]);
             }
+            
 
         }
 
@@ -111,7 +112,7 @@ public abstract class ObjModel extends Model {
 
     @Override
     public Hit getNearestIntersectionPoint(double[] origin, double[] direction) {
-        Hit hit = new Hit(new double[4], new double[4], new double[]{1, 1, 1, 0}, false);
+        Hit hit = new Hit(new double[4], new double[4], new double[]{1, 1, 1, 0}, null);
         double dist = Double.MAX_VALUE;
         direction = Algeb.normalize(direction);
         for (int t = 0; t < triangles.length; t++) {
@@ -141,6 +142,10 @@ public abstract class ObjModel extends Model {
                         hit.point = p;
                         hit.color = getColor(origin, p);
                         hit.normal = normalsTriangle[t];
+                        if (Algeb.dot(hit.normal, Algeb.sub(origin, hit.point)) < 0) {
+                            hit.normal = Algeb.dotByScale(-1, hit.normal);
+                        }
+
                         hit.model = this;
                     }
                 } else {
@@ -152,8 +157,6 @@ public abstract class ObjModel extends Model {
         }
         return hit;
     }
-
-    public abstract double[] getColor(double[] origin, double[] target);
 
     @Override
     public String toString() {
