@@ -162,7 +162,7 @@ public class PathTracingAlgorithm extends RenderAlgorithm {
         Hit hit = new Hit();
         for (int t = 0; t < scene.getModels().size(); t++) {
             Model a = scene.getModels().get(t);
-            Hit temp = a.getNearestIntersectionPoint(scene.getEye(), direction);
+            Hit temp = a.getNearestIntersectionPoint(origin, direction);
             if (temp.isHit()) {
                 double tempDist = Algeb.distance(temp.point, scene.getEye());
                 if (tempDist < Algeb.distance(hit.point, scene.getEye())) {
