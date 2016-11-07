@@ -48,14 +48,14 @@ public class PathTracingAlgorithm extends RenderAlgorithm {
         double dy = PI / dk;
 
         int i = 0;
-        for (double y = 0; y < 2*PI; y += dy) {
-            for (double w = 0; w <  PI; w += dw) {
+        for (double y = 0; y < 2 * PI; y += dy) {
+            for (double w = 0; w < PI; w += dw) {
                 double a1 = 0;//-dw+rand.nextDouble()*dw;
                 double a2 = 0;//-dy+ rand.nextDouble() *dy;
                 brdf[i] = Algeb.normalize(Algeb.matrixVectorProduct(rotation(w + a1, y + a2), ref));//Algeb.normalize(ref);
                 System.err.println(i);
                 i++;
-                
+
             }
         }
         System.out.println(Algeb.MatrixToString(brdf));
@@ -65,15 +65,15 @@ public class PathTracingAlgorithm extends RenderAlgorithm {
     double[][] rotation(double x, double y) {
 
         double[][] r1 = new double[][]{
-            {1,0,0,0},
-            {0,Math.cos(x), -Math.sin(x), 0},
-            {0,Math.sin(x), Math.cos(x), 0},
+            {1, 0, 0, 0},
+            {0, Math.cos(x), -Math.sin(x), 0},
+            {0, Math.sin(x), Math.cos(x), 0},
             {0, 0, 0, 1}
         };
         double[][] r2 = new double[][]{
-            {Math.cos(y),0, Math.sin(y), 0},
+            {Math.cos(y), 0, Math.sin(y), 0},
             {0, 1, 0, 0},
-            { -Math.sin(y), 0,Math.cos(y), 0},
+            {-Math.sin(y), 0, Math.cos(y), 0},
             {0, 0, 0, 1}
         };
         return Algeb.matrixMatrixProduct(r1, r2);
@@ -118,14 +118,17 @@ public class PathTracingAlgorithm extends RenderAlgorithm {
                         double ks = ((DifuseModel) hit.model).getCoeficients()[2];
                         double kd = ((DifuseModel) hit.model).getCoeficients()[1];
                         double ktot = ka + kd + ks;
-
-                        Hit test = getNextHit(hit.point, brdf[r], scene);
-                        double random = rand.nextDouble() * ktot;
+                        double[] ray = brdf[r];
+                        if (Algeb.dot(ray, hit.normal) < 0) {
+                            ray = Algeb.dotByScale(-1, ray);
+                        }
+                        Hit test = getNextHit(hit.point, ray, scene);
+                        double random = rand.nextDouble() * (ktot - ks);
                         double[] fator = new double[4];
                         if (random < ka) {
                             fator = Algeb.dotByScale(ka * scene.getAmbientColor() / brdf.length, hit.color);
                         } else if (random < ka + kd) {
-                        //    fator = Algeb.dotByScale(1, runAlgorithm(hit.point, test, RayType.DIFUSE, scene, 0));
+                            fator = Algeb.dotByScale(kd / brdf.length, runAlgorithm(hit.point, test, RayType.DIFUSE, scene, 5));
                         } else if (random < ka + kd + ks) {
                             //    fator = Algeb.dotByScale(kd/ brdf.length, runAlgorithm(hit.point, test, RayType.SPECULAR, scene, 5));
 
@@ -183,8 +186,8 @@ public class PathTracingAlgorithm extends RenderAlgorithm {
             if (hit.isHit()) {
                 color = hit.model.getColor(origin, hit.point);
             } else {
-
-                color = scene.getBackgroundColor();
+                color = new double[]{scene.getAmbientColor(), scene.getAmbientColor(), scene.getAmbientColor(),
+                    (scene.getAmbientColor() == 0) ? 0 : 1};
             }
         } else if (hit.isHit()) {
             if (hit.model.getType() == Model.Type.LIGHT) {
@@ -205,10 +208,15 @@ public class PathTracingAlgorithm extends RenderAlgorithm {
                         double[] reflectedColor = runAlgorithm(hit.point, next, rayType, scene, deep - 1);
                         double kd = model.getCoeficients()[1];
                         double[] temp = Algeb.dotByScale(kd, reflectedColor);
-                        color = Algeb.soma(Algeb.dotByScale(kd, color), temp);
+                        //color = Algeb.soma(Algeb.dotByScale(kd, color), temp);
+                        color = Algeb.soma(hit.color, temp);
                         break;
                     case SPECULAR:
-
+                        reflectedColor = runAlgorithm(hit.point, next, rayType, scene, deep - 1);
+                        double ks = model.getCoeficients()[2];
+                        temp = Algeb.dotByScale(ks, reflectedColor);
+                        //color = Algeb.soma(Algeb.dotByScale(kd, color), temp);
+                        color = Algeb.soma(hit.color, temp);
                         break;
                 }
             }
