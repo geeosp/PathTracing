@@ -141,6 +141,10 @@ public abstract class ObjModel extends Model  {
                     if (dist > Algeb.distanceSqr(p, origin)) {
                         hit.point = p;
                         hit.color = getColor(origin, p);
+                       dist = Algeb.distanceSqr(p, origin);
+                        
+                        
+                        
                         hit.normal = normalsTriangle[t];
                         if (Algeb.dot(hit.normal, Algeb.sub(origin, hit.point)) < 0) {
                             hit.normal = Algeb.dotByScale(-1, hit.normal);
