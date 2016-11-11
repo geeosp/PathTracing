@@ -74,5 +74,7 @@ public abstract class Model {
     public void setType(Type type) {
         this.type = type;
     }
-
+public boolean isLight(){
+    return this.type == Type.LIGHT;
+}
 }

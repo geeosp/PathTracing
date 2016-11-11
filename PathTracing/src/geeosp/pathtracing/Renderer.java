@@ -127,10 +127,16 @@ public class Renderer {
         renderBundle.imageViewGui.setImage(renderBundle.writeImage);
     }
 
-    public static void saveFile(int width, int height, WritableImage wImage) throws IOException {
+    public  void saveFile(int width, int height, WritableImage wImage) throws IOException {
         File dir = new File("out");
         dir.mkdir();
-        String name = "out/" + width + "px_" + height + "px_";
+        String name = "out/" + width + "px_" + height + "px_"+"amb: "+this.scene.getAmbientColor()
+                +"pth: "+this.scene.getNpaths()
+                +"tnmp: "+this.scene.getTonemapping();
+        
+        
+        
+        
         //FileChooser fileChooser = new FileChooser();
         File file = new File(name + ".png");
         if (file != null) {
@@ -201,12 +207,8 @@ public class Renderer {
 
         synchronized void savePixelConcurrent(int x, int y, double[] color, boolean update) {
             //System.err.println(Algeb.VectorToString(color));
-            for (int i = 0; i < 4; i++) {
-                if (color[i] > 1) {
-                    color[i] = 1;
-                }
-            }
 
+            color[3] = 1;
             pixels[x][y] = color;
 
             renderBundle.writeImage.getPixelWriter().setColor(x, pixels[0].length - y - 1, new Color(pixels[x][y][0], pixels[x][y][1], pixels[x][y][2], pixels[x][y][3]));
@@ -214,7 +216,7 @@ public class Renderer {
 
                 pixelsRendered.incrementAndGet();
                 if (currentProgress != getProgress()) {
-                 //   System.out.println("Progress: " + currentProgress);
+                    //   System.out.println("Progress: " + currentProgress);
                     ImageView iv = renderBundle.imageViewGui;
                     if (iv != null) {
                         WritableImage wi = renderBundle.writeImage;

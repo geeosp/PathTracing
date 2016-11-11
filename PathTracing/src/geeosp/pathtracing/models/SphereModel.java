@@ -71,6 +71,26 @@ public class SphereModel extends Model implements DifuseModel {
         };
     }
 
+     @Override
+    public double getKa() {
+        return coeficients[0];
+    }
+
+    @Override
+    public double getKt() {
+        return coeficients[3];
+    }
+
+    @Override
+    public double getKd() {
+        return coeficients[1];
+    }
+
+    @Override
+    public double getKs() {
+        return coeficients[2];
+    }
+
     @Override
     public String toString() {
         String s = super.name

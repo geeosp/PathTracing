@@ -12,4 +12,11 @@ package geeosp.pathtracing.models;
 public interface DifuseModel {
 
     public double[] getCoeficients();
+    public double getKa();
+    public double getKt();
+    public double getKd();
+    public double getKs();
+    
+    
+    
 }

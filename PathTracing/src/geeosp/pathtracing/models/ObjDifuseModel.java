@@ -9,7 +9,7 @@ package geeosp.pathtracing.models;
  *
  * @author geeo
  */
-public class ObjDifuseModel extends ObjModel implements DifuseModel{
+public class ObjDifuseModel extends ObjModel implements DifuseModel {
 
     private double[] color;
     private double[] coeficients;
@@ -24,6 +24,26 @@ public class ObjDifuseModel extends ObjModel implements DifuseModel{
 
     public double[] getCoeficients() {
         return coeficients;
+    }
+
+    @Override
+    public double getKa() {
+        return coeficients[0];
+    }
+
+    @Override
+    public double getKt() {
+        return coeficients[3];
+    }
+
+    @Override
+    public double getKd() {
+        return coeficients[1];
+    }
+
+    @Override
+    public double getKs() {
+        return coeficients[2];
     }
 
     public void setCoeficients(double[] coeficients) {
@@ -45,7 +65,7 @@ public class ObjDifuseModel extends ObjModel implements DifuseModel{
     }
 
     @Override
-    public double[] getColor(double [] origin, double[] target) {
+    public double[] getColor(double[] origin, double[] target) {
         return this.color;
     }
 
