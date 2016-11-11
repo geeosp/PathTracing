@@ -9,6 +9,7 @@ package geeosp.pathtracing.models;
  *
  * @author geeo
  */
-interface Light {
+public interface Light {
     public double[] getOneLightPosition();
+     public double[] getColor();
 }

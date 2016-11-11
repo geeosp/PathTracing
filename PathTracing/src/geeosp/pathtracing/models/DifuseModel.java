@@ -16,7 +16,7 @@ public interface DifuseModel {
     public double getKt();
     public double getKd();
     public double getKs();
-    
+        public double[] getColor();
     
     
 }

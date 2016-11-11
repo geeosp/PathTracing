@@ -22,7 +22,7 @@ public class RenderScene {
     private double[] eye;
     private double[][] ortho;
     private double[] backgroundColor;
-    private double ambientColor;
+    private double []ambientColor;
     private ArrayList<Model> models;
     private ArrayList<Model> lights;
     private int npaths;
@@ -83,7 +83,7 @@ public class RenderScene {
         this.rayDepth = rayDepth;
     }
 
-    public double getAmbientColor() {
+    public double[] getAmbientColor() {
         return ambientColor;
     }
 
@@ -190,7 +190,8 @@ public class RenderScene {
                     };
                     break;
                 case "ambient"://ambient la
-                    scene.ambientColor = arq.readDouble();
+                    double amb = arq.readDouble();
+                    scene.ambientColor= new double[]{amb, amb, amb, 1.0};
                     break;
                 case "seed":
                     scene.seed = arq.readInt();

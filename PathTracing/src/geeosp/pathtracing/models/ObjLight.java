@@ -23,6 +23,11 @@ public class ObjLight extends ObjModel implements Light {
 
     }
 
+    @Override
+    public double[] getColor() {
+    return this.color;}
+    
+
     public ObjLight(String objectName, double[] material) {
         super(objectName, Type.LIGHT);
         this.color = new double[]{

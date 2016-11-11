@@ -111,4 +111,9 @@ public class SphereModel extends Model implements DifuseModel {
         return this.color;
     }
 
+    @Override
+    public double[] getColor() {
+       return this.color;
+    }
+
 }

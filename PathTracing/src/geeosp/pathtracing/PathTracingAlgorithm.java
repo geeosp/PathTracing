@@ -6,6 +6,8 @@
 package geeosp.pathtracing;
 
 import geeosp.pathtracing.models.Hit;
+
+import geeosp.pathtracing.models.Light;
 import geeosp.pathtracing.models.Model;
 import geeosp.pathtracing.models.DifuseModel;
 import geeosp.pathtracing.models.ObjDifuseModel;
@@ -45,13 +47,13 @@ public class PathTracingAlgorithm extends RenderAlgorithm {
         double dk = k;
         double dw = PI / dk;
         double dy = PI / dk;
-        
-        
+
         int i = 0;
         for (double y = 0; y < 2 * PI; y += dy) {
             for (double w = 0; w < PI; w += dw) {
-            i++;
-            }}
+                i++;
+            }
+        }
         brdf = new double[i][4];
         i--;
         for (double y = 0; y < 2 * PI; y += dy) {
@@ -95,6 +97,7 @@ public class PathTracingAlgorithm extends RenderAlgorithm {
         double deltax = (x1 - x0) / scene.getSizeWidth();
         double deltay = (y1 - y0) / scene.getSizeHeight();
         //spacial position of the pixel
+
         double[] onScreen = new double[]{
             x0 + (i + 1) * deltax,
             y0 + (j + 1) * deltay,
@@ -107,52 +110,56 @@ public class PathTracingAlgorithm extends RenderAlgorithm {
         double[] color = new double[4];
         color[3] = 1;
         if (hit.isHit()) {
-            double dot = Algeb.dot(direction, hit.normal);
+            for (int p = 0; p < scene.getNpaths(); p++) {
+                if (hit.model.isLight()) {
+                    color = Algeb.soma(color, hit.model.getColor(scene.getEye(), hit.point));
+                } else {//is a object
+                    DifuseModel model = (DifuseModel) hit.model;
+                    //phong
+                    double[] tmpAmb = new double[4];
+                    double[] tmpSpec = new double[4];
+                    double[] tmpDif = new double[4];
+                    //ambiental
+                    tmpAmb = Algeb.dotByScale(model.getKa(), scene.getAmbientColor());
 
-            switch (hit.model.getType()) {
-                case LIGHT:
-
-                    color = ((ObjLight) hit.model).getColor(scene.getEye(), hit.point);
-                    color[3] = 1;
-
-                    break;
-                case OBJECT:
-                    DifuseModel difuseModel = (DifuseModel) hit.model;
-                    for (int r = 0; r < brdf.length; r++) {
-                        Random rand = new Random();
-                        double ka = ((DifuseModel) hit.model).getCoeficients()[0];
-                        double ks = ((DifuseModel) hit.model).getCoeficients()[2];
-                        double kd = ((DifuseModel) hit.model).getCoeficients()[1];
-                        double ktot = ka + kd + ks;
-                        double[] ray = brdf[r];
-                        if (Algeb.dot(ray, hit.normal) < 0) {
-                            ray = Algeb.dotByScale(-1, ray);
+                    double[] n = hit.normal;
+                    //para cada fonte de luz
+                    for (int s = 0; s < scene.getLights().size(); s++) {
+                        //oege uma posicao aleatoria
+                        Light light = (Light) scene.getLights().get(s);
+                        double[] lightPosition = light.getOneLightPosition();
+                        //calula a direcao da luz em relacao ao hit.point
+                        double[] dir = Algeb.normalize(Algeb.sub(lightPosition, hit.point));
+                        //cos do angulo entre a normal  e a direcao da luz
+                        double cos = Algeb.dot(n, dir);
+                        if (cos > 0) {
+                            Hit inDirectionOfLight = getNextHit(hit.point, dir, scene);
+                            //Se nao há nada  entre a luz e o ponto estudado
+                            // if (hit.model == (scene.getLights().get(s))) {
+                            tmpDif = Algeb.soma(tmpDif,
+                                    new double[]{
+                                        cos * light.getColor()[0] * model.getColor()[0],
+                                        cos * light.getColor()[1] * model.getColor()[1],
+                                        cos * light.getColor()[2] * model.getColor()[2],
+                                        1.0
+                                    });
+                            //}
+                            
                         }
-                        Hit test = getNextHit(hit.point, ray, scene);
-                        double random = rand.nextDouble() * (ktot - ks);
-                        double[] fator = new double[4];
-                        if (random < ka) {
-                            fator = Algeb.dotByScale(ka * scene.getAmbientColor() / brdf.length, hit.color);
-                        } else if (random < ka + kd) {
-                            fator = Algeb.dotByScale(kd / brdf.length, runAlgorithm(hit.point, test, RayType.DIFUSE, scene, 5));
-                        } else if (random < ka + kd + ks) {
-                            //    fator = Algeb.dotByScale(kd/ brdf.length, runAlgorithm(hit.point, test, RayType.SPECULAR, scene, 5));
-
-                        }
-                        color = Algeb.soma(color, fator);
 
                     }
+                    color = Algeb.soma(color, tmpAmb);
+                    color = Algeb.soma(color, tmpDif);
 
-                    break;
+                }
             }
-
         } else {
             color = scene.getBackgroundColor();
         }
-         color = toneMapping(color,scene);
+        color = toneMapping(color, scene);
 
         return color;
-        // return hit.color;
+        //return hit.color;
 
     }
 
@@ -161,6 +168,7 @@ public class PathTracingAlgorithm extends RenderAlgorithm {
         for (int i = 0; i < color.length; i++) {
             color[i] = color[i] / (color[i] + tm);
         }
+        color[3] = 1.0;
         return color;
     }
 
@@ -202,9 +210,10 @@ public class PathTracingAlgorithm extends RenderAlgorithm {
             if (hit.isHit()) {
                 color = hit.model.getColor(origin, hit.point);
             } else {
-                color = new double[]{scene.getAmbientColor(), scene.getAmbientColor(), scene.getAmbientColor(),
-                    (scene.getAmbientColor() == 0) ? 0 : 1};
+                color = scene.getAmbientColor();
+                color[3] = color[0] == 0 ? 0 : 1;
             }
+
         } else if (hit.isHit()) {
             if (hit.model.getType() == Model.Type.LIGHT) {
                 color = hit.model.getColor(origin, hit.point);

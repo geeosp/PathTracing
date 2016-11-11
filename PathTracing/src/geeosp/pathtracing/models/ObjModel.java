@@ -14,7 +14,7 @@ import java.util.ArrayList;
  *
  * @author geeo
  */
-public abstract class ObjModel extends Model  {
+public abstract class ObjModel extends Model {
 
     protected double[][] vertices;
     protected int[][] triangles;
@@ -100,7 +100,6 @@ public abstract class ObjModel extends Model  {
             for (int j = 0; j < 3; j++) {
                 normalsVertices[triangles[i][j]] = Algeb.soma(nt, normalsVertices[triangles[i][j]]);
             }
-            
 
         }
 
@@ -141,11 +140,10 @@ public abstract class ObjModel extends Model  {
                     if (dist > Algeb.distanceSqr(p, origin)) {
                         hit.point = p;
                         hit.color = getColor(origin, p);
-                       dist = Algeb.distanceSqr(p, origin);
+                        dist = Algeb.distanceSqr(p, origin);
+
                         
-                        
-                        
-                        hit.normal = normalsTriangle[t];
+                        hit.normal = n;
                         if (Algeb.dot(hit.normal, Algeb.sub(origin, hit.point)) < 0) {
                             hit.normal = Algeb.dotByScale(-1, hit.normal);
                         }
