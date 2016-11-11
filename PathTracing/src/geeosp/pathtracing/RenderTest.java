@@ -26,10 +26,10 @@ public class RenderTest extends Application {
         RenderScene renderScene = RenderScene.load();
         //System.out.println(renderScene);
         ImageView imageView = new ImageView();
-        imageView.setFitWidth(renderScene.getSizeWidth());
-        imageView.setFitHeight(renderScene.getSizeHeight());
+        imageView.setFitWidth(640);
+        imageView.setFitHeight(640);
         Pane pane = new Pane(imageView);
-        Scene scene = new Scene(pane, renderScene.getSizeWidth(), renderScene.getSizeHeight());
+        Scene scene = new Scene(pane, 640, 640);
        
         
         
