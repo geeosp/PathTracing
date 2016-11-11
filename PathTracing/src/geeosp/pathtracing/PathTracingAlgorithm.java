@@ -115,7 +115,7 @@ public class PathTracingAlgorithm extends RenderAlgorithm {
                 case LIGHT:
 
                     color = ((ObjLight) hit.model).getColor(scene.getEye(), hit.point);
-                    //               color[3] = 1;
+                    
 
                     break;
                 case OBJECT:
@@ -134,7 +134,7 @@ public class PathTracingAlgorithm extends RenderAlgorithm {
                         Hit test = getNextHit(hit.point, ray, scene);
                         double random = rand.nextDouble() * (ktot);
                         double[] fator = new double[4];
-                        int deep = 2;
+                        int deep = 4;
                         if (random < ka) {
                             fator = Algeb.dotByScale(ka * scene.getAmbientColor() / brdf.length, hit.color);
                         } else if (random < ka + kd) {
@@ -154,7 +154,7 @@ public class PathTracingAlgorithm extends RenderAlgorithm {
             color = scene.getBackgroundColor();
         }
 
-        color = toneMapping(color, scene);
+        color = toneMapping(color,scene);
 
         return color;
         // return hit.color;
@@ -166,7 +166,6 @@ public class PathTracingAlgorithm extends RenderAlgorithm {
         for (int i = 0; i < color.length; i++) {
             color[i] = color[i] / (color[i] + tm);
         }
-        color[3] = 1;
         return color;
     }
 
