@@ -10,13 +10,9 @@ import geeosp.pathtracing.models.Hit;
 import geeosp.pathtracing.models.Light;
 import geeosp.pathtracing.models.Model;
 import geeosp.pathtracing.models.DifuseModel;
-import geeosp.pathtracing.models.ObjDifuseModel;
-import geeosp.pathtracing.models.ObjLight;
-import geeosp.pathtracing.models.ObjModel;
+
 import geeosp.pathtracing.scene.RenderScene;
 import java.util.Random;
-import javafx.scene.paint.Color;
-
 /**
  *
  * @author geeo

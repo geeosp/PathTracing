@@ -83,45 +83,17 @@ public class Renderer {
                 //    this.renderBundle.writeImage.getPixelWriter().setColor(i, j, Color.BLACK);
             }
         }
-        if (scene.getNthreads() > 1) {
+      
             for (int i = 0; i < renderThreads.length; i++) {
                 renderThreads[i] = new RenderThread(i, renderThreads.length, this.renderBundle);
                 renderThreads[i].setDaemon(false);
                 renderThreads[i].start();
             }
-        } else {
-            startRenderNoThreads();
-        }
+         
 //
     }
 
-    void startRenderNoThreads() throws IOException, InterruptedException {
-        //System.out.println("Starting Rendering");
-
-        this.runningState = RunningState.Running;
-        for (int i = 0; i < scene.getSizeWidth(); i++) {
-            for (int j = 0; j < scene.getSizeHeight(); j++) {
-                savePixel(i, j, scene.getBackgroundColor(), false);
-            }
-        }
-        for (int i = 0; i < scene.getSizeWidth(); i++) {
-            for (int j = 0; j < scene.getSizeHeight(); j++) {
-                double[] color = new double[4];
-                //  color = algorithm.calulatePixel(i, j, scene);
-                savePixel(i, j, color, true);
-            }
-        }
-        time = System.currentTimeMillis() - time;
-        try {
-            saveFile(scene.getSizeWidth(), scene.getSizeHeight(), this.renderBundle.writeImage);
-        } catch (IOException ex) {
-            Logger.getLogger(Renderer.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        updateImage();
-        System.err.println("Finished: " + (time / 1000.0) + " seconds");
-
-    }
-
+   
     void updateImage() {
 
         renderBundle.imageViewGui.setImage(renderBundle.writeImage);
@@ -130,14 +102,8 @@ public class Renderer {
     public  void saveFile(int width, int height, WritableImage wImage) throws IOException {
         File dir = new File("out");
         dir.mkdir();
-        String name = "out/" + width + "px_" + height + "px_"+"amb: "+this.scene.getAmbientColor()
-                +"pth: "+this.scene.getNpaths()
-                +"tnmp: "+this.scene.getTonemapping();
-        
-        
-        
-        
-        //FileChooser fileChooser = new FileChooser();
+        String name = "out/" + width + "px_" + height ;//
+     
         File file = new File(name + ".png");
         if (file != null) {
             RenderedImage renderedImage = SwingFXUtils.fromFXImage(wImage, null);

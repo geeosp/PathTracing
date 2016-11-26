@@ -36,8 +36,10 @@ public class RenderTest extends Application {
         primaryStage1.setScene(scene);
         primaryStage1.show();
         primaryStage1.setResizable(false);
-        Renderer renderer = new Renderer(renderScene, imageView, new PathTracingAlgorithm());
-        renderer.startRender();
+       // Renderer renderer = new Renderer(renderScene, imageView, new PathTracingAlgorithm());
+       Renderer renderer = new Renderer(renderScene, imageView, new NormalRendererAlgorithm());
+      
+       renderer.startRender();
 
        // System.out.println("Erros: " + errors);
         /*

@@ -4,9 +4,9 @@
 # Este arquivo NAO foi testado!!!
 # Modificado de acordo com os testes
 # do Vinicius 6/12/2005
-nthreads 8
-eye 0.0 0.0 5.7
-size 300 300
+nthreads 1
+eye 0.0 0.0 5.9
+size 200 200
 ortho -1 -1 1 1
 background 0.0 0.0 0.0
 ambient 0.5
@@ -17,7 +17,7 @@ ambient 0.5
 light luzcornell.obj 1.0 1.0 1.0 1.0
 
 npaths 100
-tonemapping 100
+tonemapping 1
 seed 9
 
 # Aqui comeca a definicao das geometrias
@@ -49,5 +49,7 @@ object cube1.obj 1.0 1.0 1.0 0.3 0.7 0 0 5
 
 # cube 2 WHITE
 object cube2.obj 1.0 1.0 1.0 0.3 0.7 0 0 5
+
+sphere 0 0 0 .2 1.0 1.0 1.0 0.3 0.7 0 0 5
 
 output cornell.pnm
