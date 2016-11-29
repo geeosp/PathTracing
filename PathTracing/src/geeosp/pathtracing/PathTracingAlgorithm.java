@@ -20,6 +20,7 @@ import java.util.Random;
  */
 public class PathTracingAlgorithm extends RenderAlgorithm {
 
+    final double threshold = .01;
     final double PI = Math.PI;
     double[][] brdf;
     Random rand;
@@ -83,12 +84,14 @@ public class PathTracingAlgorithm extends RenderAlgorithm {
                     double kt = model.getKt();
                     double ktot = kd + ks + kt;
                     double r = rand.nextDouble() * ktot;
-                        pathColor = Algeb.soma(pathColor, model.getColor());
-                    if (r < kd) {
-                        double[] newdir = {rand.nextDouble(), rand.nextDouble(), rand.nextDouble(), 0};
-                        newdir = Algeb.normalize(newdir);
-                        Hit h = getNextHit(modelHit.point, newdir, scene);
-                        pathColor = Algeb.soma(pathColor, tracePath(newdir, h, RayType.DIFUSE, scene, 4));
+                    for (int l = 0; l < scene.getLights().size(); l++) {
+                        Light lg = (Light) scene.getLights().get(l);
+                        double[] pl = lg.getOneLightPosition();
+
+                        if (canSee(pl, (Model) lg, modelHit.point, modelHit.model, scene)) {
+                            System.err.println("illuminate");
+                            pathColor = modelHit.color;
+                        }
                     }
 
                 }
@@ -101,7 +104,7 @@ public class PathTracingAlgorithm extends RenderAlgorithm {
         }
 
         color = Algeb.dotByScale(1.0 / scene.getNpaths(), color);
-        color = toneMapping(color, scene.getTonemapping());
+      //  color = toneMapping(color, scene.getTonemapping());
 
         return color;
 
@@ -131,21 +134,47 @@ public class PathTracingAlgorithm extends RenderAlgorithm {
 
     }
 
-    Hit getNextHit(double[] origin, double[] direction, RenderScene scene
-    ) {
-        Hit hit = new Hit();
+    Hit getNextHit(double[] origin, double[] direction, RenderScene scene) {
+        Hit hit = null;
         direction = Algeb.normalize(direction);
         for (int t = 0; t < scene.getModels().size(); t++) {
             Model a = scene.getModels().get(t);
             Hit temp = a.getNearestIntersectionPoint(origin, direction);
             if (temp.isHit()) {
-                double tempDist = Algeb.distance(temp.point, scene.getEye());
-                if (tempDist < Algeb.distance(hit.point, scene.getEye())) {
+                if (hit == null) {
+                    hit = temp;
+                }
+                double tempDist = Algeb.distance(temp.point, origin);
+                if (tempDist < Algeb.distance(hit.point, origin)) {
                     hit = temp;
                 }
             }
         }
+
         return hit;
+    }
+
+    boolean canSee(double[] originPoint, Model originModel, double[] targetPoint, Model targetModel, RenderScene scene) {
+        Hit hit = null;
+        double[] direction = Algeb.sub(targetPoint, originPoint);
+        direction = Algeb.normalize(direction);
+        for (int t = 0; t < scene.getModels().size(); t++) {
+            Model a = scene.getModels().get(t);
+            if (!a.getName().equals(originModel.getName())) {
+                Hit temp = a.getNearestIntersectionPoint(originPoint, direction);
+                if (temp.isHit()) {
+                    if (hit == null) {
+                        hit = temp;
+                    }
+                    double tempDist = Algeb.distance(temp.point, originPoint);
+                    if (tempDist < Algeb.distance(hit.point, originPoint)) {
+                        hit = temp;
+                    }
+                }
+            }
+        }
+
+        return (hit.model != null) && hit.model.getName().equals(targetModel.getName());
     }
 
     enum RayType {
@@ -160,7 +189,7 @@ public class PathTracingAlgorithm extends RenderAlgorithm {
                 color = hit.model.getColor(origin, hit.point);
             }
         } else if (hit.isHit()) {
-            if (hit.model.getType() == Model.Type.LIGHT) {
+            if (hit.model.isLight()) {
                 color = hit.model.getColor(origin, hit.point);
             } else {//n é uma luz
                 double[] incident = Algeb.normalize(Algeb.sub(origin, hit.point));
