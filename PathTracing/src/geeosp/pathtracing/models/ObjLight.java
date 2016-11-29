@@ -15,8 +15,7 @@ import java.util.Random;
 public class ObjLight extends ObjModel implements Light {
 
     double[] color;
-    double[][] lightPoints;
-
+  
     //  double intensity;
     public ObjLight() {
         super("", Type.LIGHT);
@@ -36,36 +35,7 @@ public class ObjLight extends ObjModel implements Light {
             material[2] * material[3],
             1
         };
-        double terc = 1.0 / 4.0;
-        int a = 0;
-        for (int t = 0; t < triangles.length; t++) {
-            for (double i = 0; i < 1.0; i += terc) {
-                for (double j = 1 - i; j > 0; j -= terc) {
-                    double k = 1 - i - j;
-                    a++;
-
-                }
-            }
-        }
-        this.lightPoints = new double[triangles.length * a][4];
-        a = 0;
-        for (int t = 0; t < triangles.length; t++) {
-            for (double i = 0; i < 1.0; i += terc) {
-                for (double j = 1 - i; j > 0; j -= terc) {
-                    double k = 1 - i - j;
-                    lightPoints[a]
-                            = Algeb.soma(
-                                    Algeb.dotByScale(i, vertices[triangles[t][0]]),
-                                    Algeb.soma(Algeb.dotByScale(j, vertices[triangles[t][1]]),
-                                            Algeb.dotByScale(k, vertices[triangles[t][2]])
-                                    )
-                            );
-
-                    a++;
-
-                }
-            }
-        }
+  
 
     }
 
@@ -73,18 +43,21 @@ public class ObjLight extends ObjModel implements Light {
     public double[] getColor(double[] origin, double[] target
     ) {
         double[] ret = color;
-        /*
-        double dist = Algeb.distance(origin, target);
-        ret =Algeb.dotByScale(1/dist, color);
-        ret[3]=1;
-         */
+      
         return ret;
     }
 
     @Override
     public double[] getOneLightPosition() {
       Random rand = new Random();  
-      return lightPoints[rand.nextInt(lightPoints.length)];
+      double i = rand.nextDouble();
+      double k = rand.nextDouble()*(1-i);
+      double j = 1 -k -i;
+      int [] t = triangles[rand.nextInt(triangles.length)];
+      double[] p = Algeb.dotByScale(i, vertices[t[0]]);
+       p =Algeb.soma(p, Algeb.dotByScale(j,vertices[t[1]]));
+       p = Algeb.soma(p, Algeb.dotByScale(k, vertices[t[2]]));
+      return p;
     }
 
 
