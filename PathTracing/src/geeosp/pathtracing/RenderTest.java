@@ -8,6 +8,7 @@ package geeosp.pathtracing;
 import geeosp.pathtracing.scene.RenderScene;
 import java.io.IOException;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
@@ -22,7 +23,7 @@ public class RenderTest extends Application {
     @Override
     public void start(Stage primaryStage1) throws IOException, InterruptedException {
         int errors = 0;
-
+        Algeb.test();
         RenderScene renderScene = RenderScene.load();
         //System.out.println(renderScene);
         ImageView imageView = new ImageView();
@@ -30,24 +31,22 @@ public class RenderTest extends Application {
         imageView.setFitHeight(640);
         Pane pane = new Pane(imageView);
         Scene scene = new Scene(pane, 640, 640);
-       
-        
-        
+
         primaryStage1.setScene(scene);
         primaryStage1.show();
         primaryStage1.setResizable(false);
-       // Renderer renderer = new Renderer(renderScene, imageView, new PathTracingAlgorithm());
-       Renderer renderer = new Renderer(renderScene, imageView, new NormalRendererAlgorithm());
-      
-       renderer.startRender();
+        primaryStage1.setOnCloseRequest(e -> {
+            Platform.exit();
+            System.exit(0);
+        });
+        Renderer renderer = new Renderer(renderScene, imageView, new PathTracingAlgorithm());
+        //Renderer renderer = new Renderer(renderScene, imageView, new NormalRendererAlgorithm());
 
-       // System.out.println("Erros: " + errors);
+        renderer.startRender();
+
+        // System.out.println("Erros: " + errors);
         /*
          */
-        
-        
-        
-
     }
 
     public static void main(String[] args) {

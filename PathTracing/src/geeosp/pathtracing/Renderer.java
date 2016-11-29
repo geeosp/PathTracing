@@ -94,15 +94,13 @@ public class Renderer {
     }
 
    
-    void updateImage() {
-
-        renderBundle.imageViewGui.setImage(renderBundle.writeImage);
-    }
+  
+    
 
     public  void saveFile(int width, int height, WritableImage wImage) throws IOException {
         File dir = new File("out");
         dir.mkdir();
-        String name = "out/" + width + "px_" + height ;//
+        String name = "out/_"  +System.currentTimeMillis();//
      
         File file = new File(name + ".png");
         if (file != null) {

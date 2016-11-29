@@ -48,6 +48,15 @@ public class Algeb {
         return resp;
     }
 
+    public static double[] crossdot(double[] a, double[] b) {// produto escalar
+        // a.b
+        double[] resp = new double[a.length];
+        for (int i = 0; i < a.length; i++) {
+            resp[i] = a[i] * b[i];
+        }
+        return resp;
+    }
+
     public static double[] dotByScale(double escalar, double[] vetor) {
         double[] k = new double[vetor.length];
         for (int i = 0; i < vetor.length; i++) {
@@ -224,4 +233,22 @@ public class Algeb {
         return new double[]{1 - u - v, u, v};
     }
 
+
+
+    public static void test(){
+        double[] e1 = {1, 0, 0, 0};
+        double [] e2  ={ 0, 1, 0, 0};
+        double [] e3 = { 0,0,1,0};
+        double [] e4 = { 0, 0 , 0, 1};
+    double [] p1 = {1, 2, 3};
+    double [] p2  = { 3, 4, 5} ;
+
+    assert( e1 == new double[] {1,1,0,0});
+
+
+
+
+
+
+    }
 }

@@ -15,7 +15,7 @@ import java.util.Random;
 public class ObjLight extends ObjModel implements Light {
 
     double[] color;
-  
+
     //  double intensity;
     public ObjLight() {
         super("", Type.LIGHT);
@@ -24,8 +24,8 @@ public class ObjLight extends ObjModel implements Light {
 
     @Override
     public double[] getColor() {
-    return this.color;}
-    
+        return this.color;
+    }
 
     public ObjLight(String objectName, double[] material) {
         super(objectName, Type.LIGHT);
@@ -35,7 +35,6 @@ public class ObjLight extends ObjModel implements Light {
             material[2] * material[3],
             1
         };
-  
 
     }
 
@@ -43,22 +42,21 @@ public class ObjLight extends ObjModel implements Light {
     public double[] getColor(double[] origin, double[] target
     ) {
         double[] ret = color;
-      
+
         return ret;
     }
 
     @Override
     public double[] getOneLightPosition() {
-      Random rand = new Random();  
-      double i = rand.nextDouble();
-      double k = rand.nextDouble()*(1-i);
-      double j = 1 -k -i;
-      int [] t = triangles[rand.nextInt(triangles.length)];
-      double[] p = Algeb.dotByScale(i, vertices[t[0]]);
-       p =Algeb.soma(p, Algeb.dotByScale(j,vertices[t[1]]));
-       p = Algeb.soma(p, Algeb.dotByScale(k, vertices[t[2]]));
-      return p;
+        Random rand = new Random();
+        double i = rand.nextDouble();
+        double k = rand.nextDouble() * (1 - i);
+        double j = 1 - k - i;
+        int[] t = triangles[rand.nextInt(triangles.length)];
+        double[] p = Algeb.dotByScale(i, vertices[t[0]]);
+        p = Algeb.soma(p, Algeb.dotByScale(j, vertices[t[1]]));
+        p = Algeb.soma(p, Algeb.dotByScale(k, vertices[t[2]]));
+        return p;
     }
-
 
 }
