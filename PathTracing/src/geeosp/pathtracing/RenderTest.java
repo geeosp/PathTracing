@@ -5,13 +5,19 @@
  */
 package geeosp.pathtracing;
 
+import renderers.RenderAlgorithm;
+import renderers.PathTracingAlgorithm;
 import geeosp.pathtracing.scene.RenderScene;
 import java.io.IOException;
+import java.util.ArrayList;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import renderers.DistanceRenderer;
+import renderers.NormalRendererAlgorithm;
 
 /**
  *
@@ -22,30 +28,38 @@ public class RenderTest extends Application {
     @Override
     public void start(Stage primaryStage1) throws IOException, InterruptedException {
         int errors = 0;
+        ArrayList<RenderAlgorithm> renderers = new ArrayList<RenderAlgorithm>();
+        renderers.add(new PathTracingAlgorithm());
+        renderers.add(new DistanceRenderer());
+        renderers.add(new NormalRendererAlgorithm());
 
         RenderScene renderScene = RenderScene.load();
-        //System.out.println(renderScene);
-        ImageView imageView = new ImageView();
-        imageView.setFitWidth(renderScene.getSizeWidth());
-        imageView.setFitHeight(renderScene.getSizeHeight());
-        Pane pane = new Pane(imageView);
-        Scene scene = new Scene(pane, renderScene.getSizeWidth(), renderScene.getSizeHeight());
-       
-        
-        
-        primaryStage1.setScene(scene);
-        primaryStage1.show();
-        primaryStage1.setResizable(false);
-        Renderer renderer = new Renderer(renderScene, imageView, new PathTracingAlgorithm());
-        renderer.startRender();
+        for (int i = 0; i < renderers.size(); i++) {
+            Stage s;
+            if (i == 0) {
+                s = primaryStage1;
+                s.setOnCloseRequest(e -> {
+                    Platform.exit();
+                    System.exit(0);
+                });
+            } else {
+                s = new Stage();
 
-       // System.out.println("Erros: " + errors);
-        /*
-         */
-        
-        
-        
+            }
+            ImageView imageView = new ImageView();
+            imageView.setFitWidth(renderScene.getSizeWidth());
+            imageView.setFitHeight(renderScene.getSizeHeight());
+            Pane pane = new Pane(imageView);
+            Scene scene = new Scene(pane, renderScene.getSizeWidth(), renderScene.getSizeHeight());
+            s.setScene(scene);
+            s.show();
+            s.setResizable(false);
+            Renderer renderer = new Renderer(renderScene, imageView,renderers.get(i));
+            renderer.startRender();
 
+        }
+
+      
     }
 
     public static void main(String[] args) {

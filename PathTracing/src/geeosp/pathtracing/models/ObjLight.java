@@ -5,7 +5,8 @@
  */
 package geeosp.pathtracing.models;
 
-import geeosp.pathtracing.Algeb;
+import geeosp.pathtracing.Algb;
+import java.util.Random;
 
 /**
  *
@@ -33,7 +34,7 @@ public class ObjLight extends ObjModel {
     }
 
     @Override
-    public double[] getColor(double[] origin, double[] target) {
+    public double[] getColor() {
         double [] ret = color;
         /*
         double dist = Algeb.distance(origin, target);
@@ -41,6 +42,18 @@ public class ObjLight extends ObjModel {
         ret[3]=1;
         */
         return ret;
+    }
+
+    public double[] getOnePoint() {
+        Random rand = new Random();
+        double i = rand.nextDouble();
+        double k = rand.nextDouble() * (1 - i);
+        double j = 1 - k - i;
+        int[] t = triangles[rand.nextInt(triangles.length)];
+        double[] p = Algb.dotByScale(i, vertices[t[0]]);
+        p = Algb.soma(p, Algb.dotByScale(j, vertices[t[1]]));
+        p = Algb.soma(p, Algb.dotByScale(k, vertices[t[2]]));
+        return p;
     }
 
 }

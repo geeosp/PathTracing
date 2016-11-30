@@ -5,7 +5,7 @@
  */
 package geeosp.pathtracing.models;
 
-import geeosp.pathtracing.Algeb;
+import geeosp.pathtracing.Algb;
 
 /**
  *
@@ -21,34 +21,34 @@ public class SphereModel extends Model implements DifuseModel {
     @Override
     public Hit getNearestIntersectionPoint(double[] origin, double[] direction) {
         Hit hit = new Hit();
-        direction = Algeb.normalize(direction);
+        direction = Algb.normalize(direction);
         double a = 1;
-        double[] co = Algeb.sub(origin, center);
-        double b = 2 * Algeb.dot(direction, co);
-        double c = Algeb.dot(co, co) - radius * radius;
+        double[] co = Algb.sub(origin, center);
+        double b = 2 * Algb.dot(direction, co);
+        double c = Algb.dot(co, co) - radius * radius;
         double delta = b * b - 4 * a * c;
         double t;
         double[] p = null;
         if (delta == 0) {
             t = -.5 * b / a;
-            p = Algeb.soma(origin, Algeb.dotByScale(t, direction));
+            p = Algb.soma(origin, Algb.dotByScale(t, direction));
 
         } else if (delta > 0) {
             double sqrDelta = Math.sqrt(delta);
             double[] p1, p2;
             t = (-b + sqrDelta) / (2 * a);
-            p1 = Algeb.soma(origin, Algeb.dotByScale(t, direction));
+            p1 = Algb.soma(origin, Algb.dotByScale(t, direction));
             t = (-b - sqrDelta) / (2 * a);
-            p2 = Algeb.soma(origin, Algeb.dotByScale(t, direction));
+            p2 = Algb.soma(origin, Algb.dotByScale(t, direction));
 
-            if (Algeb.distance(p1, origin) < Algeb.distance(p2, origin)) {
+            if (Algb.distance(p1, origin) < Algb.distance(p2, origin)) {
                 p = p1;
             } else {
                 p = p2;
             }
 
             hit.point = p;
-            hit.normal = Algeb.normalize(Algeb.sub(p, center));
+            hit.normal = Algb.normalize(Algb.sub(p, center));
             hit.color = color;
             hit.model = this;
         }
@@ -87,7 +87,7 @@ public class SphereModel extends Model implements DifuseModel {
     }
 
     @Override
-    public double[] getColor(double[] origin, double[] target) {
+    public double[] getColor() {
         return this.color;
     }
 

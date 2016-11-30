@@ -5,7 +5,7 @@
  */
 package geeosp.pathtracing.scene;
 
-import geeosp.pathtracing.Algeb;
+import geeosp.pathtracing.Algb;
 import geeosp.pathtracing.Arquivo;
 import geeosp.pathtracing.models.Model;
 import geeosp.pathtracing.models.ObjDifuseModel;
@@ -46,10 +46,10 @@ public class RenderScene {
     public String toString() {
         String ret = "";
         ret += outfile.toString() + " \n"
-                + "\neye:\n " + Algeb.VectorToString(eye)
-                + "\northo:\n " + Algeb.MatrixToString(ortho)
-                + "\nsize:\n" + Algeb.VectorToString(size)
-                + "\nbackground:\n" + Algeb.VectorToString(backgroundColor)
+                + "\neye:\n " + Algb.VectorToString(eye)
+                + "\northo:\n " + Algb.MatrixToString(ortho)
+                + "\nsize:\n" + Algb.VectorToString(size)
+                + "\nbackground:\n" + Algb.VectorToString(backgroundColor)
                 + "\nambient:\n" + " " + ambientColor
                 + "\nseed:\n" + " " + seed
                 + "\ntonemapping\n" + " " + tonemapping

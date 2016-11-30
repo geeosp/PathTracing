@@ -5,7 +5,7 @@
  */
 package geeosp.pathtracing.models;
 
-import geeosp.pathtracing.Algeb;
+import geeosp.pathtracing.Algb;
 
 /**
  *
@@ -20,7 +20,7 @@ public class Hit {
 
     public Hit(double[] hitPoint, double[] hitNormal, double[] color, Model model) {
         this.point = hitPoint;
-        this.normal = Algeb.normalize(hitNormal);
+        this.normal = Algb.normalize(hitNormal);
         this.color = color;
         this.model = model;
     }

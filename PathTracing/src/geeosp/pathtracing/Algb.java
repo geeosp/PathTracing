@@ -1,6 +1,6 @@
 package geeosp.pathtracing;
 
-public class Algeb {
+public class Algb {
 
     // OPERACOES COM VETORES
     // SOMA
@@ -21,24 +21,6 @@ public class Algeb {
         return sub;
     }
 
-    public static double distance(double[] a, double[] b) {
-        double d = 0;
-        for (int i = 0; i < a.length; i++) {
-            d += (a[i] - b[i]) * (a[i] - b[i]);
-        }
-        return (Math.sqrt(d));
-
-    }
-
-    public static double distanceSqr(double[] a, double[] b) {
-        double d = 0;
-        for (int i = 0; i < a.length; i++) {
-            d += (a[i] - b[i]) * (a[i] - b[i]);
-        }
-        return d;
-
-    }
-
     public static double dot(double[] a, double[] b) {// produto escalar
         // a.b
         double resp = 0;
@@ -49,11 +31,38 @@ public class Algeb {
     }
 
     public static double[] dotByScale(double escalar, double[] vetor) {
+
         double[] k = new double[vetor.length];
         for (int i = 0; i < vetor.length; i++) {
             k[i] = escalar * vetor[i];
         }
+
         return k;
+    }
+
+    public static double[] crossdot(double[] v1, double[] v2) {
+        double[] dot = new double[v1.length];
+        for (int i = 0; i < v1.length; i++) {
+            dot[i] = v1[i] * v2[i];
+        }
+        return dot;
+
+    }
+
+    public static double getNorma(double[] v) {
+
+        return Math.sqrt(Algb.dot(v, v));
+
+    }
+
+    public static double distance(double[] a, double[] b) {
+        double d =  getNorma(sub(a, b));
+        if(d<=0){
+         //   System.err.println(""+ d);
+        }
+        
+        return d;
+
     }
 
     public static double[] cross(double[] a, double[] b) {
@@ -62,6 +71,13 @@ public class Algeb {
         resp[1] = a[2] * b[0] - a[0] * b[2];
         resp[2] = a[0] * b[1] - a[1] * b[0];
         return resp;
+    }
+
+    public static double[] normalize(double[] v) {
+
+        double n = getNorma(v);
+
+        return dotByScale((1.0 / n), v);
     }
 
     public static double[] projection(double[] u, double[] v) {
@@ -113,25 +129,6 @@ public class Algeb {
             }
         }
         return ret;
-    }
-
-    public static double getNorma(double[] v) {
-        double k = 0;
-        for (int i = 0; i < v.length; i++) {
-            k = k + v[i] * v[i];
-        }
-        k = Math.sqrt(k);
-        return k;
-    }
-
-    public static double[] normalize(double[] v) {
-        double n = 0;
-        n = getNorma(v);
-        double[] v2 = v;
-        for (int i = 0; i < v.length; i++) {
-            v2[i] = v2[i] / n;
-        }
-        return v2;
     }
 
     public static String VectorToString(double[] v) {
@@ -222,6 +219,16 @@ public class Algeb {
             v = -v;
         }
         return new double[]{1 - u - v, u, v};
+    }
+
+    public static boolean isEquals(double[] v1, double[] v2) {
+
+        for (int i = 0; i < v1.length; i++) {
+            if (v1[i] != v2[i]) {
+                return false;
+            }
+        }
+        return true;
     }
 
 }

@@ -21,7 +21,7 @@ public abstract class Model {
         OBJECT
     }
     
-    public abstract double[] getColor(double[] origin, double[] target);
+    public abstract double[] getColor();
 
     protected Type type;
 

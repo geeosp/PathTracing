@@ -44,11 +44,7 @@ public class ObjDifuseModel extends ObjModel implements DifuseModel{
 
     }
 
-    @Override
-    public double[] getColor(double [] origin, double[] target) {
-        return this.color;
-    }
-
+   
     @Override
     public String toString() {
         String s = super.toString()

@@ -5,7 +5,7 @@
  */
 package geeosp.pathtracing.models;
 
-import geeosp.pathtracing.Algeb;
+import geeosp.pathtracing.Algb;
 import geeosp.pathtracing.Arquivo;
 import geeosp.pathtracing.scene.Settings;
 import java.util.ArrayList;
@@ -91,59 +91,63 @@ public abstract class ObjModel extends Model  {
             p2 = vertices[triangles[i][1]];
             p3 = vertices[triangles[i][2]];
 
-            v1 = Algeb.sub(p2, p1);
-            v2 = Algeb.sub(p3, p1);
-            nt = Algeb.cross(v1, v2);
-            nt = Algeb.normalize(nt);
+            v1 = Algb.sub(p2, p1);
+            v2 = Algb.sub(p3, p1);
+            nt = Algb.cross(v1, v2);
+            nt = Algb.normalize(nt);
             normalsTriangle[i] = nt;
 
             for (int j = 0; j < 3; j++) {
-                normalsVertices[triangles[i][j]] = Algeb.soma(nt, normalsVertices[triangles[i][j]]);
+                normalsVertices[triangles[i][j]] = Algb.soma(nt, normalsVertices[triangles[i][j]]);
             }
             
 
         }
 
         for (int i = 0; i < normalsVertices.length; i++) {
-            normalsVertices[i] = Algeb.normalize(normalsVertices[i]);
+            normalsVertices[i] = Algb.normalize(normalsVertices[i]);
         }
 
     }
 
     @Override
-    public Hit getNearestIntersectionPoint(double[] origin, double[] direction) {
+    
+        public Hit getNearestIntersectionPoint(double[] origin, double[] direction) {
         Hit hit = new Hit(new double[4], new double[4], new double[]{1, 1, 1, 0}, null);
-        double dist = Double.MAX_VALUE;
-        direction = Algeb.normalize(direction);
+        double minDist = Double.MAX_VALUE;
+        direction = Algb.normalize(direction);
         for (int t = 0; t < triangles.length; t++) {
             double[] p1, p2, p3, e1, e2, n, p;
             p1 = vertices[triangles[t][0]];
             p2 = vertices[triangles[t][1]];
             p3 = vertices[triangles[t][2]];
-            e1 = Algeb.sub(p2, p1);
-            e2 = Algeb.sub(p3, p1);
-            n = Algeb.cross(e1, e2);
-            n = Algeb.normalize(n);
-            if (Algeb.dot(n, n) - Algeb.dot(n, direction) > zero) {
-                double[] p1p0 = Algeb.sub(origin, p1);
-                double s = -Algeb.dot(n, p1p0) / Algeb.dot(n, direction);
-                p = Algeb.soma(origin, Algeb.dotByScale(s, direction));
+            e1 = Algb.sub(p2, p1);
+            e2 = Algb.sub(p3, p1);
+            n = Algb.cross(e1, e2);
+            n = Algb.normalize(n);
+            if (Algb.dot(n, n) - Algb.dot(n, direction) > zero) {
+                double[] p1p0 = Algb.sub(origin, p1);
+                double s = -Algb.dot(n, p1p0) / Algb.dot(n, direction);
+                p = Algb.soma(origin, Algb.dotByScale(s, direction));
 
                 boolean ok = true;
 
-                double[] coeficients = Algeb.barCoef(p, p1, p2, p3);
+                double[] coeficients = Algb.barCoef(p, p1, p2, p3);
                 for (int i = 0; i < coeficients.length; i++) {
                     if (coeficients[i] < 0 || coeficients[i] > 1) {
                         ok = false;
                     }
                 }
                 if (ok) {
-                    if (dist > Algeb.distanceSqr(p, origin)) {
+                    if ( Algb.distance(p, origin)< minDist ) {
                         hit.point = p;
-                        hit.color = getColor(origin, p);
-                        hit.normal = normalsTriangle[t];
-                        if (Algeb.dot(hit.normal, Algeb.sub(origin, hit.point)) < 0) {
-                            hit.normal = Algeb.dotByScale(-1, hit.normal);
+                        hit.color = getColor();
+                        minDist = Algb.distance(p, origin);
+
+                        
+                        hit.normal = n;
+                        if (Algb.dot(hit.normal, Algb.sub(origin, hit.point)) < 0) {
+                            hit.normal = Algb.dotByScale(-1, hit.normal);
                         }
 
                         hit.model = this;
@@ -161,8 +165,8 @@ public abstract class ObjModel extends Model  {
     @Override
     public String toString() {
         String s = super.toString()
-                + "\n vertices: " + Algeb.MatrixToString(vertices)
-                + "\n triangles: " + Algeb.MatrixToString(triangles);
+                + "\n vertices: " + Algb.MatrixToString(vertices)
+                + "\n triangles: " + Algb.MatrixToString(triangles);
         return s;
 
     }

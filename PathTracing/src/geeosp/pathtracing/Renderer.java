@@ -5,6 +5,7 @@
  */
 package geeosp.pathtracing;
 
+import renderers.RenderAlgorithm;
 import geeosp.pathtracing.scene.RenderScene;
 import java.awt.image.RenderedImage;
 import java.io.File;
@@ -130,8 +131,8 @@ public class Renderer {
     public static void saveFile(int width, int height, WritableImage wImage) throws IOException {
         File dir = new File("out");
         dir.mkdir();
-        String name = "out/" + width + "px_" + height + "px_";
-        //FileChooser fileChooser = new FileChooser();
+        String name = "out/_"  +System.currentTimeMillis();//
+     
         File file = new File(name + ".png");
         if (file != null) {
             RenderedImage renderedImage = SwingFXUtils.fromFXImage(wImage, null);
