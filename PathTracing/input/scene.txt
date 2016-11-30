@@ -1,7 +1,7 @@
 nthreads 8
 
 eye 0.0 0.0 5.7
-size 540 540
+size 400 400
 ortho -1 -1 1 1
 background 0 0 0
 
@@ -11,7 +11,7 @@ background 0 0 0
 
 ambient 4
 
-npaths 32
+npaths 10
 tonemapping 1.0
 
 seed 9

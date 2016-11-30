@@ -15,7 +15,9 @@ import geeosp.pathtracing.scene.RenderScene;
  *
  * @author geeo
  */
+
 public class LightRenderer extends RenderAlgorithm {
+final double zero =.001;
 
     RenderScene scene;
 
@@ -49,13 +51,24 @@ public class LightRenderer extends RenderAlgorithm {
         direction = Algb.normalize(direction);
         hit = getNextHit(scene.getEye(), direction, scene);
         double[] color = new double[4];
-        color[3] = 1;
+        // color[3] = 1;
         if (hit.isHit()) {
-            for (int l = 0; l < scene.getLights().size(); l++) {
-                ObjLight lg = (ObjLight) scene.getLights().get(l);
-                double[] lgPt = lg.getOnePoint();
-                if (canSee(lg, lgPt, hit.model, hit.point)) {
-                  color = Algb.dotByScale(100.0/(Algb.distance(hit.point, lgPt)),new double[] {1,0,0,1});
+            if (hit.model.getType() == Model.Type.LIGHT) {
+                color = new double[]{1, 1, 0, 1};
+            } else {
+                for (int l = 0; l < scene.getLights().size(); l++) {
+                    double tmp[] = new double[4];
+                    int k = scene.getNpaths();
+                    double strength = 4.0;
+                    for (int s = 0; s < k; s++) {
+
+                        ObjLight lg = (ObjLight) scene.getLights().get(l);
+                        double[] lgPt = lg.getOnePoint();
+                        if (canSee(lg, lgPt, hit.model, hit.point)) {
+                            tmp = Algb.soma(tmp, Algb.dotByScale(strength / (k * Algb.distance(hit.point, lgPt)), new double[]{1, 0, 0, 1}));
+                        }
+                    }
+                    color = Algb.soma(color, tmp);
                 }
 
             }
@@ -70,27 +83,29 @@ public class LightRenderer extends RenderAlgorithm {
     }
 
     boolean canSee(Model lg, double[] lgPt, Model model, double[] point) {
-         double[] dir= Algb.normalize(Algb.sub(point, lgPt));
-         double minDist = Double.MAX_VALUE;
-         double modelDist = Double.MAX_VALUE;
-         for(int i =0;i< scene.getModels().size(); i++){
-             Model t = scene.getModels().get(i);
-             if(!t.getName().equals(lg.getName())){ //ignora a luz
-                 Hit h = t.getNearestIntersectionPoint(lgPt, dir);
-                 if(h.isHit()){
-                     double dist = Algb.distance(lgPt, h.point);
-                     if(dist<minDist){
-                         minDist = dist;
-                     }
-                     if(h.model.getName().equals(model.getName())){
-                         modelDist= dist;
-                     }
-                 }
-             }
-         }
-         
-        
-        
-        return modelDist== minDist;
+        double[] dir = Algb.normalize(Algb.sub(point, lgPt));
+        double minDist = Double.MAX_VALUE;
+        double modelDist = Double.MAX_VALUE;
+        double[] minPoint = new double[4];
+        for (int i = 0; i < scene.getModels().size(); i++) {
+            Model t = scene.getModels().get(i);
+            if (!t.getName().equals(lg.getName())) { //ignora a luz
+                Hit h = t.getNearestIntersectionPoint(lgPt, dir);
+                if (h.isHit()) {
+                    double dist = Algb.distance(lgPt, h.point);
+                    if (dist < minDist) {
+                        minDist = dist;
+                        minPoint = h.point;
+                    }
+                    if (h.model.getName().equals(model.getName())) {
+                        modelDist = dist;
+                    }
+                    
+                    
+                }
+            }
+        }
+
+        return (modelDist == minDist)&&Algb.distance(minPoint, point)<=zero;
     }
 }

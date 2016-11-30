@@ -14,14 +14,14 @@ import java.util.ArrayList;
  *
  * @author geeo
  */
-public abstract class ObjModel extends Model  {
+public abstract class ObjModel extends Model {
 
     protected double[][] vertices;
     protected int[][] triangles;
     protected double[][] normalsVertices;
     protected double[][] normalsTriangle;
 
-    private final double zero = 0.001;
+    private final double zero = 0.000001;
 
     public ObjModel(String objectName, Model.Type type) {
         super(objectName, new double[3], new double[3], new double[]{1, 1, 1}, type);
@@ -100,7 +100,6 @@ public abstract class ObjModel extends Model  {
             for (int j = 0; j < 3; j++) {
                 normalsVertices[triangles[i][j]] = Algb.soma(nt, normalsVertices[triangles[i][j]]);
             }
-            
 
         }
 
@@ -111,8 +110,8 @@ public abstract class ObjModel extends Model  {
     }
 
     @Override
-    
-        public Hit getNearestIntersectionPoint(double[] origin, double[] direction) {
+
+    public Hit getNearestIntersectionPoint(double[] origin, double[] direction) {
         Hit hit = new Hit(new double[4], new double[4], new double[]{1, 1, 1, 0}, null);
         double minDist = Double.MAX_VALUE;
         direction = Algb.normalize(direction);
@@ -128,33 +127,34 @@ public abstract class ObjModel extends Model  {
             if (Algb.dot(n, n) - Algb.dot(n, direction) > zero) {
                 double[] p1p0 = Algb.sub(origin, p1);
                 double s = -Algb.dot(n, p1p0) / Algb.dot(n, direction);
-                p = Algb.soma(origin, Algb.dotByScale(s, direction));
+                if (s > 0) {
+                    p = Algb.soma(origin, Algb.dotByScale(s, direction));
 
-                boolean ok = true;
+                    boolean ok = true;
 
-                double[] coeficients = Algb.barCoef(p, p1, p2, p3);
-                for (int i = 0; i < coeficients.length; i++) {
-                    if (coeficients[i] < 0 || coeficients[i] > 1) {
-                        ok = false;
-                    }
-                }
-                if (ok) {
-                    if ( Algb.distance(p, origin)< minDist ) {
-                        hit.point = p;
-                        hit.color = getColor();
-                        minDist = Algb.distance(p, origin);
-
-                        
-                        hit.normal = n;
-                        if (Algb.dot(hit.normal, Algb.sub(origin, hit.point)) < 0) {
-                            hit.normal = Algb.dotByScale(-1, hit.normal);
+                    double[] coeficients = Algb.barCoef(p, p1, p2, p3);
+                    for (int i = 0; i < coeficients.length; i++) {
+                        if (coeficients[i] < 0 || coeficients[i] > 1) {
+                            ok = false;
                         }
-
-                        hit.model = this;
                     }
-                } else {
-                    //   System.out.println("coeficientes baricentricos: " + Algeb.VectorToString(coeficients));
+                    if (ok) {
+                        if (Algb.distance(p, origin) < minDist) {
+                            hit.point = p;
+                            hit.color = getColor();
+                            minDist = Algb.distance(p, origin);
 
+                            hit.normal = n;
+                            if (Algb.dot(hit.normal, Algb.sub(origin, hit.point)) < 0) {
+                                hit.normal = Algb.dotByScale(-1, hit.normal);
+                            }
+
+                            hit.model = this;
+                        }
+                    } else {
+                        //   System.out.println("coeficientes baricentricos: " + Algeb.VectorToString(coeficients));
+
+                    }
                 }
 
             }
