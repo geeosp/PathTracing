@@ -17,7 +17,6 @@ import geeosp.pathtracing.scene.RenderScene;
  */
 
 public class LightRenderer extends RenderAlgorithm {
-final double zero =.001;
 
     RenderScene scene;
 
@@ -64,7 +63,7 @@ final double zero =.001;
 
                         ObjLight lg = (ObjLight) scene.getLights().get(l);
                         double[] lgPt = lg.getOnePoint();
-                        if (canSee(lg, lgPt, hit.model, hit.point)) {
+                        if (canSee(lg, lgPt, hit.model, hit.point, scene)) {
                             tmp = Algb.soma(tmp, Algb.dotByScale(strength / (k * Algb.distance(hit.point, lgPt)), new double[]{1, 0, 0, 1}));
                         }
                     }
@@ -82,30 +81,5 @@ final double zero =.001;
         //return hit.color;
     }
 
-    boolean canSee(Model lg, double[] lgPt, Model model, double[] point) {
-        double[] dir = Algb.normalize(Algb.sub(point, lgPt));
-        double minDist = Double.MAX_VALUE;
-        double modelDist = Double.MAX_VALUE;
-        double[] minPoint = new double[4];
-        for (int i = 0; i < scene.getModels().size(); i++) {
-            Model t = scene.getModels().get(i);
-            if (!t.getName().equals(lg.getName())) { //ignora a luz
-                Hit h = t.getNearestIntersectionPoint(lgPt, dir);
-                if (h.isHit()) {
-                    double dist = Algb.distance(lgPt, h.point);
-                    if (dist < minDist) {
-                        minDist = dist;
-                        minPoint = h.point;
-                    }
-                    if (h.model.getName().equals(model.getName())) {
-                        modelDist = dist;
-                    }
-                    
-                    
-                }
-            }
-        }
-
-        return (modelDist == minDist)&&Algb.distance(minPoint, point)<=zero;
-    }
+  
 }

@@ -8,7 +8,7 @@ package renderers;
 import geeosp.pathtracing.Algb;
 import geeosp.pathtracing.models.Hit;
 import geeosp.pathtracing.models.Model;
-import geeosp.pathtracing.models.DifuseModel;
+
 import geeosp.pathtracing.models.ObjDifuseModel;
 import geeosp.pathtracing.models.ObjLight;
 import geeosp.pathtracing.models.ObjModel;
@@ -119,7 +119,7 @@ public class DistanceRenderer extends RenderAlgorithm {
                     break;
                 case OBJECT:
 
-                    DifuseModel difuseModel = (DifuseModel) hit.model;
+                 Model difuseModel =hit.model;
                     for (int l = 0; l < scene.getLights().size(); l++) {
                         ObjLight lg = (ObjLight) scene.getLights().get(l);
 
@@ -199,7 +199,7 @@ color[3]=1;
                 color = hit.model.getColor();
             } else {//n é uma luz
                 double[] incident = Algb.normalize(Algb.sub(origin, hit.point));
-                DifuseModel model = (DifuseModel) hit.model;
+             Model model =  hit.model;
                 if (Algb.dot(incident, hit.normal) < 0) {
                     incident = Algb.dotByScale(-1, incident);
                 }
@@ -211,14 +211,14 @@ color[3]=1;
 
                         //    color = hit.color;
                         double[] reflectedColor = tracePath(hit.point, next, rayType, scene, deep - 1);
-                        double kd = model.getCoeficients()[1];
+                        double kd = model.getMaterial().kd;
                         double[] temp = Algb.dotByScale(kd, reflectedColor);
                         //color = Algeb.soma(Algeb.dotByScale(kd, color), temp);
                         color = Algb.soma(hit.color, temp);
                         break;
                     case SPECULAR:
                         reflectedColor = tracePath(hit.point, next, rayType, scene, deep - 1);
-                        double ks = model.getCoeficients()[2];
+                        double ks = model.getMaterial().ks;
                         temp = Algb.dotByScale(ks, reflectedColor);
                         //color = Algeb.soma(Algeb.dotByScale(kd, color), temp);
                         color = Algb.soma(hit.color, temp);

@@ -20,7 +20,7 @@ public abstract class Model {
         LIGHT,
         OBJECT
     }
-    
+
     public abstract double[] getColor();
 
     protected Type type;
@@ -74,5 +74,11 @@ public abstract class Model {
     public void setType(Type type) {
         this.type = type;
     }
+
+    public boolean isLight() {
+        return this.type == Type.LIGHT;
+    }
+
+    public abstract Material getMaterial();
 
 }

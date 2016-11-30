@@ -29,6 +29,7 @@ public class RenderTest extends Application {
         int errors = 0;
         ArrayList<RenderAlgorithm> renderers = new ArrayList<RenderAlgorithm>();
       //renderers.add(new PathTracingAlgorithm());
+              renderers.add(new PathTracingRenderer());
        renderers.add(new DistanceRenderer());
         renderers.add(new NormalRendererAlgorithm());
         renderers.add(new LightRenderer());

@@ -56,4 +56,9 @@ public class ObjLight extends ObjModel {
         return p;
     }
 
+    @Override
+    public Material getMaterial() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

@@ -11,7 +11,7 @@ import geeosp.pathtracing.Algb;
  *
  * @author geeo
  */
-public class SphereModel extends Model implements DifuseModel {
+public class SphereModel extends Model  {
 
     double center[];
     double radius;
@@ -82,13 +82,13 @@ public class SphereModel extends Model implements DifuseModel {
     }
 
     @Override
-    public double[] getCoeficients() {
-        return this.coeficients;
+    public double[] getColor() {
+        return this.color;
     }
 
     @Override
-    public double[] getColor() {
-        return this.color;
+    public Material getMaterial() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

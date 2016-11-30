@@ -131,8 +131,8 @@ public class Renderer {
     public static void saveFile(int width, int height, WritableImage wImage) throws IOException {
         File dir = new File("out");
         dir.mkdir();
-        String name = "out/_"  +System.currentTimeMillis();//
-     
+        String name = "out/_" + System.currentTimeMillis();//
+
         File file = new File(name + ".png");
         if (file != null) {
             RenderedImage renderedImage = SwingFXUtils.fromFXImage(wImage, null);
@@ -184,7 +184,11 @@ public class Renderer {
                 for (int j = 0; j < scene.getSizeHeight(); j++) {
                     double[] color = new double[4];
                     color = algorithm.calulatePixel(i, j, scene);
-                    this.savePixelConcurrent(i, j, color, true);
+                    try {
+                        this.savePixelConcurrent(i, j, color, true);
+                    }catch(IllegalArgumentException e){
+                        System.err.println("pixel: "+i+", "+j+" "+e.getMessage());
+                    }
                 }
             }
             if (threadsFinished.decrementAndGet() == 0) {
@@ -202,11 +206,6 @@ public class Renderer {
 
         synchronized void savePixelConcurrent(int x, int y, double[] color, boolean update) {
             //System.err.println(Algeb.VectorToString(color));
-            for (int i = 0; i < 4; i++) {
-                if (color[i] > 1) {
-                    color[i] = 1;
-                }
-            }
 
             pixels[x][y] = color;
 
@@ -215,7 +214,7 @@ public class Renderer {
 
                 pixelsRendered.incrementAndGet();
                 if (currentProgress != getProgress()) {
-                 //   System.out.println("Progress: " + currentProgress);
+                    //   System.out.println("Progress: " + currentProgress);
                     ImageView iv = renderBundle.imageViewGui;
                     if (iv != null) {
                         WritableImage wi = renderBundle.writeImage;

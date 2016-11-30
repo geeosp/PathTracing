@@ -10,7 +10,7 @@ import geeosp.pathtracing.models.Hit;
 
 
 import geeosp.pathtracing.models.Model;
-import geeosp.pathtracing.models.DifuseModel;
+
 import geeosp.pathtracing.models.ObjDifuseModel;
 import geeosp.pathtracing.models.ObjLight;
 import geeosp.pathtracing.models.ObjModel;

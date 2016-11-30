@@ -20,12 +20,12 @@ import geeosp.pathtracing.Algb;
  *
  * @author geeo
  */
-public class PathTracingAlgorithm extends RenderAlgorithm {
+public class PathTracingRenderer extends RenderAlgorithm {
 
     final double PI = Math.PI;
     double[][] brdf;
 
-    public PathTracingAlgorithm() {
+    public PathTracingRenderer() {
     }
 
     public int findRightK(int n) {
@@ -42,7 +42,6 @@ public class PathTracingAlgorithm extends RenderAlgorithm {
         int k = findRightK(n);
         n = 2 * k * k;
 
-        
         double[] ref = Algb.normalize(new double[]{1, 1, 1, 0});
         double dk = k;
         double dw = PI / dk;
@@ -55,15 +54,15 @@ public class PathTracingAlgorithm extends RenderAlgorithm {
             }
         }
 
-brdf = new double[i][4];
-i--;
+        brdf = new double[i][4];
+        i--;
         for (double y = 0; y < 2 * PI; y += dy) {
             for (double w = 0; w < PI; w += dw) {
 
                 double a1 = 0;//-dw+rand.nextDouble()*dw;
                 double a2 = 0;//-dy+ rand.nextDouble() *dy;
                 brdf[i] = Algb.normalize(Algb.matrixVectorProduct(rotation(w + a1, y + a2), ref));//Algeb.normalize(ref);
-               i--;
+                i--;
             }
         }
 
@@ -106,50 +105,39 @@ i--;
         direction = Algb.normalize(direction);
         hit = getNextHit(scene.getEye(), direction, scene);
         double[] color = new double[4];
-        color[3] = 1;
         if (hit.isHit()) {
-            double dot = Algb.dot(direction, hit.normal);
+            for (int p = 0; p < scene.getNpaths(); p++) {
+                double[] fator = new double[4];
+                if (hit.model.isLight()) {
+                    ObjLight lg = (ObjLight) hit.model;
 
-            switch (hit.model.getType()) {
-                case LIGHT:
-
-                    color = ((ObjLight) hit.model).getColor();
-                    color[3] = 1;
-
-                    break;
-                case OBJECT:
-             Model difuseModel = hit.model;
-                    for (int r = 0; r < brdf.length; r++) {
-                        Random rand = new Random();
-                        double ka = hit.model.getMaterial().ka;
-                        double kd =  hit.model.getMaterial().kd;
-                        double ks =  hit.model.getMaterial().ks;
-                        double ktot = ka + kd + ks;
-                        double[] ray = brdf[r];
-                        if (Algb.dot(ray, hit.normal) < 0) {
-                            ray = Algb.dotByScale(-1, ray);
-                        }
-                        Hit test = getNextHit(hit.point, ray, scene);
-                        double random = rand.nextDouble() * (ktot - ks);
-                        double[] fator = new double[4];
-                        if (random < ka) {
-                            fator = Algb.dotByScale(ka * scene.getAmbientColor() / brdf.length, hit.color);
-                        } else if (random < ka + kd) {
-                            fator = Algb.dotByScale(kd / brdf.length, runAlgorithm(hit.point, test, RayType.DIFUSE, scene, 5));
-                        } else if (random < ka + kd + ks) {
-                            //    fator = Algeb.dotByScale(kd/ brdf.length, runAlgorithm(hit.point, test, RayType.SPECULAR, scene, 5));
+                    fator = lg.getColor();
+                } else {//is a object
+                    //phong
+                  Model obj = hit.model;
+                    double[] diffuse = new double[4];
+                    for (int l = 0; l < scene.getLights().size(); l++) {
+                        ObjLight lg = (ObjLight) scene.getLights().get(l);
+                        double[] lgPt = lg.getOnePoint();
+                        if (canSee(lg, lgPt, hit.model, hit.point, scene)) {
+                            double[] lgDir = Algb.normalize(Algb.sub(lgPt, hit.point));
+                            double cos = Math.max(0.0, Algb.dot(lgDir, hit.normal));
+                            diffuse = Algb.dotByScale(cos*obj.getMaterial().kd, Algb.crossdot(lg.getColor(), hit.model.getColor()));
 
                         }
-                        color = Algb.soma(color, fator);
-
+                          
                     }
+                    fator = Algb.soma(fator, diffuse);
 
-                    break;
+                }
+
+                color = Algb.soma(color, Algb.dotByScale(1.0 / scene.getNpaths(), fator));
             }
 
         } else {
             color = scene.getBackgroundColor();
         }
+        color = toneMap(color, scene.getTonemapping());
         return color;
         // return hit.color;
 
@@ -167,13 +155,11 @@ i--;
 
     }
 
-    
-
     enum RayType {
         DIFUSE, SPECULAR, TRANSMITED
     };
 
-    double[] runAlgorithm(double[] origin, Hit hit, RayType rayType, RenderScene scene, int deep) {
+    double[] tracePath(double[] origin, Hit hit, RayType rayType, RenderScene scene, int deep) {
         double[] color = scene.getBackgroundColor();
         if (deep == 0) {
             if (hit.isHit()) {
@@ -187,7 +173,7 @@ i--;
                 color = hit.model.getColor();
             } else {//n é uma luz
                 double[] incident = Algb.normalize(Algb.sub(origin, hit.point));
-      Model model =  hit.model;
+            Model model =  hit.model;
                 if (Algb.dot(incident, hit.normal) < 0) {
                     incident = Algb.dotByScale(-1, incident);
                 }
@@ -198,14 +184,14 @@ i--;
                     case DIFUSE:
 
                         //    color = hit.color;
-                        double[] reflectedColor = runAlgorithm(hit.point, next, rayType, scene, deep - 1);
+                        double[] reflectedColor = tracePath(hit.point, next, rayType, scene, deep - 1);
                         double kd = model.getMaterial().kd;
                         double[] temp = Algb.dotByScale(kd, reflectedColor);
                         //color = Algeb.soma(Algeb.dotByScale(kd, color), temp);
                         color = Algb.soma(hit.color, temp);
                         break;
                     case SPECULAR:
-                        reflectedColor = runAlgorithm(hit.point, next, rayType, scene, deep - 1);
+                        reflectedColor = tracePath(hit.point, next, rayType, scene, deep - 1);
                         double ks = model.getMaterial().ks;
                         temp = Algb.dotByScale(ks, reflectedColor);
                         //color = Algeb.soma(Algeb.dotByScale(kd, color), temp);
@@ -216,6 +202,8 @@ i--;
         } else {//hit nothing
             color = scene.getBackgroundColor();
         }
+
         return color;
     }
+
 }
