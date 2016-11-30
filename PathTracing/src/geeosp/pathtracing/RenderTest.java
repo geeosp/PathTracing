@@ -16,8 +16,7 @@ import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import renderers.DistanceRenderer;
-import renderers.NormalRendererAlgorithm;
+import renderers.*;
 
 /**
  *
@@ -29,21 +28,22 @@ public class RenderTest extends Application {
     public void start(Stage primaryStage1) throws IOException, InterruptedException {
         int errors = 0;
         ArrayList<RenderAlgorithm> renderers = new ArrayList<RenderAlgorithm>();
-        renderers.add(new PathTracingAlgorithm());
-        renderers.add(new DistanceRenderer());
-        renderers.add(new NormalRendererAlgorithm());
+       // renderers.add(new PathTracingAlgorithm());
+       // renderers.add(new DistanceRenderer());
+       // renderers.add(new NormalRendererAlgorithm());
+        renderers.add(new LightRenderer());
 
         RenderScene renderScene = RenderScene.load();
         for (int i = 0; i < renderers.size(); i++) {
-            Stage s;
+            Stage stage;
             if (i == 0) {
-                s = primaryStage1;
-                s.setOnCloseRequest(e -> {
+                stage = primaryStage1;
+                stage.setOnCloseRequest(e -> {
                     Platform.exit();
                     System.exit(0);
                 });
             } else {
-                s = new Stage();
+                stage = new Stage();
 
             }
             ImageView imageView = new ImageView();
@@ -51,9 +51,9 @@ public class RenderTest extends Application {
             imageView.setFitHeight(renderScene.getSizeHeight());
             Pane pane = new Pane(imageView);
             Scene scene = new Scene(pane, renderScene.getSizeWidth(), renderScene.getSizeHeight());
-            s.setScene(scene);
-            s.show();
-            s.setResizable(false);
+            stage.setScene(scene);
+            stage.show();
+            stage.setResizable(false);
             Renderer renderer = new Renderer(renderScene, imageView,renderers.get(i));
             renderer.startRender();
 

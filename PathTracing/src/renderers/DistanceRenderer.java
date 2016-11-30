@@ -105,7 +105,7 @@ public class DistanceRenderer extends RenderAlgorithm {
         };
         direction = Algb.sub(onScreen, scene.getEye());
         direction = Algb.normalize(direction);
-        hit = getNextHit(scene.getEye(), direction, scene, null, false);
+        hit = getNextHit(scene.getEye(), direction, scene);
         double[] color = new double[4];
         color[3] = 1;
         if (hit.isHit()) {
@@ -179,22 +179,7 @@ color[3]=1;
 
     }
 
-    Hit getNextHit(double[] origin, double[] direction, RenderScene scene, Model originModel, boolean exclude) {
-        Hit hit = new Hit();
-        for (int t = 0; t < scene.getModels().size(); t++) {
-            Model a = scene.getModels().get(t);
-            if (!exclude || !a.getName().equals(originModel.getName())) {
-                Hit temp = a.getNearestIntersectionPoint(origin, direction);
-                if (temp.isHit()) {
-                    double tempDist = Algb.distance(temp.point, origin);
-                    if (tempDist < Algb.distance(hit.point, origin)) {
-                        hit = temp;
-                    }
-                }
-            }
-        }
-        return hit;
-    }
+  
 
     enum RayType {
         DIFUSE, SPECULAR, TRANSMITED
@@ -220,7 +205,7 @@ color[3]=1;
                 }
                 double[] reflectedRay = reflect(incident, hit.normal);
                 //  reflectedRay = new double[]{0,1,0,0};
-                Hit next = getNextHit(hit.point, reflectedRay, scene, hit.model, true);
+                Hit next = getNextHit(hit.point, reflectedRay, scene);
                 switch (rayType) {
                     case DIFUSE:
 
