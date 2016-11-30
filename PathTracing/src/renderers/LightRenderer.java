@@ -55,7 +55,7 @@ public class LightRenderer extends RenderAlgorithm {
                 ObjLight lg = (ObjLight) scene.getLights().get(l);
                 double[] lgPt = lg.getOnePoint();
                 if (canSee(lg, lgPt, hit.model, hit.point)) {
-                  color = new double[] {1,0,0,1};
+                  color = Algb.dotByScale(100.0/(Algb.distance(hit.point, lgPt)),new double[] {1,0,0,1});
                 }
 
             }

@@ -1,4 +1,4 @@
-nthreads 2
+nthreads 8
 
 eye 0.0 0.0 5.7
 size 540 540

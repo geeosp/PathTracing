@@ -46,14 +46,14 @@ public class ObjLight extends ObjModel {
 
     public double[] getOnePoint() {
         Random rand = new Random();
-        double i = rand.nextDouble();
-        double k = rand.nextDouble() * (1 - i);
-        double j = 1 - k - i;
+        double i = 1.0/3.0;
+        double k = i;
+        double j = k;
         int[] t = triangles[rand.nextInt(triangles.length)];
         double[] p = Algb.dotByScale(i, vertices[t[0]]);
         p = Algb.soma(p, Algb.dotByScale(j, vertices[t[1]]));
         p = Algb.soma(p, Algb.dotByScale(k, vertices[t[2]]));
-        return p;
+        return vertices[rand.nextInt(vertices.length)];
     }
 
 }
