@@ -75,7 +75,7 @@ public class LightRenderer extends RenderAlgorithm {
         } else {
             color = scene.getBackgroundColor();
         }
-        // color = toneMapping(color, scene);
+     color = toneMap(color, scene.getTonemapping());
         color[3] = 1;
         return color;
         //return hit.color;

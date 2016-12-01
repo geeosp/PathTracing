@@ -28,11 +28,11 @@ public class RenderTest extends Application {
     public void start(Stage primaryStage1) throws IOException, InterruptedException {
         int errors = 0;
         ArrayList<RenderAlgorithm> renderers = new ArrayList<RenderAlgorithm>();
-      //renderers.add(new PathTracingAlgorithm());
-              renderers.add(new PathTracingRenderer());
-       renderers.add(new DistanceRenderer());
-        renderers.add(new NormalRendererAlgorithm());
-        renderers.add(new LightRenderer());
+  
+         renderers.add(new PathTracingRenderer());
+     //renderers.add(new DistanceRenderer());
+    //   renderers.add(new NormalRendererAlgorithm());
+       // renderers.add(new LightRenderer());
 
         RenderScene renderScene = RenderScene.load();
         for (int i = 0; i < renderers.size(); i++) {

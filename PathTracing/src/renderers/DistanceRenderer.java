@@ -126,7 +126,7 @@ public class DistanceRenderer extends RenderAlgorithm {
                       //if (canSee(lg.getOnePoint(), lg, hit.point, hit.model, scene)) {
                             // if(Algeb.distance(h.point, hit.point)<=threshold){
                             double d = Algb.distance(hit.point, scene.getEye());
-                            color = Algb.dotByScale(500.0/(d*d), new double[]{1, 1, 1.0, 1.0});
+                            color = Algb.dotByScale(500/(d*d), new double[]{1, 1, 1.0, 1.0});
 color[3]=1;
                             //}
                     // }
@@ -162,7 +162,7 @@ color[3]=1;
         } else {
             color = scene.getBackgroundColor();
         }
-        return color;
+        return toneMap(color, scene.getTonemapping());
         // return hit.color;
 
     }

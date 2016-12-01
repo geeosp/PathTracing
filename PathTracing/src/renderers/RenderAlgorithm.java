@@ -66,10 +66,11 @@ public abstract class RenderAlgorithm {
 
     double[] toneMap(double[] color, double tonemap) {
         double[] ret = new double[color.length];
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < color.length; i++) {
             ret[i] = color[i] / (color[i] + tonemap);
         }
         ret[3] = 1;
+       // System.out.println(Algb.VectorToString(ret));
         return ret;
     }
 }

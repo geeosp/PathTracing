@@ -15,7 +15,7 @@ public class Material {
      public double kd;
      public double ks;
      public double kt;
-     double n;
+    public  double n;
      public double[] color;
 
     public Material(double[] color, double ka, double kd, double ks, double kt, double n) {

@@ -15,7 +15,7 @@ import java.util.Random;
 public class ObjLight extends ObjModel {
 
     double[] color;
-
+    Material material;
     //  double intensity;
     public ObjLight() {
         super("", Type.LIGHT);
@@ -29,6 +29,7 @@ public class ObjLight extends ObjModel {
             material[2] * material[3],
             1
         };
+        this.material = new Material(this.color, 0, 0, 0, 0, 0);
         //    this.intensity = material[3];
 
     }
@@ -58,7 +59,7 @@ public class ObjLight extends ObjModel {
 
     @Override
     public Material getMaterial() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      return this.material;
     }
 
 }

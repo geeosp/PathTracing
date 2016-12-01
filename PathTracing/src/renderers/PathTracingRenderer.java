@@ -114,26 +114,13 @@ public class PathTracingRenderer extends RenderAlgorithm {
                     fator = lg.getColor();
                 } else {//is a object
                     //phong
-                  Model obj = hit.model;
-                    double[] diffuse = new double[4];
-                    for (int l = 0; l < scene.getLights().size(); l++) {
-                        ObjLight lg = (ObjLight) scene.getLights().get(l);
-                        double[] lgPt = lg.getOnePoint();
-                        if (canSee(lg, lgPt, hit.model, hit.point, scene)) {
-                            double[] lgDir = Algb.normalize(Algb.sub(lgPt, hit.point));
-                            double cos = Math.max(0.0, Algb.dot(lgDir, hit.normal));
-                            diffuse = Algb.dotByScale(cos*obj.getMaterial().kd, Algb.crossdot(lg.getColor(), hit.model.getColor()));
-
-                        }
-                          
-                    }
-                    fator = Algb.soma(fator, diffuse);
-
+                    double[] phong = phongBase(hit, scene, scene.getEye());
+                    fator = Algb.soma(fator, phong);
                 }
 
-                color = Algb.soma(color, Algb.dotByScale(1.0 / scene.getNpaths(), fator));
+                color = Algb.soma(color, fator);
             }
-
+            color = Algb.dotByScale(1.0 / scene.getNpaths(), color);
         } else {
             color = scene.getBackgroundColor();
         }
@@ -141,6 +128,33 @@ public class PathTracingRenderer extends RenderAlgorithm {
         return color;
         // return hit.color;
 
+    }
+
+    double[] phongBase(Hit hit, RenderScene scene, double[] eye) {
+        double[] color = new double[4];
+        Model obj = hit.model;
+        double[] ambient = Algb.dotByScale(scene.getAmbientColor() * obj.getMaterial().ka, obj.getColor());
+        double[] diffuse = new double[4];
+        double[] specular = new double[4];
+        
+        for (int l = 0; l < scene.getLights().size(); l++) {
+            ObjLight lg = (ObjLight) scene.getLights().get(l);
+            double[] lgPt = lg.getOnePoint();
+            if (canSee(lg, lgPt, hit.model, hit.point, scene)) {
+                double[] lgDir = Algb.normalize(Algb.sub(lgPt, hit.point));
+                double cos = Math.max(0.0, Algb.dot(lgDir, hit.normal));
+                diffuse = Algb.soma(diffuse, Algb.dotByScale(cos * obj.getMaterial().kd, Algb.crossdot(lg.getColor(), hit.model.getColor())));
+                //speccular
+                double []reflected = reflect(lgDir, hit.normal);
+                double []toEye = Algb.normalize(Algb.sub(eye, hit.point));
+                cos = Math.max(0, Algb.dot(toEye, reflected));
+                specular = Algb.soma(specular, Algb.dotByScale(Math.pow(cos, hit.model.getMaterial().n) * obj.getMaterial().ks, Algb.crossdot(lg.getColor(), hit.model.getColor())));
+            }
+        }
+        color = Algb.soma(color, ambient);
+        color = Algb.soma(color, diffuse);
+        color = Algb.soma(color, specular);
+        return color;
     }
 
     double[] reflect(double[] incident, double[] normal
@@ -173,7 +187,7 @@ public class PathTracingRenderer extends RenderAlgorithm {
                 color = hit.model.getColor();
             } else {//n é uma luz
                 double[] incident = Algb.normalize(Algb.sub(origin, hit.point));
-            Model model =  hit.model;
+                Model model = hit.model;
                 if (Algb.dot(incident, hit.normal) < 0) {
                     incident = Algb.dotByScale(-1, incident);
                 }
