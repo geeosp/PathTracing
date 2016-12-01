@@ -47,7 +47,7 @@ public class Renderer {
     Renderer(RenderScene renderScene, ImageView imageView, RenderAlgorithm algorithm) {
         this.scene = renderScene;
         this.renderBundle = new RenderBundle(renderScene.getSizeWidth(), renderScene.getSizeHeight(), renderScene.getNpaths(), imageView);
-        this.renderThreads = new RenderThread[renderScene.getNthreads()];
+        this.renderThreads = new RenderThread[Math.max(1, renderScene.getNthreads())];
         this.pixelsRendered = new AtomicInteger(0);
         this.pixels = new double[renderScene.getSizeWidth()][renderScene.getSizeHeight()][4];
         this.threadsFinished = new AtomicInteger(renderScene.getNthreads());
@@ -84,48 +84,15 @@ public class Renderer {
                 //    this.renderBundle.writeImage.getPixelWriter().setColor(i, j, Color.BLACK);
             }
         }
-        if (scene.getNthreads() > 1) {
-            for (int i = 0; i < renderThreads.length; i++) {
-                renderThreads[i] = new RenderThread(i, renderThreads.length, this.renderBundle);
-                renderThreads[i].setDaemon(false);
-                renderThreads[i].start();
-            }
-        } else {
-            startRenderNoThreads();
+        UpdateViewThread updateViewThread = new UpdateViewThread(renderBundle);
+        updateViewThread.setDaemon(false);
+        updateViewThread.start();
+        for (int i = 0; i < renderThreads.length; i++) {
+            renderThreads[i] = new RenderThread(i, renderThreads.length, this.renderBundle);
+            renderThreads[i].setDaemon(false);
+            renderThreads[i].start();
         }
-//
-    }
 
-    void startRenderNoThreads() throws IOException, InterruptedException {
-        //System.out.println("Starting Rendering");
-
-        this.runningState = RunningState.Running;
-        for (int i = 0; i < scene.getSizeWidth(); i++) {
-            for (int j = 0; j < scene.getSizeHeight(); j++) {
-                savePixel(i, j, scene.getBackgroundColor(), false);
-            }
-        }
-        for (int i = 0; i < scene.getSizeWidth(); i++) {
-            for (int j = 0; j < scene.getSizeHeight(); j++) {
-                double[] color = new double[4];
-                //  color = algorithm.calulatePixel(i, j, scene);
-                savePixel(i, j, color, true);
-            }
-        }
-        time = System.currentTimeMillis() - time;
-        try {
-            saveFile(scene.getSizeWidth(), scene.getSizeHeight(), this.renderBundle.writeImage);
-        } catch (IOException ex) {
-            Logger.getLogger(Renderer.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        updateImage();
-        System.err.println("Finished: " + (time / 1000.0) + " seconds");
-
-    }
-
-    void updateImage() {
-
-        renderBundle.imageViewGui.setImage(renderBundle.writeImage);
     }
 
     public static void saveFile(int width, int height, WritableImage wImage) throws IOException {
@@ -160,6 +127,46 @@ public class Renderer {
         }
     }
 
+    class UpdateViewThread extends Thread {
+
+        RenderBundle bundle;
+
+        public UpdateViewThread(RenderBundle bundle) {
+            this.bundle = bundle;
+        }
+
+        @Override
+        public void run() {
+            while (runningState == RunningState.Running) {
+                try {
+                    sleep(20);
+                    if (currentProgress != getProgress()) {
+                        //   System.out.println("Progress: " + currentProgress);
+                        ImageView iv = renderBundle.imageViewGui;
+                        if (iv != null) {
+                            WritableImage wi = renderBundle.writeImage;
+                            if (wi != null) {
+                                //  if (System.currentTimeMillis() - lastimeupdated > 500) {
+                         
+                                try {
+                                iv.setImage(wi);
+                                } catch (Exception e) {
+                                    System.out.println("erro");
+                                }
+                                //   }
+                            }
+                        }
+
+                        currentProgress = getProgress();
+                    }
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Renderer.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+
+    }
+
     class RenderThread extends Thread {
 
         private int index;
@@ -186,8 +193,8 @@ public class Renderer {
                     color = algorithm.calulatePixel(i, j, scene);
                     try {
                         this.savePixelConcurrent(i, j, color, true);
-                    }catch(IllegalArgumentException e){
-                        System.err.println("pixel: "+i+", "+j+" "+e.getMessage());
+                    } catch (IllegalArgumentException e) {
+                        System.err.println("pixel: " + i + ", " + j + " " + e.getMessage());
                     }
                 }
             }
@@ -213,25 +220,7 @@ public class Renderer {
             if (update) {
 
                 pixelsRendered.incrementAndGet();
-                if (currentProgress != getProgress()) {
-                    //   System.out.println("Progress: " + currentProgress);
-                    ImageView iv = renderBundle.imageViewGui;
-                    if (iv != null) {
-                        WritableImage wi = renderBundle.writeImage;
-                        if (wi != null) {
-                            if (System.currentTimeMillis() - lastimeupdated > 500) {
-                                lastimeupdated = System.currentTimeMillis();
-                                try {
-                                    iv.setImage(wi);
-                                } catch (Exception e) {
-                                    System.out.println("erro");
-                                }
-                            }
-                        }
-                    }
 
-                    currentProgress = getProgress();
-                }
             }
         }
 

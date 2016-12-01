@@ -1,5 +1,7 @@
 package geeosp.pathtracing;
 
+import java.util.Random;
+
 public class Algb {
 
     // OPERACOES COM VETORES
@@ -229,6 +231,15 @@ public class Algb {
             }
         }
         return true;
+    }
+
+    public static double[] randomVector() {
+        double[] d = new double[4];
+        Random rand  = new Random();
+        for(int i =0;i<3;i++){
+            d[i] = rand.nextGaussian();
+        }
+        return normalize(d);
     }
 
 }

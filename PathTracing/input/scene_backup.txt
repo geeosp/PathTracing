@@ -1,11 +1,11 @@
-nthreads 16
+nthreads 8
 # sphere cx cy cx r red green blue ka kd ks kt n
-sphere 0 0 -26 2 1.0 1.0 1.0 1. 0.7 1 .8 5
+#sphere 0 0 -32 1 1.0 1.0 1.0 1. 0.7 1 .8 5
 
 
 
 eye 0.0 0.0 5.7
-size 400 400
+size 200 200
 ortho -1 -1 1 1
 background 0.0 0.0 0.0
 ambient 0.5
@@ -13,8 +13,8 @@ ambient 0.5
 # Luz branca retangulo no centro do teto
 light luzcornell.obj 1.0 1.0 1.0 1.0
 
-npaths 64
-tonemapping 1
+npaths 40
+tonemapping 0
 seed 9
 
 # Aqui comeca a definicao das geometrias
@@ -36,7 +36,7 @@ object rightwall.obj 0.0 1.0 0.0 0.3 0.7 0 0 5
 object floor.obj 1.0 1.0 1.0 0.3 0.7 0 0 5
 
 # back wall WHITE
-object back.obj 1.0 1.0 1.0 0.3 0.7 1 0 500
+object back.obj 1.0 1.0 1.0 0.3 0.7 0 0 5
 
 # ceiling WHITE
 object ceiling.obj 1.0 1.0 1.0 0.3 0.7 0 0 5

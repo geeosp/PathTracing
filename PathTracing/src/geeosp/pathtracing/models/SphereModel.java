@@ -11,12 +11,13 @@ import geeosp.pathtracing.Algb;
  *
  * @author geeo
  */
-public class SphereModel extends Model  {
+public class SphereModel extends Model {
 
     double center[];
     double radius;
-    private double[] color;
+
     private double[] coeficients;
+    private Material material;
 
     @Override
     public Hit getNearestIntersectionPoint(double[] origin, double[] direction) {
@@ -49,7 +50,7 @@ public class SphereModel extends Model  {
 
             hit.point = p;
             hit.normal = Algb.normalize(Algb.sub(p, center));
-            hit.color = color;
+            hit.color = material.color;
             hit.model = this;
         }
         return hit;
@@ -58,17 +59,21 @@ public class SphereModel extends Model  {
 
     public SphereModel(double[] center, double radius, double[] objectMaterial) {
         super("sphere", new double[3], new double[3], new double[]{1, 1, 1}, Type.OBJECT);
-        this.color = new double[]{objectMaterial[0], objectMaterial[1], objectMaterial[2], 1.0};
+
         this.center = center;
         this.radius = radius;
-        this.coeficients = new double[]{
-            objectMaterial[3],
-            objectMaterial[4],
-            objectMaterial[5],
-            objectMaterial[6],
-            objectMaterial[7]
 
-        };
+        this.material = new Material(new double[]{
+            objectMaterial[0],
+            objectMaterial[1],
+            objectMaterial[2],
+            1.0},
+                objectMaterial[3],
+                objectMaterial[4],
+                objectMaterial[5],
+                objectMaterial[6],
+                objectMaterial[7]
+        );
     }
 
     @Override
@@ -76,19 +81,19 @@ public class SphereModel extends Model  {
         String s = super.name
                 + "\n center: " + center[0] + " " + center[1] + " " + center[2] + " " + center[3]
                 + "\n radius: " + radius
-                + "\n color: " + color[0] + " " + color[1] + " " + color[2] + " " + color[3]
+           //     + "\n color: " + color[0] + " " + color[1] + " " + color[2] + " " + color[3]
                 + "\n coeficients: " + coeficients[0] + " " + coeficients[1] + " " + coeficients[2] + " " + coeficients[3] + " " + coeficients[4] + " ";
         return s; //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public double[] getColor() {
-        return this.color;
+        return this.material.color;
     }
 
     @Override
     public Material getMaterial() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.material;
     }
 
 }

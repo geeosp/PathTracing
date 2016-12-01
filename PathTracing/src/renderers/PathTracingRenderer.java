@@ -15,6 +15,7 @@ import geeosp.pathtracing.scene.RenderScene;
 import java.util.Random;
 import javafx.scene.paint.Color;
 import geeosp.pathtracing.Algb;
+import geeosp.pathtracing.models.Material;
 
 /**
  *
@@ -113,9 +114,23 @@ public class PathTracingRenderer extends RenderAlgorithm {
 
                     fator = lg.getColor();
                 } else {//is a object
+                    Random rand = new Random();
                     //phong
                     double[] phong = phongBase(hit, scene, scene.getEye());
                     fator = Algb.soma(fator, phong);
+
+                    Material m = hit.model.getMaterial();
+                    double ktot = m.kd + m.ks;
+                    double test = rand.nextDouble() * ktot;
+                    int deep = 0;
+                    if (test < m.kd) {
+                        double[] dir = brdf[p];
+                        if(Algb.dot(dir, hit.normal)<0){
+                            dir = Algb.dotByScale(-1, dir);
+                        }
+                        fator = Algb.soma(fator, Algb.dotByScale(m.kd, tracePath(hit.point, dir, RayType.DIFUSE, scene, deep)));
+                    }
+
                 }
 
                 color = Algb.soma(color, fator);
@@ -129,6 +144,24 @@ public class PathTracingRenderer extends RenderAlgorithm {
         // return hit.color;
 
     }
+double[] tracePath(double[] origin, double[] dir, RayType rayType, RenderScene scene, int deep) {
+        double[] color = new double[4];
+        Hit hit = getNextHit(origin, dir, scene);
+        if (hit.isHit()) {
+            if(hit.model.isLight()){
+                color =  hit.color;
+            }else{
+                color = phongBase(hit, scene, origin);
+                
+            
+            
+            }
+            
+        }
+
+        //color = new double[] {1.0, 0, 1.0, 1.0};
+        return color;
+    }
 
     double[] phongBase(Hit hit, RenderScene scene, double[] eye) {
         double[] color = new double[4];
@@ -136,35 +169,39 @@ public class PathTracingRenderer extends RenderAlgorithm {
         double[] ambient = Algb.dotByScale(scene.getAmbientColor() * obj.getMaterial().ka, obj.getColor());
         double[] diffuse = new double[4];
         double[] specular = new double[4];
-        
+
         for (int l = 0; l < scene.getLights().size(); l++) {
             ObjLight lg = (ObjLight) scene.getLights().get(l);
             double[] lgPt = lg.getOnePoint();
-            if (canSee(lg, lgPt, hit.model, hit.point, scene)) {
-                double[] lgDir = Algb.normalize(Algb.sub(lgPt, hit.point));
-                double cos = Math.max(0.0, Algb.dot(lgDir, hit.normal));
-                diffuse = Algb.soma(diffuse, Algb.dotByScale(cos * obj.getMaterial().kd, Algb.crossdot(lg.getColor(), hit.model.getColor())));
-                //speccular
-                double []reflected = reflect(lgDir, hit.normal);
-                double []toEye = Algb.normalize(Algb.sub(eye, hit.point));
-                cos = Math.max(0, Algb.dot(toEye, reflected));
-                specular = Algb.soma(specular, Algb.dotByScale(Math.pow(cos, hit.model.getMaterial().n) * obj.getMaterial().ks, Algb.crossdot(lg.getColor(), hit.model.getColor())));
+            int liMax = 1;
+            double inveLiMax = 1.0 / liMax;
+            for (int li = 0; li < liMax; li++) {
+                if (canSee(lg, lgPt, hit.model, hit.point, scene)) {
+                    double[] lgDir = Algb.normalize(Algb.sub(lgPt, hit.point));
+                    double cos = cos = Math.max(0, Algb.dot(lgDir, hit.normal));
+                    double dist = Algb.getNorma(Algb.sub(lgPt, hit.point));
+                    double f = inveLiMax;/// dist;///(dist*dist);
+                    diffuse = Algb.soma(diffuse, Algb.dotByScale(cos * f * obj.getMaterial().kd, Algb.crossdot(lg.getColor(), hit.model.getColor())));
+                    //speccular
+                    //     double[] reflected = reflect(lgDir, hit.normal);
+                    //   double[] toEye = Algb.normalize(Algb.sub(eye, hit.point));
+                    //  cos = Math.max(0, Algb.dot(toEye, reflected));
+                    // specular = Algb.soma(specular, Algb.dotByScale(Math.pow(cos, hit.model.getMaterial().n) * f * obj.getMaterial().ks, lg.getColor()));
+                }
             }
         }
         color = Algb.soma(color, ambient);
         color = Algb.soma(color, diffuse);
-        color = Algb.soma(color, specular);
+        //   color = Algb.soma(color, specular);
         return color;
     }
 
     double[] reflect(double[] incident, double[] normal
     ) {
-        if (Algb.dot(incident, normal) < 0) {
-            incident = Algb.dotByScale(-1, incident);
-        }
 
-        double[] x = Algb.projection(incident, normal);
-        double[] reflect = Algb.soma(incident, Algb.dotByScale(-2, Algb.sub(incident, x)));
+        double x = 2.0 * Algb.dot(incident, normal);
+
+        double[] reflect = Algb.sub(Algb.dotByScale(x, normal), incident);
         return reflect;
 
     }
@@ -173,51 +210,5 @@ public class PathTracingRenderer extends RenderAlgorithm {
         DIFUSE, SPECULAR, TRANSMITED
     };
 
-    double[] tracePath(double[] origin, Hit hit, RayType rayType, RenderScene scene, int deep) {
-        double[] color = scene.getBackgroundColor();
-        if (deep == 0) {
-            if (hit.isHit()) {
-                color = hit.model.getColor();
-            } else {
-                color = new double[]{scene.getAmbientColor(), scene.getAmbientColor(), scene.getAmbientColor(),
-                    (scene.getAmbientColor() == 0) ? 0 : 1};
-            }
-        } else if (hit.isHit()) {
-            if (hit.model.getType() == Model.Type.LIGHT) {
-                color = hit.model.getColor();
-            } else {//n é uma luz
-                double[] incident = Algb.normalize(Algb.sub(origin, hit.point));
-                Model model = hit.model;
-                if (Algb.dot(incident, hit.normal) < 0) {
-                    incident = Algb.dotByScale(-1, incident);
-                }
-                double[] reflectedRay = reflect(incident, hit.normal);
-                //  reflectedRay = new double[]{0,1,0,0};
-                Hit next = getNextHit(hit.point, reflectedRay, scene);
-                switch (rayType) {
-                    case DIFUSE:
-
-                        //    color = hit.color;
-                        double[] reflectedColor = tracePath(hit.point, next, rayType, scene, deep - 1);
-                        double kd = model.getMaterial().kd;
-                        double[] temp = Algb.dotByScale(kd, reflectedColor);
-                        //color = Algeb.soma(Algeb.dotByScale(kd, color), temp);
-                        color = Algb.soma(hit.color, temp);
-                        break;
-                    case SPECULAR:
-                        reflectedColor = tracePath(hit.point, next, rayType, scene, deep - 1);
-                        double ks = model.getMaterial().ks;
-                        temp = Algb.dotByScale(ks, reflectedColor);
-                        //color = Algeb.soma(Algeb.dotByScale(kd, color), temp);
-                        color = Algb.soma(hit.color, temp);
-                        break;
-                }
-            }
-        } else {//hit nothing
-            color = scene.getBackgroundColor();
-        }
-
-        return color;
-    }
-
+    
 }

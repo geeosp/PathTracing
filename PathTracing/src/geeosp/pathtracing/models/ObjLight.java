@@ -16,6 +16,7 @@ public class ObjLight extends ObjModel {
 
     double[] color;
     Material material;
+
     //  double intensity;
     public ObjLight() {
         super("", Type.LIGHT);
@@ -36,21 +37,25 @@ public class ObjLight extends ObjModel {
 
     @Override
     public double[] getColor() {
-        double [] ret = color;
+        double[] ret = color;
         /*
         double dist = Algeb.distance(origin, target);
         ret =Algeb.dotByScale(1/dist, color);
         ret[3]=1;
-        */
+         */
         return ret;
     }
 
     public double[] getOnePoint() {
         Random rand = new Random();
         double i = rand.nextDouble();
-        double k =rand.nextDouble()*(1-i);
-        double j = 1-i-k;
-        int[] t = triangles[rand.nextInt(triangles.length)];
+        double k = rand.nextDouble() * (1 - i);
+        int pos = rand.nextInt(triangles.length);
+
+  
+
+        double j = 1 - i - k;
+        int[] t = triangles[pos];
         double[] p = Algb.dotByScale(i, vertices[t[0]]);
         p = Algb.soma(p, Algb.dotByScale(j, vertices[t[1]]));
         p = Algb.soma(p, Algb.dotByScale(k, vertices[t[2]]));
@@ -59,7 +64,7 @@ public class ObjLight extends ObjModel {
 
     @Override
     public Material getMaterial() {
-      return this.material;
+        return this.material;
     }
 
 }
