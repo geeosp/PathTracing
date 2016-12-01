@@ -122,13 +122,28 @@ public class PathTracingRenderer extends RenderAlgorithm {
                     Material m = hit.model.getMaterial();
                     double ktot = m.kd + m.ks;
                     double test = rand.nextDouble() * ktot;
-                    int deep = 0;
+                    int deep = 5;
                     if (test < m.kd) {
                         double[] dir = brdf[p];
-                        if(Algb.dot(dir, hit.normal)<0){
+                        dir = Algb.randomVector();
+                        double cos = Algb.dot(dir, hit.normal);
+                        if (cos < 0) {
                             dir = Algb.dotByScale(-1, dir);
+                            cos *= -1;
                         }
-                        fator = Algb.soma(fator, Algb.dotByScale(m.kd, tracePath(hit.point, dir, RayType.DIFUSE, scene, deep)));
+                        fator = Algb.soma(fator, Algb.dotByScale(m.kd * cos, tracePath(hit.point, dir, RayType.DIFUSE, scene, deep)));
+                    }else if(test< m.kd+m.ks){//specular
+                        double[] dir = direction;
+                        double cos = Algb.dot(dir, hit.normal);
+                        if (cos < 0) {
+                            dir = Algb.dotByScale(-1, dir);
+                            cos *= -1;
+                        }
+                        dir = reflect(dir, hit.normal);
+                        fator = Algb.soma(fator, Algb.dotByScale(m.ks , tracePath(hit.point, dir, RayType.SPECULAR, scene, deep)));
+                
+                        
+                        
                     }
 
                 }
@@ -144,19 +159,33 @@ public class PathTracingRenderer extends RenderAlgorithm {
         // return hit.color;
 
     }
-double[] tracePath(double[] origin, double[] dir, RayType rayType, RenderScene scene, int deep) {
+
+    double[] tracePath(double[] origin, double[] dir, RayType rayType, RenderScene scene, int deep) {
         double[] color = new double[4];
         Hit hit = getNextHit(origin, dir, scene);
         if (hit.isHit()) {
-            if(hit.model.isLight()){
-                color =  hit.color;
-            }else{
+            if (hit.model.isLight() || deep == 0) {
+                color = hit.color;
+            } else {
                 color = phongBase(hit, scene, origin);
-                
-            
-            
+                double[] incident = Algb.dotByScale(-1, dir);
+                double[] reflect = reflect(incident, hit.normal);
+                double[] factor = tracePath(hit.point, reflect, rayType, scene, deep - 1);
+                switch (rayType) {
+                    case DIFUSE:
+                        factor = Algb.dotByScale(hit.model.getMaterial().kd, factor);
+                        break;
+                    case SPECULAR:
+                        factor = Algb.dotByScale(hit.model.getMaterial().ks, factor);
+                        break;
+                }
+                color = Algb.soma(color, factor);
+
             }
-            
+
+        } else {
+            color = Algb.dotByScale(scene.getAmbientColor(), new double[]{1.0, 1.0, 1.0, 1.0});
+            color[3] = 1.0;
         }
 
         //color = new double[] {1.0, 0, 1.0, 1.0};
@@ -210,5 +239,4 @@ double[] tracePath(double[] origin, double[] dir, RayType rayType, RenderScene s
         DIFUSE, SPECULAR, TRANSMITED
     };
 
-    
 }

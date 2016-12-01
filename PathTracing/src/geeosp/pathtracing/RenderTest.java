@@ -32,7 +32,7 @@ public class RenderTest extends Application {
         renderers.add(new PathTracingRenderer());
         //renderers.add(new DistanceRenderer());
         //   renderers.add(new NormalRendererAlgorithm());
-    renderers.add(new LightRenderer());
+        //renderers.add(new LightRenderer());
 
         RenderScene renderScene = RenderScene.load();
         for (int i = 0; i < renderers.size(); i++) {
