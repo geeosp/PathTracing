@@ -58,11 +58,11 @@ public class Algb {
     }
 
     public static double distance(double[] a, double[] b) {
-        double d =  getNorma(sub(a, b));
-        if(d<=0){
-         //   System.err.println(""+ d);
+        double d = getNorma(sub(a, b));
+        if (d <= 0) {
+            //   System.err.println(""+ d);
         }
-        
+
         return d;
 
     }
@@ -235,15 +235,14 @@ public class Algb {
 
     public static double[] randomVector() {
         double[] d = new double[4];
-        Random rand  = new Random();
-        for(int i =0;i<3;i++){
+        Random rand = new Random();
+        for (int i = 0; i < 3; i++) {
             d[i] = rand.nextGaussian();
         }
         return normalize(d);
     }
-    
-    double[] reflect(double[] incident, double[] normal
-    ) {
+
+    public static double[] reflect(double[] incident, double[] normal) {
 
         double x = 2.0 * Algb.dot(incident, normal);
 
@@ -251,6 +250,5 @@ public class Algb {
         return reflect;
 
     }
-
 
 }

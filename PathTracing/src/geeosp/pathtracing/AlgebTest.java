@@ -37,18 +37,10 @@ public class AlgebTest {
         double[] incident = new double[]{1, 0, 0, 0};
         //incident = Algb.normalize(incident);
         System.out.println(Algb.VectorToString(incident));
-        double[] reflected = reflect(incident, Algb.normalize(Algb.soma(e1, e2)));
+        double[] reflected = Algb.reflect(incident, Algb.normalize(Algb.soma(e1, e2)));
         System.out.println(Algb.VectorToString(reflected));
 
     }
 
-    static double[] reflect(double[] incident, double[] normal
-    ) {
-
-        double x = 2.0 * Algb.dot(incident, normal);
-
-        double[] reflect = Algb.sub(Algb.dotByScale(x, normal), incident);
-        return reflect;
-
-    }
+    
 }
