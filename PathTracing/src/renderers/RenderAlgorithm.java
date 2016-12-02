@@ -29,8 +29,8 @@ public abstract class RenderAlgorithm {
             Model a = scene.getModels().get(t);
             Hit temp = a.getNearestIntersectionPoint(origin, direction);
             if (temp.isHit()) {
-                double tempDist = Algb.distance(temp.point, scene.getEye());
-                if (tempDist < Algb.distance(hit.point, scene.getEye())) {
+                double tempDist = Algb.distance(temp.point, origin);
+                if (tempDist < Algb.distance(hit.point, origin)) {
                     hit = temp;
                 }
             }
