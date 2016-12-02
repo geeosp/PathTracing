@@ -1,11 +1,11 @@
 nthreads 8
 # sphere cx cy cx r red green blue ka kd ks kt n
-#sphere 0 0 -32 1 1.0 1.0 1.0 1. 0.7 1 .8 5
+#sphere 0 0 -32 6 1.0 1.0 1.0 1. 0.7 1 .8 5
 
 
 
 eye 0.0 0.0 5.7
-size 200 200
+size 400 400
 ortho -1 -1 1 1
 background 0.0 0.0 0.0
 ambient 0.5
@@ -14,7 +14,7 @@ ambient 0.5
 light luzcornell.obj 1.0 1.0 1.0 1.0
 
 npaths 40
-tonemapping 0
+tonemapping 1
 seed 9
 
 # Aqui comeca a definicao das geometrias

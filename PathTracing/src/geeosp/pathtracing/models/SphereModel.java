@@ -23,36 +23,31 @@ public class SphereModel extends Model {
     public Hit getNearestIntersectionPoint(double[] origin, double[] direction) {
         Hit hit = new Hit();
         direction = Algb.normalize(direction);
-        double a = 1;
         double[] co = Algb.sub(origin, center);
-        double b = 2 * Algb.dot(direction, co);
-        double c = Algb.dot(co, co) - radius * radius;
-        double delta = b * b - 4 * a * c;
-        double t;
-        double[] p = null;
-        if (delta == 0) {
-            t = -.5 * b / a;
-            p = Algb.soma(origin, Algb.dotByScale(t, direction));
-
-        } else if (delta > 0) {
-            double sqrDelta = Math.sqrt(delta);
-            double[] p1, p2;
-            t = (-b + sqrDelta) / (2 * a);
-            p1 = Algb.soma(origin, Algb.dotByScale(t, direction));
-            t = (-b - sqrDelta) / (2 * a);
-            p2 = Algb.soma(origin, Algb.dotByScale(t, direction));
-
-            if (Algb.distance(p1, origin) < Algb.distance(p2, origin)) {
+        double delta = Algb.dot(direction, co)*Algb.dot(direction, co) - Algb.dot(co, co) + radius * radius;
+        if (delta > 0) {
+            double t = -Algb.dot(direction, co);
+            double deltaSqr = Math.sqrt(delta);
+            double t1 = t+deltaSqr;
+            double t2 = t - deltaSqr;
+            double [] p1 = Algb.soma(origin, Algb.dotByScale(t1, direction));
+            double [] p2 = Algb.soma(origin, Algb.dotByScale(t2, direction));
+            double[] p;
+            if(Algb.distance(origin, p1)<Algb.distance(origin, p2)){
                 p = p1;
-            } else {
+            }else{
                 p = p2;
             }
+            
+            
+            
+            hit.normal = Algb.normalize(Algb.sub(p, center));
 
             hit.point = p;
-            hit.normal = Algb.normalize(Algb.sub(p, center));
             hit.color = material.color;
             hit.model = this;
         }
+
         return hit;
 
     }
@@ -81,7 +76,7 @@ public class SphereModel extends Model {
         String s = super.name
                 + "\n center: " + center[0] + " " + center[1] + " " + center[2] + " " + center[3]
                 + "\n radius: " + radius
-           //     + "\n color: " + color[0] + " " + color[1] + " " + color[2] + " " + color[3]
+                //     + "\n color: " + color[0] + " " + color[1] + " " + color[2] + " " + color[3]
                 + "\n coeficients: " + coeficients[0] + " " + coeficients[1] + " " + coeficients[2] + " " + coeficients[3] + " " + coeficients[4] + " ";
         return s; //To change body of generated methods, choose Tools | Templates.
     }

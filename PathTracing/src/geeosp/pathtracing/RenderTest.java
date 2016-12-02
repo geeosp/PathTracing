@@ -30,10 +30,12 @@ public class RenderTest extends Application {
         ArrayList<RenderAlgorithm> renderers = new ArrayList<RenderAlgorithm>();
 
         renderers.add(new PathTracingRenderer());
-        //renderers.add(new DistanceRenderer());
-        //   renderers.add(new NormalRendererAlgorithm());
+       //  renderers.add(new DistanceRenderer());
+       // renderers.add(new NormalRendererAlgorithm());
         //renderers.add(new LightRenderer());
-
+        AlgebTest.test();
+        
+        
         RenderScene renderScene = RenderScene.load();
         for (int i = 0; i < renderers.size(); i++) {
             Stage stage;
@@ -47,11 +49,12 @@ public class RenderTest extends Application {
                 stage = new Stage();
 
             }
+            int size = 450;
             ImageView imageView = new ImageView();
-            imageView.setFitWidth(500);
-            imageView.setFitHeight(500);
+            imageView.setFitWidth(size);
+            imageView.setFitHeight(size);
             Pane pane = new Pane(imageView);
-            Scene scene = new Scene(pane, 500, 500);
+            Scene scene = new Scene(pane, size, size);
             stage.setScene(scene);
             stage.show();
             stage.setResizable(false);

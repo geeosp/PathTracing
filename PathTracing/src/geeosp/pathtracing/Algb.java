@@ -241,5 +241,16 @@ public class Algb {
         }
         return normalize(d);
     }
+    
+    double[] reflect(double[] incident, double[] normal
+    ) {
+
+        double x = 2.0 * Algb.dot(incident, normal);
+
+        double[] reflect = Algb.sub(Algb.dotByScale(x, normal), incident);
+        return reflect;
+
+    }
+
 
 }
