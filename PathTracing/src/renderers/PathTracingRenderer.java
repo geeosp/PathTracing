@@ -12,13 +12,14 @@ import geeosp.pathtracing.models.ObjDifuseModel;
 import geeosp.pathtracing.models.ObjLight;
 import geeosp.pathtracing.models.ObjModel;
 import geeosp.pathtracing.scene.RenderScene;
+
 import java.util.Random;
+
 import javafx.scene.paint.Color;
 import geeosp.pathtracing.Algb;
 import geeosp.pathtracing.models.Material;
 
 /**
- *
  * @author geeo
  */
 public class PathTracingRenderer extends RenderAlgorithm {
@@ -72,16 +73,16 @@ public class PathTracingRenderer extends RenderAlgorithm {
     double[][] rotation(double x, double y) {
 
         double[][] r1 = new double[][]{
-            {1, 0, 0, 0},
-            {0, Math.cos(x), -Math.sin(x), 0},
-            {0, Math.sin(x), Math.cos(x), 0},
-            {0, 0, 0, 1}
+                {1, 0, 0, 0},
+                {0, Math.cos(x), -Math.sin(x), 0},
+                {0, Math.sin(x), Math.cos(x), 0},
+                {0, 0, 0, 1}
         };
         double[][] r2 = new double[][]{
-            {Math.cos(y), 0, Math.sin(y), 0},
-            {0, 1, 0, 0},
-            {-Math.sin(y), 0, Math.cos(y), 0},
-            {0, 0, 0, 1}
+                {Math.cos(y), 0, Math.sin(y), 0},
+                {0, 1, 0, 0},
+                {-Math.sin(y), 0, Math.cos(y), 0},
+                {0, 0, 0, 1}
         };
         return Algb.matrixMatrixProduct(r1, r2);
     }
@@ -97,102 +98,51 @@ public class PathTracingRenderer extends RenderAlgorithm {
         double deltay = (y1 - y0) / scene.getSizeHeight();
         //spacial position of the pixel
         double[] onScreen = new double[]{
-            x0 + (i + 1) * deltax,
-            y0 + (j + 1) * deltay,
-            0,
-            1
+                x0 + (i + 1) * deltax,
+                y0 + (j + 1) * deltay,
+                0,
+                1
         };
         direction = Algb.sub(onScreen, scene.getEye());
         direction = Algb.normalize(direction);
-        hit = getNextHit(scene.getEye(), direction, scene);
+
         double[] color = new double[4];
-        if (hit.isHit()) {
-            for (int p = 0; p < scene.getNpaths(); p++) {
-                double[] fator = new double[4];
-                if (hit.model.isLight()) {
-                    ObjLight lg = (ObjLight) hit.model;
-
-                    fator = lg.getColor();
-                } else {//is a object
-                    Random rand = new Random();
-                    //phong
-                    double[] phong = phongBase(hit, scene, scene.getEye());
-                    fator = Algb.soma(fator, phong);
-
-                    Material m = hit.model.getMaterial();
-                    double ktot = m.kd + m.ks;
-                    double test = rand.nextDouble() * ktot;
-                    int deep = 5;
-                    if (test < m.kd) {
-                        double[] dir = brdf[p];
-                        dir = Algb.randomVector();
-                        double cos = Algb.dot(dir, hit.normal);
-                        if (cos < 0) {
-                            dir = Algb.dotByScale(-1, dir);
-                            cos *= -1;
-                        }
-                        fator = Algb.soma(fator, Algb.dotByScale(m.kd * cos, tracePath(hit.point, dir, RayType.DIFUSE, scene, deep)));
-                    }else if(test< m.kd+m.ks){//specular
-                        double[] dir = direction;
-                        double cos = Algb.dot(dir, hit.normal);
-                        if (cos < 0) {
-                            dir = Algb.dotByScale(-1, dir);
-                            cos *= -1;
-                        }
-                        dir = reflect(dir, hit.normal);
-                        fator = Algb.soma(fator, Algb.dotByScale(m.ks , tracePath(hit.point, dir, RayType.SPECULAR, scene, deep)));
-                
-                        
-                        
-                    }
-
-                }
-
-                color = Algb.soma(color, fator);
-            }
-            color = Algb.dotByScale(1.0 / scene.getNpaths(), color);
-        } else {
-            color = scene.getBackgroundColor();
+        int deep = 3;
+        for (int r = 0; r < scene.getNpaths(); r++) {
+            color = Algb.soma(color, tracePath(scene.getEye(), direction, scene, deep));
         }
-        color = toneMap(color, scene.getTonemapping());
+
+
         return color;
-        // return hit.color;
+
 
     }
 
-    double[] tracePath(double[] origin, double[] dir, RayType rayType, RenderScene scene, int deep) {
-        double[] color = new double[4];
+    double[] tracePath(double[] origin, double[] dir, RenderScene scene, int deep) {
+        double[] color = new double[]{0, 1, 0, 1};
         Hit hit = getNextHit(origin, dir, scene);
-        if (hit.isHit()) {
-            if (hit.model.isLight() || deep == 0) {
-                color = hit.color;
-            } else {
+        if(hit.isHit()){
+            if(hit.model.isLight()){
+                return hit.model.getColor();
+            }else{
                 color = phongBase(hit, scene, origin);
-                double[] incident = Algb.dotByScale(-1, dir);
-                double[] reflect = reflect(incident, hit.normal);
-                double[] factor = tracePath(hit.point, reflect, rayType, scene, deep - 1);
-                switch (rayType) {
-                    case DIFUSE:
-                        factor = Algb.dotByScale(hit.model.getMaterial().kd, factor);
-                        break;
-                    case SPECULAR:
-                        factor = Algb.dotByScale(hit.model.getMaterial().ks, factor);
-                        break;
-                }
-                color = Algb.soma(color, factor);
-
             }
 
-        } else {
-            color = Algb.dotByScale(scene.getAmbientColor(), new double[]{1.0, 1.0, 1.0, 1.0});
-            color[3] = 1.0;
+
+
+
+
+        }else{
+            return scene.getBackgroundColor();
         }
 
-        //color = new double[] {1.0, 0, 1.0, 1.0};
+
+
+
         return color;
     }
 
-    double[] phongBase(Hit hit, RenderScene scene, double[] eye) {
+    double[] phongBase(Hit hit, RenderScene scene, double[] origin) {
         double[] color = new double[4];
         Model obj = hit.model;
         double[] ambient = Algb.dotByScale(scene.getAmbientColor() * obj.getMaterial().ka, obj.getColor());
@@ -202,21 +152,22 @@ public class PathTracingRenderer extends RenderAlgorithm {
         for (int l = 0; l < scene.getLights().size(); l++) {
             ObjLight lg = (ObjLight) scene.getLights().get(l);
             double[] lgPt = lg.getOnePoint();
-            int liMax = 1;
+            int liMax = 8;//number of trys per light
             double inveLiMax = 1.0 / liMax;
             for (int li = 0; li < liMax; li++) {
                 if (canSee(lg, lgPt, hit.model, hit.point, scene)) {
                     double[] lgDir = Algb.normalize(Algb.sub(lgPt, hit.point));
-                    double cos = cos = Math.max(0, Algb.dot(lgDir, hit.normal));
+                    double cosLN  = Math.max(0, Algb.dot(lgDir, hit.normal));
                     double dist = Algb.getNorma(Algb.sub(lgPt, hit.point));
                     double f = inveLiMax;/// dist;///(dist*dist);
-                    diffuse = Algb.soma(diffuse, Algb.dotByScale(cos * f * obj.getMaterial().kd, Algb.crossdot(lg.getColor(), hit.model.getColor())));
-                    //speccular
-                    //     double[] reflected = reflect(lgDir, hit.normal);
-                    //   double[] toEye = Algb.normalize(Algb.sub(eye, hit.point));
-                    //  cos = Math.max(0, Algb.dot(toEye, reflected));
-                    // specular = Algb.soma(specular, Algb.dotByScale(Math.pow(cos, hit.model.getMaterial().n) * f * obj.getMaterial().ks, lg.getColor()));
+                    diffuse = Algb.soma(diffuse,
+                            Algb.dotByScale(cosLN * f * obj.getMaterial().kd,
+                                    Algb.crossdot(lg.getColor(), hit.model.getColor())));
+
+
+
                 }
+
             }
         }
         color = Algb.soma(color, ambient);
@@ -237,6 +188,7 @@ public class PathTracingRenderer extends RenderAlgorithm {
 
     enum RayType {
         DIFUSE, SPECULAR, TRANSMITED
-    };
+    }
+
 
 }

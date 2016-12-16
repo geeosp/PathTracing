@@ -7,6 +7,7 @@ package geeosp.pathtracing;
 
 import renderers.RenderAlgorithm;
 import geeosp.pathtracing.scene.RenderScene;
+
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
@@ -14,6 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Scene;
@@ -23,10 +25,10 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+
 import javax.imageio.ImageIO;
 
 /**
- *
  * @author Geovane
  */
 public class Renderer {
@@ -105,9 +107,10 @@ public class Renderer {
     public double[] toneMapp(double[] color, double tm) {
         double[] c = new double[color.length];
         for (int i = 0; i < 3; i++) {
-            color[i] = color[i] / (color[i] + tm);
+            c[i] = color[i] / (color[i] + tm);
         }
-        return color;
+        c[3] = 1;
+        return c;
     }
 
     public void renderAfterFinish() {
@@ -143,14 +146,14 @@ public class Renderer {
                 }
                 for (int x = 0; x < rawPixels.length; x++) {
                     for (int y = 0; y < rawPixels[0].length; y++) {
-                        for (int i = 0; i < 4; i++) {
-                            if (rawPixels[x][y][i] > max) {
-                                rawPixels[x][y][i] = rawPixels[x][y][i] / max;
-                            }
+                        for (int i = 0; i < 3; i++) {
+
+                            rawPixels[x][y][i] = rawPixels[x][y][i] / max;
                         }
+rawPixels[x][y][3] = 1.0;
                     }
                 }
-
+                System.out.print(max);
                 for (int x = 0; x < rawPixels.length; x++) {
                     for (int y = 0; y < rawPixels[0].length; y++) {
                         writableImage.getPixelWriter().setColor(x, rawPixels[0].length - y - 1, new Color(rawPixels[x][y][0], rawPixels[x][y][1], rawPixels[x][y][2], rawPixels[x][y][3]));

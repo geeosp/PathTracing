@@ -6,7 +6,6 @@
 package geeosp.pathtracing;
 
 import renderers.RenderAlgorithm;
-import renderers.PathTracingAlgorithm;
 import geeosp.pathtracing.scene.RenderScene;
 import java.io.IOException;
 import java.util.ArrayList;
