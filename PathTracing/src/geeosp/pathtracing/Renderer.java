@@ -103,11 +103,11 @@ public class Renderer {
     }
 
     public double[] toneMapp(double[] color, double tm) {
-       double[] c = new double[color.length];
+        double[] c = new double[color.length];
         for (int i = 0; i < 3; i++) {
-            c[i] = color[i] / (color[i] + tm);
+            color[i] = color[i] / (color[i] + tm);
         }
-        return c;
+        return color;
     }
 
     public void renderAfterFinish() {
@@ -153,7 +153,7 @@ public class Renderer {
 
                 for (int x = 0; x < rawPixels.length; x++) {
                     for (int y = 0; y < rawPixels[0].length; y++) {
-                     writableImage.getPixelWriter().setColor(x, rawPixels[0].length - y - 1, new Color(rawPixels[x][y][0], rawPixels[x][y][1], rawPixels[x][y][2], rawPixels[x][y][3]));
+                        writableImage.getPixelWriter().setColor(x, rawPixels[0].length - y - 1, new Color(rawPixels[x][y][0], rawPixels[x][y][1], rawPixels[x][y][2], rawPixels[x][y][3]));
 
                     }
                 }
@@ -269,14 +269,15 @@ public class Renderer {
 
         synchronized void savePixelConcurrent(int x, int y, double[] color, boolean update) {
             //System.err.println(Algeb.VectorToString(color));
-            rawPixels[x][y] = color;
-            mappedPixels[x][y] = toneMapp(color, scene.getTonemapping());
+            rawPixels[x][y] = new double[]{color[0], color[1], color[2], color[3]};
+            double[] c = toneMapp(color, scene.getTonemapping());
+            mappedPixels[x][y] = c;
 
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
                     renderBundle.writeImage.getPixelWriter().setColor(x, mappedPixels[0].length - y - 1, new Color(mappedPixels[x][y][0], mappedPixels[x][y][1], mappedPixels[x][y][2], mappedPixels[x][y][3]));
-                         }
+                }
             });
             if (update) {
 
