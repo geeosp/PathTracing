@@ -133,9 +133,9 @@ i--;
                         double random = rand.nextDouble() * (ktot - ks);
                         double[] fator = new double[4];
                         if (random < ka) {
-                            fator = Algb.dotByScale(ka * scene.getAmbientColor() / brdf.length, hit.color);
+                            fator = Algb.dotByScale(ka * scene.getAmbientColor(), hit.color);
                         } else if (random < ka + kd) {
-                            fator = Algb.dotByScale(kd / brdf.length, runAlgorithm(hit.point, test, RayType.DIFUSE, scene, 5));
+                            fator = Algb.dotByScale(kd , runAlgorithm(hit.point, test, RayType.DIFUSE, scene, 5));
                         } else if (random < ka + kd + ks) {
                             //    fator = Algeb.dotByScale(kd/ brdf.length, runAlgorithm(hit.point, test, RayType.SPECULAR, scene, 5));
 

@@ -5,7 +5,7 @@ sphere 2 2 -28 3 0.0 0.0 0.0 0. 0.0 1 .0 5
 
 
 eye 0.0 0.0 5.7
-size 400 400
+size 100 100
 ortho -1 -1 1 1
 background 0.0 0.0 0.0
 ambient 0.5
@@ -13,8 +13,8 @@ ambient 0.5
 # Luz branca retangulo no centro do teto
 light luzcornell.obj 1.0 1.0 1.0 1.0
 
-npaths 32
-tonemapping .4
+npaths 100
+tonemapping 1
 seed 9
 
 # Aqui comeca a definicao das geometrias
