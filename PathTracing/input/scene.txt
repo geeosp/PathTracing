@@ -5,7 +5,7 @@ nthreads 8
 
 
 eye 0.0 0.0 5.7
-size 400 400
+size 350 350
 ortho -1 -1 1 1
 background 0.0 0.0 0.0
 ambient 0.5
@@ -13,8 +13,8 @@ ambient 0.5
 # Luz branca retangulo no centro do teto
 light luzcornell.obj 1.0 1.0 1.0 1.0
 
-npaths 40
-tonemapping 1
+npaths 32
+tonemapping 2
 seed 9
 
 # Aqui comeca a definicao das geometrias
@@ -33,7 +33,7 @@ object leftwall.obj 1.0 0.0 0.0 0.3 0.7 0 0 5
 object rightwall.obj 0.0 1.0 0.0 0.3 0.7 0 0 5
 
 # floor WHITE
-object floor.obj 1.0 1.0 1.0 0.3 0.7 0 0 5
+object floor.obj 1.0 1.0 1.0 0.3 0.7 1 0 5
 
 # back wall WHITE
 object back.obj 1.0 1.0 1.0 0.3 0.7 0 0 5

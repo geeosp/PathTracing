@@ -114,7 +114,26 @@ public class Renderer {
     }
 
     public void renderAfterFinish() {
+        double max = 0.00001;
+        for (int x = 0; x < rawPixels.length; x++) {
+            for (int y = 0; y < rawPixels[0].length; y++) {
+                for (int i = 0; i < 4; i++) {
+                    if (rawPixels[x][y][i] > max) {
+                        max = rawPixels[x][y][i];
+                    }
+                }
+            }
+        }
+        for (int x = 0; x < rawPixels.length; x++) {
+            for (int y = 0; y < rawPixels[0].length; y++) {
+                for (int i = 0; i < 3; i++) {
 
+                    rawPixels[x][y][i] = rawPixels[x][y][i] / max;
+                }
+                rawPixels[x][y][3] = 1.0;
+            }
+        }
+        System.out.print(max);
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
@@ -134,26 +153,7 @@ public class Renderer {
                 stage.show();
                 stage.setResizable(false);
                 WritableImage writableImage = new WritableImage(rawPixels.length, rawPixels[0].length);
-                double max = 0.00001;
-                for (int x = 0; x < rawPixels.length; x++) {
-                    for (int y = 0; y < rawPixels[0].length; y++) {
-                        for (int i = 0; i < 4; i++) {
-                            if (rawPixels[x][y][i] > max) {
-                                max = rawPixels[x][y][i];
-                            }
-                        }
-                    }
-                }
-                for (int x = 0; x < rawPixels.length; x++) {
-                    for (int y = 0; y < rawPixels[0].length; y++) {
-                        for (int i = 0; i < 3; i++) {
 
-                            rawPixels[x][y][i] = rawPixels[x][y][i] / max;
-                        }
-rawPixels[x][y][3] = 1.0;
-                    }
-                }
-                System.out.print(max);
                 for (int x = 0; x < rawPixels.length; x++) {
                     for (int y = 0; y < rawPixels[0].length; y++) {
                         writableImage.getPixelWriter().setColor(x, rawPixels[0].length - y - 1, new Color(rawPixels[x][y][0], rawPixels[x][y][1], rawPixels[x][y][2], rawPixels[x][y][3]));
@@ -161,16 +161,20 @@ rawPixels[x][y][3] = 1.0;
                     }
                 }
                 imageView.setImage(writableImage);
-
+                try {
+                    saveFile(writableImage, "normalized");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
 
         });
     }
 
-    public static void saveFile(int width, int height, WritableImage wImage) throws IOException {
+    public static void saveFile(WritableImage wImage, String prefix) throws IOException {
         File dir = new File("out");
         dir.mkdir();
-        String name = "out/_" + System.currentTimeMillis();//
+        String name = "out/"+prefix+ " "+System.currentTimeMillis();//
 
         File file = new File(name + ".png");
         if (file != null) {
@@ -204,22 +208,18 @@ rawPixels[x][y][3] = 1.0;
                     if (iv != null) {
                         WritableImage wi = renderBundle.writeImage;
                         if (wi != null) {
-                            //  if (System.currentTimeMillis() - lastimeupdated > 500) {
 
                             try {
                                 iv.setImage(wi);
                             } catch (Exception e) {
                                 System.out.println("erro");
                             }
-                            //   }
+
                         }
                     }
 
                     currentProgress = getProgress();
                 }
-                //  } catch (InterruptedException ex) {
-                //      Logger.getLogger(Renderer.class.getName()).log(Level.SEVERE, null, ex);
-                //  }
             }
         }
 
@@ -260,7 +260,7 @@ rawPixels[x][y][3] = 1.0;
                 time = System.currentTimeMillis() - time;
                 try {
                     renderAfterFinish();
-                    saveFile(scene.getSizeWidth(), scene.getSizeHeight(), this.renderBundle.writeImage);
+                    saveFile(this.renderBundle.writeImage, "TonemmapedBy" + scene.getTonemapping());
                 } catch (IOException ex) {
                     Logger.getLogger(Renderer.class.getName()).log(Level.SEVERE, null, ex);
                 }
