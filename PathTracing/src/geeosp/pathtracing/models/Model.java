@@ -21,8 +21,14 @@ public abstract class Model {
         OBJECT
     }
 
-    public abstract double[] getColor();
+    public enum Decoy{
 
+        NONE,
+        LINEAR,
+        QUADRATIC
+    }
+    public abstract double[] getColor();
+    public abstract double[] getColor(double[] origin, double[] point, Decoy decoy);
     protected Type type;
 
     public abstract Hit getNearestIntersectionPoint(double[] origin, double[] direction);

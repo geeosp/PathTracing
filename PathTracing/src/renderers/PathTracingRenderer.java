@@ -29,7 +29,7 @@ public class PathTracingRenderer extends RenderAlgorithm {
     double[][] brdf;
     final Random rand = new Random();
     boolean debug = true;
-
+    Model.Decoy decoy = Model.Decoy.QUADRATIC;
     public PathTracingRenderer() {
     }
 
@@ -95,7 +95,7 @@ public class PathTracingRenderer extends RenderAlgorithm {
         double[] origin = scene.getEye();
 
         {
-          //  System.out.print("oi");
+            //  System.out.print("oi");
             double[] direction = new double[4];
             double x0 = scene.getOrtho()[0][0];
             double x1 = scene.getOrtho()[1][0];
@@ -130,7 +130,7 @@ public class PathTracingRenderer extends RenderAlgorithm {
         if (deep != 0) {
             Hit hit = getNextHit(origin, dir, scene);
             if (hit.isHit()) {
-              //  System.out.println(hit.model.getName());
+                //  System.out.println(hit.model.getName());
                 if (hit.model.isLight()) {
                     color = Algb.dotByScale(2, hit.model.getColor());
                 } else {
@@ -166,18 +166,20 @@ public class PathTracingRenderer extends RenderAlgorithm {
                         //nextDir=hit.normal;
                         //from hitPoint
 
-                            color = Algb.soma(color,
-                                    Algb.dotByScale(m.ks,
-                                            tracePath(hit.point, nextDir, scene, deep - 1)));
+                        color = Algb.soma(color,
+                                Algb.dotByScale(m.ks,
+                                        tracePath(hit.point, nextDir, scene, deep - 1)));
                     }
 
 
                 }
+               
             } else {
                 if (deep != maxDeep)
                     color = new double[]{scene.getAmbientColor(), scene.getAmbientColor(), scene.getAmbientColor(), 1};
                 else
                     color = scene.getBackgroundColor();
+
             }
         }
         return color;
@@ -204,7 +206,7 @@ public class PathTracingRenderer extends RenderAlgorithm {
                     if (cosLN > 0) {
                         diffuse = Algb.soma(diffuse,
                                 Algb.dotByScale(cosLN * f * obj.getMaterial().kd,
-                                        Algb.crossdot(lg.getColor(), hit.model.getColor())));
+                                        Algb.crossdot(lg.getColor(lgPt, hit.point, decoy), hit.model.getColor())));
                     }
                     //from hitPoint
                     double[] fromOrigin = Algb.normalize(Algb.sub(hit.point, origin));
@@ -212,7 +214,7 @@ public class PathTracingRenderer extends RenderAlgorithm {
                     double cosRO = Math.max(0, Algb.dot(fromOrigin, reflected));
                     if (cosRO > 0) {
                         specular = Algb.soma(specular,
-                                Algb.dotByScale(Math.pow(cosRO, hit.model.getMaterial().n) * f * obj.getMaterial().ks, lg.getColor()));
+                                Algb.dotByScale(Math.pow(cosRO, hit.model.getMaterial().n) * f * obj.getMaterial().ks, lg.getColor(lgPt, hit.point, decoy)));
                     }
                 }
             }

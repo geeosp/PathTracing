@@ -67,4 +67,24 @@ public class ObjLight extends ObjModel {
         return this.material;
     }
 
+
+    @Override
+    public double[] getColor(double[] origin, double[] point, Decoy decoy) {
+        double[] ret = color;
+
+        double dist = Algb.distance(origin, point);
+        double scale = 1;
+        switch (decoy){
+            case LINEAR:
+                scale*= 1.0/dist;
+                break;
+            case QUADRATIC:
+                scale*=1.0/(dist*dist);
+                break;
+        }
+
+        ret =Algb.dotByScale(scale, ret);
+        ret[3]=1;
+        return ret;
+    }
 }
