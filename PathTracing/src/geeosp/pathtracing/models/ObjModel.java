@@ -21,7 +21,8 @@ public abstract class ObjModel extends Model {
     protected double[][] normalsVertices;
     protected double[][] normalsTriangle;
 
-    private final double zero = 0.000001;
+    private final double zeroCos = 0.00000000000001;
+    private final double zeroDist = 0.0000000000001;
 
     public ObjModel(String objectName, Model.Type type) {
         super(objectName, new double[3], new double[3], new double[]{1, 1, 1}, type);
@@ -124,10 +125,10 @@ public abstract class ObjModel extends Model {
             e2 = Algb.sub(p3, p1);
             n = Algb.cross(e1, e2);
             n = Algb.normalize(n);
-            if (Algb.dot(n, n) - Algb.dot(n, direction) > zero) {
+            if (Algb.dot(n, n) - Algb.dot(n, direction) > zeroCos) {
                 double[] p1p0 = Algb.sub(origin, p1);
                 double s = -Algb.dot(n, p1p0) / Algb.dot(n, direction);
-                if (s > 0) {
+                if (s > zeroDist) {
                     p = Algb.soma(origin, Algb.dotByScale(s, direction));
 
                     boolean ok = true;
@@ -139,10 +140,11 @@ public abstract class ObjModel extends Model {
                         }
                     }
                     if (ok) {
-                        if (Algb.distance(p, origin) < minDist) {
+                        double distance = Algb.distance(p, origin);
+                        if (distance < minDist) {
                             hit.point = p;
                             hit.color = getColor();
-                            minDist = Algb.distance(p, origin);
+                            minDist = distance;
 
                             hit.normal = n;
                             if (Algb.dot(hit.normal, Algb.sub(origin, hit.point)) < 0) {

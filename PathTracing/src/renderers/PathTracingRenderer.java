@@ -25,9 +25,10 @@ import geeosp.pathtracing.models.Material;
 public class PathTracingRenderer extends RenderAlgorithm {
 
     final double PI = Math.PI;
-    final int maxDeep = 3;
+    final int maxDeep = 5;
     double[][] brdf;
     final Random rand = new Random();
+    boolean debug = true;
 
     public PathTracingRenderer() {
     }
@@ -90,32 +91,35 @@ public class PathTracingRenderer extends RenderAlgorithm {
     }
 
     public double[] calulatePixel(int i, int j, RenderScene scene) {
-        Hit hit = new Hit();
-        double[] direction = new double[4];
-        double x0 = scene.getOrtho()[0][0];
-        double x1 = scene.getOrtho()[1][0];
-        double y0 = scene.getOrtho()[0][0];
-        double y1 = scene.getOrtho()[1][0];
-        double deltax = (x1 - x0) / scene.getSizeWidth();
-        double deltay = (y1 - y0) / scene.getSizeHeight();
-        //spacial position of the pixel
-        double[] onScreen = new double[]{
-                x0 + (i + 1) * deltax,
-                y0 + (j + 1) * deltay,
-                0,
-                1
-        };
         double[] color = new double[4];
+        double[] origin = scene.getEye();
 
-        double antialiasing = .3;
+        {
+          //  System.out.print("oi");
+            double[] direction = new double[4];
+            double x0 = scene.getOrtho()[0][0];
+            double x1 = scene.getOrtho()[1][0];
+            double y0 = scene.getOrtho()[0][0];
+            double y1 = scene.getOrtho()[1][0];
+            double deltax = (x1 - x0) / scene.getSizeWidth();
+            double deltay = (y1 - y0) / scene.getSizeHeight();
+            //spacial position of the pixel
+            double[] onScreen = new double[]{
+                    x0 + (i + 1) * deltax,
+                    y0 + (j + 1) * deltay,
+                    0,
+                    1
+            };
 
-        for (int r = 0; r < scene.getNpaths(); r++) {
-            direction = Algb.sub(Algb.soma(onScreen, new double[]{rand.nextGaussian() * deltax * antialiasing, deltay * rand.nextGaussian() * antialiasing, 0, 0}), scene.getEye());
-            direction = Algb.normalize(direction);
-            color = Algb.soma(color, tracePath(scene.getEye(), direction, scene, maxDeep));
+            double antialiasing = .3;
+
+            for (int r = 0; r < scene.getNpaths(); r++) {
+                direction = Algb.sub(Algb.soma(onScreen, new double[]{rand.nextGaussian() * deltax * antialiasing, deltay * rand.nextGaussian() * antialiasing, 0, 0}), origin);
+                direction = Algb.normalize(direction);
+                color = Algb.soma(color, tracePath(origin, direction, scene, maxDeep));
+            }
+
         }
-
-
         return color;
 
 
@@ -126,6 +130,7 @@ public class PathTracingRenderer extends RenderAlgorithm {
         if (deep != 0) {
             Hit hit = getNextHit(origin, dir, scene);
             if (hit.isHit()) {
+              //  System.out.println(hit.model.getName());
                 if (hit.model.isLight()) {
                     color = Algb.dotByScale(2, hit.model.getColor());
                 } else {
@@ -146,6 +151,7 @@ public class PathTracingRenderer extends RenderAlgorithm {
                             cosLN = -1 * cosLN;
                         }
                         //nextDir=hit.normal;//test
+
                         color = Algb.soma(color,
                                 Algb.dotByScale(m.kd * cosLN,
                                         Algb.crossdot(hit.color,
@@ -155,13 +161,14 @@ public class PathTracingRenderer extends RenderAlgorithm {
                         );
 
                     } else if (test < m.kd + m.ks) {
-                        double[] toOrigin = Algb.normalize(Algb.sub(origin, hit.point));
-                        double[] nextDir = Algb.reflect(toOrigin, hit.normal);
+                        double[] fromOrigin = Algb.normalize(Algb.sub(hit.point, origin));
+                        double[] nextDir = Algb.reflect(fromOrigin, hit.normal);
                         //nextDir=hit.normal;
                         //from hitPoint
-                        color = Algb.soma(color,
-                                Algb.dotByScale(m.ks,
-                                        tracePath(hit.point, nextDir, scene, deep - 1)));
+
+                            color = Algb.soma(color,
+                                    Algb.dotByScale(m.ks,
+                                            tracePath(hit.point, nextDir, scene, deep - 1)));
                     }
 
 
@@ -201,7 +208,7 @@ public class PathTracingRenderer extends RenderAlgorithm {
                     }
                     //from hitPoint
                     double[] fromOrigin = Algb.normalize(Algb.sub(hit.point, origin));
-                    double[] reflected = Algb.reflect(lgDir, hit.normal);
+                    double[] reflected = Algb.reflect(lgDir, hit.normal);//TODO
                     double cosRO = Math.max(0, Algb.dot(fromOrigin, reflected));
                     if (cosRO > 0) {
                         specular = Algb.soma(specular,
