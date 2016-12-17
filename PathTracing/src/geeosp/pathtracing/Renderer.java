@@ -128,7 +128,7 @@ public class Renderer {
             for (int y = 0; y < rawPixels[0].length; y++) {
                 for (int i = 0; i < 3; i++) {
 
-                    rawPixels[x][y][i] = rawPixels[x][y][i] / max;
+                    rawPixels[x][y][i] = rawPixels[x][y][i] / (max+scene.getTonemapping());
                 }
                 rawPixels[x][y][3] = 1.0;
             }
@@ -272,6 +272,7 @@ public class Renderer {
 
         synchronized void savePixelConcurrent(int x, int y, double[] color, boolean update) {
             //System.err.println(Algeb.VectorToString(color));
+            color = Algb.dotByScale(1.0/scene.getNpaths(), color);
             rawPixels[x][y] = new double[]{color[0], color[1], color[2], color[3]};
             double[] c = toneMapp(color, scene.getTonemapping());
             mappedPixels[x][y] = c;

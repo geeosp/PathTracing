@@ -242,11 +242,11 @@ public class Algb {
         return normalize(d);
     }
 
-    public static double[] reflect(double[] incident, double[] normal) {
+    public static double[] reflect(double[] incident, double[] normal) {//incident comes to 
 
         double x = 2.0 * Algb.dot(incident, normal);
 
-        double[] reflect = Algb.sub(Algb.dotByScale(x, normal), incident);
+        double[] reflect = Algb.sub(incident, Algb.dotByScale(x, normal));
         return reflect;
 
     }
