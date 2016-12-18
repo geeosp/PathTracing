@@ -250,5 +250,27 @@ public class Algb {
         return reflect;
 
     }
+    public static double[] refract (double[] incident, double[] normal, double n1, double n2){
+        double [] refract = null;
+        double[] proj = projection(incident, normal);
+        double[] k = sub(incident, proj);
+        double s1 = getNorma(k);
+        double s2 = s1*n1/n2;
+        if(s2<= 1){
+            double c2 = Math.sqrt( 1- s2*s2);
+            refract = new double[4];
+            refract = soma(refract, dotByScale(s2/s1,k));
+            refract = soma(refract, dotByScale(c2, normalize(proj)));
+        }else{
+            //refract = reflect(incident, normal);
+        }
+
+
+
+
+        return refract;
+    }
+
+
 
 }

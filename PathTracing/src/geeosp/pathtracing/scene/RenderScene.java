@@ -32,7 +32,7 @@ public class RenderScene {
     private int[] size;
     private int nthreads;
     private int rayDepth;
-
+    private  double baseN;
     public RenderScene() {
         models = new ArrayList<>();
         lights = new ArrayList<>();
@@ -244,7 +244,9 @@ public class RenderScene {
                     scene.models.add(new ObjDifuseModel(objectName, objectMaterial));
 
                     break;
-
+                case "basen":
+                    scene.baseN = arq.readDouble();
+                    break;
                 case "light":
                     objectName = arq.readString();
                     objectMaterial = new double[]{
@@ -279,4 +281,7 @@ public class RenderScene {
         return scene;
     }
 
+    public double getBaseN() {
+        return baseN;
+    }
 }
