@@ -8,7 +8,6 @@ package geeosp.pathtracing.models;
 import geeosp.pathtracing.Algb;
 
 /**
- *
  * @author geeo
  */
 public class SphereModel extends Model {
@@ -24,28 +23,39 @@ public class SphereModel extends Model {
         Hit hit = new Hit();
         direction = Algb.normalize(direction);
         double[] co = Algb.sub(origin, center);
-        double delta = Algb.dot(direction, co)*Algb.dot(direction, co) - Algb.dot(co, co) + radius * radius;
+        double delta = Algb.dot(direction, co) * Algb.dot(direction, co) - Algb.dot(co, co) + radius * radius;
         if (delta > 0) {
             double t = -Algb.dot(direction, co);
             double deltaSqr = Math.sqrt(delta);
-            double t1 = t+deltaSqr;
-            double t2 = t - deltaSqr;
-            double [] p1 = Algb.soma(origin, Algb.dotByScale(t1, direction));
-            double [] p2 = Algb.soma(origin, Algb.dotByScale(t2, direction));
+            double t1 = Math.max(0, t + deltaSqr);
+            double t2 = Math.max(0, t - deltaSqr);
+            double[] p1 = Algb.soma(origin, Algb.dotByScale(t1, direction));
+            double[] p2 = Algb.soma(origin, Algb.dotByScale(t2, direction));
             double[] p;
-            if(Algb.distance(origin, p1)<Algb.distance(origin, p2)){
-                p = p1;
-            }else{
-                p = p2;
-            }
-            
-            
-            
-            hit.normal = Algb.normalize(Algb.sub(p, center));
 
-            hit.point = p;
-            hit.color = material.color;
-            hit.model = this;
+            boolean ok = false;
+
+            if (t1 > t2) {//ordena
+                double aux = t2;
+                t2 = t1;
+                t1 = aux;
+            }
+            t = 0;
+            if (t1 > zeroDist) {
+                t = t1;
+            } else if (t2 > zeroDist) {
+                t = t2;
+            }
+            if (t > zeroDist) {
+                p = Algb.soma(origin, Algb.dotByScale(t, direction));
+                hit.normal = Algb.normalize(Algb.sub(p, center));
+                hit.point = p;
+                hit.color = material.color;
+                hit.model = this;
+
+            }
+
+
         }
 
         return hit;
@@ -59,10 +69,10 @@ public class SphereModel extends Model {
         this.radius = radius;
 
         this.material = new Material(new double[]{
-            objectMaterial[0],
-            objectMaterial[1],
-            objectMaterial[2],
-            1.0},
+                objectMaterial[0],
+                objectMaterial[1],
+                objectMaterial[2],
+                1.0},
                 objectMaterial[3],
                 objectMaterial[4],
                 objectMaterial[5],
@@ -98,16 +108,16 @@ public class SphereModel extends Model {
 
         double dist = Algb.distance(origin, point);
         double scale = 1;
-        switch (decoy){
+        switch (decoy) {
             case LINEAR:
-                scale*= 1.0/dist;
+                scale *= 1.0 / dist;
                 break;
             case QUADRATIC:
-                scale*=1.0/(dist*dist);
+                scale *= 1.0 / (dist * dist);
         }
 
-        ret =Algb.dotByScale(scale, ret);
-        ret[3]=1;
+        ret = Algb.dotByScale(scale, ret);
+        ret[3] = 1;
         return ret;
     }
 }

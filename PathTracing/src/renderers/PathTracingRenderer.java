@@ -25,11 +25,14 @@ import geeosp.pathtracing.models.Material;
 public class PathTracingRenderer extends RenderAlgorithm {
 
     final double PI = Math.PI;
-    final int maxDeep = 5;
+
     double[][] brdf;
     final Random rand = new Random();
-    boolean debug = true;
-    Model.Decoy decoy = Model.Decoy.QUADRATIC;
+
+    Model.Decoy decoy = Model.Decoy.NONE;
+
+
+
     public PathTracingRenderer() {
     }
 
@@ -116,7 +119,7 @@ public class PathTracingRenderer extends RenderAlgorithm {
             for (int r = 0; r < scene.getNpaths(); r++) {
                 direction = Algb.sub(Algb.soma(onScreen, new double[]{rand.nextGaussian() * deltax * antialiasing, deltay * rand.nextGaussian() * antialiasing, 0, 0}), origin);
                 direction = Algb.normalize(direction);
-                color = Algb.soma(color, tracePath(origin, direction, scene, maxDeep));
+                color = Algb.soma(color, tracePath(origin, direction, scene, scene.getRayDepth()));
             }
 
         }
@@ -174,12 +177,6 @@ public class PathTracingRenderer extends RenderAlgorithm {
 
                 }
                
-            } else {
-                if (deep != maxDeep)
-                    color = new double[]{scene.getAmbientColor(), scene.getAmbientColor(), scene.getAmbientColor(), 1};
-                else
-                    color = scene.getBackgroundColor();
-
             }
         }
         return color;
@@ -197,6 +194,7 @@ public class PathTracingRenderer extends RenderAlgorithm {
             double[] lgPt = lg.getOnePoint();
             int liMax = 3;//number of trys per light
             double inveLiMax = 1.0 / liMax;
+            int timesNotSeen = 0;
             for (int li = 0; li < liMax; li++) {
                 if (canSee(lg, lgPt, hit.model, hit.point, scene)) {
                     double[] lgDir = Algb.normalize(Algb.sub(lgPt, hit.point));
@@ -215,6 +213,11 @@ public class PathTracingRenderer extends RenderAlgorithm {
                     if (cosRO > 0) {
                         specular = Algb.soma(specular,
                                 Algb.dotByScale(Math.pow(cosRO, hit.model.getMaterial().n) * f * obj.getMaterial().ks, lg.getColor(lgPt, hit.point, decoy)));
+                    }
+                }else{//lightCantSee
+                    if(timesNotSeen<liMax){
+                        li--;
+                        timesNotSeen++;
                     }
                 }
             }

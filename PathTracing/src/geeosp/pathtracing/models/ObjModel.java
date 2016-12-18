@@ -21,8 +21,7 @@ public abstract class ObjModel extends Model {
     protected double[][] normalsVertices;
     protected double[][] normalsTriangle;
 
-    private final double zeroCos = 0.00000000000001;
-    private final double zeroDist = 0.0000000000001;
+
 
     public ObjModel(String objectName, Model.Type type) {
         super(objectName, new double[3], new double[3], new double[]{1, 1, 1}, type);

@@ -117,7 +117,7 @@ public class Renderer {
         double max = 0.00001;
         for (int x = 0; x < rawPixels.length; x++) {
             for (int y = 0; y < rawPixels[0].length; y++) {
-                for (int i = 0; i < 4; i++) {
+                for (int i = 0; i < 3; i++) {
                     if (rawPixels[x][y][i] > max) {
                         max = rawPixels[x][y][i];
                     }
@@ -128,7 +128,7 @@ public class Renderer {
             for (int y = 0; y < rawPixels[0].length; y++) {
                 for (int i = 0; i < 3; i++) {
 
-                    rawPixels[x][y][i] = rawPixels[x][y][i] / (max+scene.getTonemapping());
+                    rawPixels[x][y][i] = Math.min(1, rawPixels[x][y][i]*8/(max));
                 }
                 rawPixels[x][y][3] = 1.0;
             }

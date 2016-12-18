@@ -255,7 +255,10 @@ public class RenderScene {
                     scene.models.add(light);
                     scene.lights.add(light);
                     break;
+                case "config":
+                    scene.rayDepth = arq.readInt();
 
+                    break;
                 /*
                 case "objectquadric":
 

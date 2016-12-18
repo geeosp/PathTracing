@@ -10,7 +10,8 @@ package geeosp.pathtracing.models;
  * @author geeo
  */
 public abstract class Model {
-
+    protected final double zeroCos = 0.00000000000001;
+    protected final double zeroDist = 0.0000000000001;
     protected double[] position;
     protected double[] rotation;
     protected double[] scale;
@@ -27,6 +28,7 @@ public abstract class Model {
         LINEAR,
         QUADRATIC
     }
+
     public abstract double[] getColor();
     public abstract double[] getColor(double[] origin, double[] point, Decoy decoy);
     protected Type type;
