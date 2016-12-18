@@ -40,6 +40,7 @@ public class SphereModel extends Model {
                 t2 = t1;
                 t1 = aux;
             }
+
             t = 0;
             if (t1 > zeroDist) {
                 t = t1;
@@ -47,6 +48,9 @@ public class SphereModel extends Model {
                 t = t2;
             }
             if (t > zeroDist) {
+
+
+
                 p = Algb.soma(origin, Algb.dotByScale(t, direction));
                 hit.normal = Algb.normalize(Algb.sub(p, center));
                 hit.point = p;

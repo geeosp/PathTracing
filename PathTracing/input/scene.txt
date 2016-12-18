@@ -1,6 +1,6 @@
 nthreads 8
 # sphere cx cy cx r red green blue ka kd ks kt n
-#sphere 0 0 -32 6 1.0 1.0 1.0 1. 0.7 1 .8 5
+sphere 2 2 -28 3 0.0 0.0 0.0 0.0 0.0 1 0 10
 
 
 
@@ -10,10 +10,14 @@ ortho -1 -1 1 1
 background 0.0 0.0 0.0
 ambient 0.5
 
+#config depth
+config 5
+
+
 # Luz branca retangulo no centro do teto
 light luzcornell.obj 1.0 1.0 1.0 1.0
 
-npaths 64
+npaths 16
 tonemapping .4
 seed 9
 
@@ -27,7 +31,7 @@ seed 9
 #object <name.obj> red green blue ka kd ks kt n
 
 # left wall RED
-object leftwall.obj 1.0 0.0 0.0 0.3 0.7 0 0 5
+object leftwall.obj 0.0 0.0 0.0 0.0 0.0 1 0 10
 
 # right wall GREEN
 object rightwall.obj 0.0 1.0 0.0 0.3 0.7 0 0 5
@@ -39,12 +43,12 @@ object floor.obj 1.0 1.0 1.0 0.3 0.7 0 0 5
 object back.obj 1.0 1.0 1.0 0.3 0.7 0 0 5
 
 # ceiling WHITE
-object ceiling.obj 1.0 1.0 1.0 0.3 0.7 .8 0 5
+object ceiling.obj 1.0 1.0 1.0 0.3 0.7 0 0 5
 
 # cube 1 WHITE
-object cube1.obj 0.0 0.0 0.0 0.0 0.0 1 0 100
+object cube1.obj 0.0 0.0 0.0 0.0 0.0 1 0 10
 
 # cube 2 WHITE
-object cube2.obj 0 0.0 0.0 0.0 0.0 1 0 100
+object cube2.obj 0.0 0.0 0.0 0.0 0.0 1 0 10
 
 output cornell.pnm
