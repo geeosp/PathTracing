@@ -42,7 +42,7 @@ public class DistanceRenderer extends RenderAlgorithm {
         int n = scene.getNpaths();
         int k = findRightK(n);
         n = 2 * k * k;
-        //   System.out.println(n);
+        //   System.out.println(q);
         double[] ref = Algb.normalize(new double[]{1, 1, 1, 0});
         double dk = k;
         double dw = PI / dk;
@@ -197,7 +197,7 @@ color[3]=1;
         } else if (hit.isHit()) {
             if (hit.model.getType() == Model.Type.LIGHT) {
                 color = hit.model.getColor();
-            } else {//n é uma luz
+            } else {//q é uma luz
                 double[] incident = Algb.normalize(Algb.sub(origin, hit.point));
              Model model =  hit.model;
                 if (Algb.dot(incident, hit.normal) < 0) {

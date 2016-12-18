@@ -81,7 +81,8 @@ public class SphereModel extends Model {
                 objectMaterial[4],
                 objectMaterial[5],
                 objectMaterial[6],
-                objectMaterial[7]
+                objectMaterial[7],
+                objectMaterial[8]
         );
     }
 
@@ -90,7 +91,7 @@ public class SphereModel extends Model {
         String s = super.name
                 + "\n center: " + center[0] + " " + center[1] + " " + center[2] + " " + center[3]
                 + "\n radius: " + radius
-                //     + "\n color: " + color[0] + " " + color[1] + " " + color[2] + " " + color[3]
+                //     + "\q color: " + color[0] + " " + color[1] + " " + color[2] + " " + color[3]
                 + "\n coeficients: " + coeficients[0] + " " + coeficients[1] + " " + coeficients[2] + " " + coeficients[3] + " " + coeficients[4] + " ";
         return s; //To change body of generated methods, choose Tools | Templates.
     }

@@ -8,14 +8,11 @@ package renderers;
 import geeosp.pathtracing.models.Hit;
 import geeosp.pathtracing.models.Model;
 
-import geeosp.pathtracing.models.ObjDifuseModel;
 import geeosp.pathtracing.models.ObjLight;
-import geeosp.pathtracing.models.ObjModel;
 import geeosp.pathtracing.scene.RenderScene;
 
 import java.util.Random;
 
-import javafx.scene.paint.Color;
 import geeosp.pathtracing.Algb;
 import geeosp.pathtracing.models.Material;
 
@@ -212,7 +209,7 @@ public class PathTracingRenderer extends RenderAlgorithm {
                     double cosRO = Math.max(0, Algb.dot(fromOrigin, reflected));
                     if (cosRO > 0) {
                         specular = Algb.soma(specular,
-                                Algb.dotByScale(Math.pow(cosRO, hit.model.getMaterial().n) * f * obj.getMaterial().ks, lg.getColor(lgPt, hit.point, decoy)));
+                                Algb.dotByScale(Math.pow(cosRO, hit.model.getMaterial().q) * f * obj.getMaterial().ks, lg.getColor(lgPt, hit.point, decoy)));
                     }
                 }else{//lightCantSee
                     if(timesNotSeen<liMax){

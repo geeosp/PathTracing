@@ -30,7 +30,7 @@ public class ObjLight extends ObjModel {
             material[2] * material[3],
             1
         };
-        this.material = new Material(this.color, 0, 0, 0, 0, 0);
+        this.material = new Material(this.color, 0, 0, 0, 0, 0, 1);
         //    this.intensity = material[3];
 
     }

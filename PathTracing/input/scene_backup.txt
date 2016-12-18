@@ -1,6 +1,6 @@
 nthreads 8
-# sphere cx cy cx r red green blue ka kd ks kt n
-sphere 2 2 -28 3 0.0 0.0 0.0 0.0 0.0 1 0 500
+# sphere cx cy cx r red green blue ka kd ks kt q n
+sphere 2 2 -28 3 0.0 0.0 0.0 0.0 0.0 1 0 500 1
 
 
 
@@ -11,7 +11,7 @@ background 0.0 0.0 0.0
 ambient 0.5
 
 #config depth
-config 3
+config 5
 
 
 # Luz branca retangulo no centro do teto
@@ -28,27 +28,27 @@ seed 9
 # As paredes sao todas totalmente difusas
 # bem como os 2 cubos amarelos
 
-#object <name.obj> red green blue ka kd ks kt n
+#object <name.obj> red green blue ka kd ks kt q n
 
 # left wall RED
-object leftwall.obj 1.0 0.0 0.0 0.3 0.7 0 0 5
+object leftwall.obj 1.0 0.0 0.0 0.3 0.7 0 0 5 1
 
 # right wall GREEN
-object rightwall.obj 0.0 1.0 0.0 0.3 0.7 0 0 5
+object rightwall.obj 0.0 1.0 0.0 0.3 0.7 0 0 5 1
 
 # floor WHITE
-object floor.obj 1.0 1.0 1.0 0.3 0.7 0 0 5
+object floor.obj 1.0 1.0 1.0 0.3 0.7 0 0 5 1
 
 # back wall WHITE
-object back.obj 1.0 1.0 1.0 0.3 0.7 0 0 5
+object back.obj 1.0 1.0 1.0 0.3 0.7 0 0 5 1
 
 # ceiling WHITE
-object ceiling.obj 1.0 1.0 1.0 0.3 0.7 0 0 5
+object ceiling.obj 1.0 1.0 1.0 0.3 0.7 0 0 5 1
 
 # cube 1 WHITE
-object cube1.obj 1.0 1.0 1.0 0.3 0.7 0 0 5
+object cube1.obj 1.0 1.0 1.0 0.3 0.7 0 0 5 1
 
 # cube 2 WHITE
-object cube2.obj 1.0 1.0 1.0 0.3 0.7 0 0 5
+object cube2.obj 1.0 1.0 1.0 0.3 0.7 0 0 5 1
 
 output cornell.pnm

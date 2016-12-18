@@ -11,10 +11,10 @@ import geeosp.pathtracing.models.Model;
 import geeosp.pathtracing.models.ObjDifuseModel;
 import geeosp.pathtracing.models.ObjLight;
 import geeosp.pathtracing.models.SphereModel;
+
 import java.util.ArrayList;
 
 /**
- *
  * @author geeo
  */
 public class RenderScene {
@@ -150,27 +150,27 @@ public class RenderScene {
 
                 case "eye":
                     double x,
-                     y,
-                     z;
+                            y,
+                            z;
                     x = arq.readDouble();
                     y = arq.readDouble();
                     z = arq.readDouble();
                     assert (z > 0);
                     scene.eye = new double[]{
-                        x, y, z, 1.0
+                            x, y, z, 1.0
                     };
                     break;
                 case "ortho":
                     double x0,
-                     y0,
-                     x1,
-                     y1;
+                            y0,
+                            x1,
+                            y1;
                     x0 = arq.readDouble();
                     y0 = arq.readDouble();
                     x1 = arq.readDouble();
                     y1 = arq.readDouble();
                     scene.ortho = new double[][]{
-                        {x0, y0}, {x1, y1}
+                            {x0, y0}, {x1, y1}
                     };
                     break;
                 case "size":
@@ -180,13 +180,13 @@ public class RenderScene {
                     break;
                 case "background":
                     double r,
-                     g,
-                     b;
+                            g,
+                            b;
                     r = arq.readDouble();
                     g = arq.readDouble();
                     b = arq.readDouble();
                     scene.backgroundColor = new double[]{
-                        r, g, b,1
+                            r, g, b, 1
                     };
                     break;
                 case "ambient"://ambient la
@@ -207,22 +207,23 @@ public class RenderScene {
                     break;
                 case "sphere":
                     double center[] = new double[]{
-                        arq.readDouble(),
-                        arq.readDouble(),
-                        arq.readDouble(),
-                        1
+                            arq.readDouble(),
+                            arq.readDouble(),
+                            arq.readDouble(),
+                            1
 
                     };
                     double radius = arq.readDouble();
                     double[] sphereMaterial = new double[]{
-                        arq.readDouble(),//r
-                        arq.readDouble(),//g
-                        arq.readDouble(),//b
-                        arq.readDouble(),//ka
-                        arq.readDouble(),//kd
-                        arq.readDouble(),//ks
-                        arq.readDouble(),//kt
-                        arq.readDouble()//refractionindice
+                            arq.readDouble(),//r
+                            arq.readDouble(),//g
+                            arq.readDouble(),//b
+                            arq.readDouble(),//ka
+                            arq.readDouble(),//kd
+                            arq.readDouble(),//ks
+                            arq.readDouble(),//kt
+                            arq.readDouble(),//q
+                            arq.readDouble()//refractionindice
                     };
                     scene.models.add(new SphereModel(center, radius, sphereMaterial));
 
@@ -230,14 +231,15 @@ public class RenderScene {
                 case "object":
                     String objectName = arq.readString();
                     double[] objectMaterial = new double[]{
-                        arq.readDouble(),//r
-                        arq.readDouble(),//g
-                        arq.readDouble(),//b
-                        arq.readDouble(),//ka
-                        arq.readDouble(),//kd
-                        arq.readDouble(),//ks
-                        arq.readDouble(),//kt
-                        arq.readDouble()//refractionindice
+                            arq.readDouble(),//r
+                            arq.readDouble(),//g
+                            arq.readDouble(),//b
+                            arq.readDouble(),//ka
+                            arq.readDouble(),//kd
+                            arq.readDouble(),//ks
+                            arq.readDouble(),//kt
+                            arq.readDouble(),//q
+                            arq.readDouble()//refractionindice
                     };
                     scene.models.add(new ObjDifuseModel(objectName, objectMaterial));
 
@@ -246,10 +248,10 @@ public class RenderScene {
                 case "light":
                     objectName = arq.readString();
                     objectMaterial = new double[]{
-                        arq.readDouble(),//r
-                        arq.readDouble(),//g
-                        arq.readDouble(),//b
-                        arq.readDouble(),//Intensity
+                            arq.readDouble(),//r
+                            arq.readDouble(),//g
+                            arq.readDouble(),//b
+                            arq.readDouble(),//Intensity
                     };
                     ObjLight light = new ObjLight(objectName, objectMaterial);
                     scene.models.add(light);

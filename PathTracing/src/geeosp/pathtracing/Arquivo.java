@@ -138,7 +138,7 @@ public class Arquivo {
 
    /**
     * L� o pr�ximo caractere do arquivo, incluindo espa�os (' ') e quebras de
-    * linha ('\n'). Se o fim do arquivo for alcan�ado, o caractere nulo ('\0')
+    * linha ('\q'). Se o fim do arquivo for alcan�ado, o caractere nulo ('\0')
     * � retornado.
     *
     * @return   o caractere lido
@@ -198,7 +198,7 @@ public class Arquivo {
    /**
     * L� um inteiro do arquivo.
     *
-    * @return   o n�mero lido
+    * @return   o q�mero lido
     *
     */
     public int readInt() {
@@ -208,7 +208,7 @@ public class Arquivo {
    /**
     * L� um double do arquivo.
     *
-    * @return   o n�mero lido
+    * @return   o q�mero lido
     *
     */
     public double readDouble() {
@@ -318,7 +318,7 @@ public class Arquivo {
    /**
     * Escreve um inteiro no arquivo.
     *
-    * @param i     n�mero que ser� escrito no arquivo
+    * @param i     q�mero que ser� escrito no arquivo
     *
     */
     public void print(int i) {
@@ -328,7 +328,7 @@ public class Arquivo {
    /**
     * Escreve um double no arquivo.
     *
-    * @param d     n�mero que ser� escrito no arquivo
+    * @param d     q�mero que ser� escrito no arquivo
     *
     */
     public void print(double d) {
@@ -336,12 +336,12 @@ public class Arquivo {
     }
 
    /**
-    * Escreve um double no arquivo, com um n�mero fixo de casas decimais. Uma
+    * Escreve um double no arquivo, com um q�mero fixo de casas decimais. Uma
     * precis�o menor ou igual a zero indica que apenas a parte inteira ser�
     * impressa (com arredondamento).
     *
-    * @param d     n�mero que ser� escrito no arquivo
-    * @param dec   n�mero de casas decimais de precisao
+    * @param d     q�mero que ser� escrito no arquivo
+    * @param dec   q�mero de casas decimais de precisao
     * @exception IOException   em caso de erro de I/O
     *
     */
@@ -380,7 +380,7 @@ public class Arquivo {
    /**
     * Escreve um inteiro e come�a uma nova linha no arquivo.
     *
-    * @param i        n�mero que ser� gravado no arquivo
+    * @param i        q�mero que ser� gravado no arquivo
     *
     */
     public void println(int i) {
@@ -390,7 +390,7 @@ public class Arquivo {
    /**
     * Escreve um double e come�a uma nova linha no arquivo.
     *
-    * @param d        n�mero que ser� gravado no arquivo
+    * @param d        q�mero que ser� gravado no arquivo
     * @exception IOException   em caso de erro de I/O
     *
     */
@@ -399,12 +399,12 @@ public class Arquivo {
     }
 
    /**
-    * Escreve um double no arquivo, com um n�mero fixo de casas decimais e
+    * Escreve um double no arquivo, com um q�mero fixo de casas decimais e
     * come�a uma nova linha no arquivo. Uma precis�o menor ou igual a zero
     * indica que apenas a parte inteira ser� impressa (com arredondamento).
     *
-    * @param d     n�mero que ser� escrito no arquivo
-    * @param dec   n�mero de casas decimais de precisao
+    * @param d     q�mero que ser� escrito no arquivo
+    * @param dec   q�mero de casas decimais de precisao
     * @exception IOException   em caso de erro de I/O
     *
     */

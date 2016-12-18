@@ -32,7 +32,8 @@ public class ObjDifuseModel extends ObjModel {
                 objectMaterial[4],
                 objectMaterial[5],
                 objectMaterial[6],
-                objectMaterial[7]
+                objectMaterial[7],
+                objectMaterial[8]
         );
 
     }
@@ -41,7 +42,7 @@ public class ObjDifuseModel extends ObjModel {
     public String toString() {
         String s = super.toString()
                 + "\n color: " + material.color[0] + " " + material.color[1] + " " + material.color[2] + " " + material.color[3]
-                + "\n coeficients: " + material.ka + " " + material.kd + " " + material.ks + " " + material.kt + " " + material.n + " ";
+                + "\n coeficients: " + material.ka + " " + material.kd + " " + material.ks + " " + material.kt + " " + material.q + " ";
         return s;
 
     }
