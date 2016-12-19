@@ -161,11 +161,13 @@ public class Renderer {
                     }
                 }
                 imageView.setImage(writableImage);
+                /*
                 try {
                     saveFile(writableImage, "normalized");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                */
             }
 
         });
@@ -260,12 +262,12 @@ public class Renderer {
                 time = System.currentTimeMillis() - time;
                 try {
                     renderAfterFinish();
-                    saveFile(this.renderBundle.writeImage, "TonemmapedBy" + scene.getTonemapping());
+                System.err.println("Finished: " + (time / 60000.0) + " minutes");
+                    saveFile(this.renderBundle.writeImage, "tm- " + scene.getTonemapping()+"_res_" + scene.getSizeWidth()+ "_rays_" + scene.getNpaths()+ "_rayDp_" + scene.getRayDepth()+ "_"+ time / 60000 + "_minutes" );
                 } catch (IOException ex) {
                     Logger.getLogger(Renderer.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 runningState = RunningState.Stopped;
-                System.err.println("Finished: " + (time / 1000.0) + " seconds");
 
             }
         }
