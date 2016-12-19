@@ -1,11 +1,11 @@
 nthreads 8
 # sphere cx cy cx r red green blue ka kd ks kt q n
-sphere 2 2 -28 3 0.0 0.0 0.0 0.0 0.0 1 0 500 1
-sphere  -3 -3 -20 1 1.0 1.0 1.0 0.0 .0 0.0 1 500 1.5
+#sphere 2 2 -28 3 0.0 0.0 0.0 0.0 0.0 1 0 500 1
+#sphere  -3 -3 -20 1 0.0 0.0 0.0 0.0 0.0 0.0 1 500 1.2
 basen 1.0
 
 eye 0.0 0.0 5.7
-size 800 800
+size 400 400
 ortho -1 -1 1 1
 background 0.0 0.0 0.0
 ambient 0.5
@@ -17,8 +17,8 @@ config 8
 # Luz branca retangulo no centro do teto
 light luzcornell.obj 1.0 1.0 1.0 1.0
 
-npaths 64
-tonemapping .6
+npaths 4
+tonemapping .1
 seed 9
 
 # Aqui comeca a definicao das geometrias
@@ -31,24 +31,28 @@ seed 9
 #object <name.obj> red green blue ka kd ks kt q n
 
 # left wall RED
-object leftwall.obj 1.0 0.0 0.0 0.3 0.7 0 0 5 1
+#object leftwall.obj 1.0 0.0 0.0 0.3 0.7 0 0 5 1
 
 # right wall GREEN
-object rightwall.obj 0.0 1.0 0.0 0.3 0.7 0 0 5 1
+#object rightwall.obj 0.0 1.0 0.0 0.3 0.7 0 0 5 1
 
 # floor WHITE
 object floor.obj 1.0 1.0 1.0 0.3 0.7 0 0 5 1
 
 # back wall WHITE
-object back.obj 1.0 1.0 1.0 0.3 0.7 0 0 5 1
+#object back.obj 1.0 1.0 1.0 0.3 0.7 0 0 5 1
 
 # ceiling WHITE
-object ceiling.obj 1.0 1.0 1.0 0.3 0.7 0 0 5 1
+#object ceiling.obj 1.0 1.0 1.0 0.3 0.7 0 0 5 1
 
 # cube 1 WHITE
-object cube1.obj 1.0 1.0 1.0 0.3 0.7 0 0 5 1
+#object cube2.obj 1.0 1.0 1.0 0.3 0.7 0 0 5 1
 
 # cube 2 WHITE
-object cube2.obj 1.0 1.0 1.0 0.3 0.7 0 0 5 1
+object cube1.obj 1.0 1.0 1.0 1.0 0.7 0 0 5 1
+
+
+#objectquadric a b c d e f g h i j    r g b ka ks kt q n
+objectquadric  1 1 1 0 0 0 0 0 0 -2      1.0 1.0 1.0 1.0 0.7 0 0 5 1
 
 output cornell.pnm

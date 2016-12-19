@@ -129,6 +129,16 @@ public class PathTracingRenderer extends RenderAlgorithm {
         if (deep != 0) {
             Hit hit = getNextHit(origin, dir, scene);
             if (hit.isHit()) {
+                double decoyFactor = 1;
+                double d = Algb.distance(origin, hit.point);
+                switch (decoy) {
+                    case LINEAR:
+
+                        decoyFactor = 1.0 / d;
+                        break;
+                    case QUADRATIC:
+                        decoyFactor = 1.0 / (d * d);
+                }
                 //  System.out.println(hit.model.getName());
                 if (hit.model.isLight()) {
                     color = Algb.dotByScale(2, hit.model.getColor());
@@ -139,8 +149,7 @@ public class PathTracingRenderer extends RenderAlgorithm {
                             //    +m.ka
                             + m.ks
                             + m.kd
-                            +m.kt
-                            ;
+                            + m.kt;
                     double test = rand.nextDouble() * tot;
                     if (test < m.kd) {
                         double[] nextDir = Algb.randomVector();
@@ -152,7 +161,7 @@ public class PathTracingRenderer extends RenderAlgorithm {
                         //nextDir=hit.normal;//test
 
                         color = Algb.soma(color,
-                                Algb.dotByScale(m.kd * cosLN,
+                                Algb.dotByScale(cosLN*decoyFactor,
                                         Algb.crossdot(hit.color,
                                                 tracePath(hit.point, nextDir, scene, deep - 1, n)
                                         )
@@ -166,30 +175,28 @@ public class PathTracingRenderer extends RenderAlgorithm {
                         //from hitPoint
 
                         color = Algb.soma(color,
-                                Algb.dotByScale(m.ks,
+                                Algb.dotByScale(decoyFactor,
                                         tracePath(hit.point, nextDir, scene, deep - 1, n)));
                     } else if (test < m.kd + m.ks + m.kt) {
                         double[] fromOrigin = Algb.normalize(Algb.sub(hit.point, origin));
-                        double n1=n;
+                        double n1 = n;
                         double n2 = hit.model.getMaterial().n;
-                        if(n1==n2){//o raio esta passeando dentro do objeto
+                        if (n1 == n2) {//o raio esta passeando dentro do objeto
                             n2 = scene.getBaseN();//ele vai sair
                         }
                         double[] nextDir = Algb.refract(fromOrigin, hit.normal, n, hit.model.getMaterial().n);
-                        if(nextDir ==null){
+                        if (nextDir == null) {
                             nextDir = Algb.reflect(fromOrigin, hit.normal);
                             color = Algb.soma(color,
-                                    Algb.dotByScale(m.ks,
+                                    Algb.dotByScale(decoyFactor,
                                             tracePath(hit.point, nextDir, scene, deep - 1, n)));
-                        }else {
+                        } else {
                             color = Algb.soma(color,
-                                    Algb.dotByScale(m.kt,
+                                    Algb.dotByScale(decoyFactor,
                                             tracePath(hit.point, nextDir, scene, deep - 1, n2)
                                     )
                             );
                         }
-
-
 
 
                     }
@@ -211,7 +218,7 @@ public class PathTracingRenderer extends RenderAlgorithm {
         for (int l = 0; l < scene.getLights().size(); l++) {
             ObjLight lg = (ObjLight) scene.getLights().get(l);
             double[] lgPt = lg.getOnePoint();
-            int liMax = 3;//number of trys per light
+            int liMax = 8;//number of trys per light
             double inveLiMax = 1.0 / liMax;
             int timesNotSeen = 0;
             for (int li = 0; li < liMax; li++) {

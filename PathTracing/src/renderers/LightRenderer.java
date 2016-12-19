@@ -12,7 +12,6 @@ import geeosp.pathtracing.models.ObjLight;
 import geeosp.pathtracing.scene.RenderScene;
 
 /**
- *
  * @author geeo
  */
 
@@ -41,10 +40,10 @@ public class LightRenderer extends RenderAlgorithm {
         //spacial position of the pixel
 
         double[] onScreen = new double[]{
-            x0 + (i + 1) * deltax,
-            y0 + (j + 1) * deltay,
-            0,
-            1
+                x0 + (i + 1) * deltax,
+                y0 + (j + 1) * deltay,
+                0,
+                1
         };
         direction = Algb.sub(onScreen, scene.getEye());
         direction = Algb.normalize(direction);
@@ -75,11 +74,11 @@ public class LightRenderer extends RenderAlgorithm {
         } else {
             color = scene.getBackgroundColor();
         }
-     color = toneMap(color, scene.getTonemapping());
+        color = toneMap(color, scene.getTonemapping());
         color[3] = 1;
         return color;
         //return hit.color;
     }
 
-  
+
 }

@@ -7,10 +7,7 @@ package geeosp.pathtracing.scene;
 
 import geeosp.pathtracing.Algb;
 import geeosp.pathtracing.Arquivo;
-import geeosp.pathtracing.models.Model;
-import geeosp.pathtracing.models.ObjDifuseModel;
-import geeosp.pathtracing.models.ObjLight;
-import geeosp.pathtracing.models.SphereModel;
+import geeosp.pathtracing.models.*;
 
 import java.util.ArrayList;
 
@@ -174,9 +171,9 @@ public class RenderScene {
                     };
                     break;
                 case "size":
-                    int w = arq.readInt();
-                    int h = arq.readInt();
-                    scene.size = new int[]{w, h};
+                    int width = arq.readInt();
+                    int height = arq.readInt();
+                    scene.size = new int[]{width, height};
                     break;
                 case "background":
                     double r,
@@ -263,12 +260,36 @@ public class RenderScene {
                     scene.rayDepth = arq.readInt();
 
                     break;
-                /*
+
                 case "objectquadric":
+                    double a,c,d,e,f,h,i,j;
+                    a=arq.readDouble();
+                    b=arq.readDouble();
+                    c=arq.readDouble();
+                    d=arq.readDouble();
+                    e=arq.readDouble();
+                    f=arq.readDouble();
+                    g=arq.readDouble();
+                    h=arq.readDouble();
+                    i=arq.readDouble();
+                    j=arq.readDouble();
+
+
+                    objectMaterial = new double[]{
+                            arq.readDouble(),//r
+                            arq.readDouble(),//g
+                            arq.readDouble(),//b
+                            arq.readDouble(),//ka
+                            arq.readDouble(),//kd
+                            arq.readDouble(),//ks
+                            arq.readDouble(),//kt
+                            arq.readDouble(),//q
+                            arq.readDouble()//refractionindice
+                    };
+                    scene.models.add(new QuadricModel("quadric "+ scene.models.size(),a,b,c,d,e,f,g,h,i,j, objectMaterial));
 
                     break;
 
-                 */
                 default://ignore the rest of the line
                     while (!arq.isEndOfLine()) {
                         arq.readString();

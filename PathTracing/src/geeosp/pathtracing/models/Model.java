@@ -11,7 +11,7 @@ package geeosp.pathtracing.models;
  */
 public abstract class Model {
     protected final double zeroCos = 0.00000000000001;
-    protected final double zeroDist = 0.0000000000001;
+    protected final double zeroDist = 0.0001;
     protected double[] position;
     protected double[] rotation;
     protected double[] scale;
