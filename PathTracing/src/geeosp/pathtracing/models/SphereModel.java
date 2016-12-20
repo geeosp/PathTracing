@@ -15,7 +15,7 @@ public class SphereModel extends Model {
     double center[];
     double radius;
 
-    private double[] coeficients;
+    //private double[] coeficients;
     private Material material;
 
     @Override
@@ -88,11 +88,12 @@ public class SphereModel extends Model {
 
     @Override
     public String toString() {
-        String s = super.name
+        String s =""
+                +getName()
                 + "\n center: " + center[0] + " " + center[1] + " " + center[2] + " " + center[3]
                 + "\n radius: " + radius
-                //     + "\q color: " + color[0] + " " + color[1] + " " + color[2] + " " + color[3]
-                + "\n coeficients: " + coeficients[0] + " " + coeficients[1] + " " + coeficients[2] + " " + coeficients[3] + " " + coeficients[4] + " ";
+                    + material.toString();
+        ;
         return s; //To change body of generated methods, choose Tools | Templates.
     }
 

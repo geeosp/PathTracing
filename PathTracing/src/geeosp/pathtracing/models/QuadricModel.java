@@ -11,6 +11,7 @@ public class QuadricModel extends Model {
     private Material material;
     //F(x, y, z) = Ax2 + By2 + Cz2 + Dxy+ Exz + Fyz + Gx + Hy + Iz + J = 0
     double[][] A;
+    double[][] N;
 
     //Ax2 + By2 + Cz2 + Dxy  + Exz + Fyz + Gx + Hy + Iz + J =0
     public QuadricModel(String name, double a, double b, double c, double d, double e, double f, double g, double h, double i, double j, double[] objectMaterial) {
@@ -20,8 +21,12 @@ public class QuadricModel extends Model {
                 {d, b, f, h},
                 {e, f, c, i},
                 {g, h, i, j}
-
-
+        };
+        N = new double[][]{
+                {2 * a, d, e, g},
+                {d, 2 * b, f, h},
+                {e, f, 2 * c, i},
+                {0, 0, 0, 0}
         };
 
 
@@ -42,7 +47,7 @@ public class QuadricModel extends Model {
     @Override
     public Hit getNearestIntersectionPoint(double[] C, double[] D) {
         Hit hit = new Hit();
-        D=Algb.normalize(D);
+        D = Algb.normalize(D);
         double a, b, c;
         a = Algb.dot(D, Algb.matrixVectorProduct(A, D));
         b =
@@ -74,12 +79,14 @@ public class QuadricModel extends Model {
             hit.point = p;
             hit.model = this;
             hit.color = getColor();
-            n= Algb.dotByScale(2, Algb.vectorMatrixProduct(p, A));
-            n = Algb.normalize(n);
+
+            n = Algb.normalize(Algb.matrixVectorProduct(N, p));
 
             if (Algb.dot(n, D) > 0) {
                 n = Algb.dotByScale(-1, n);
             }
+
+
             hit.normal = n;
 
         }

@@ -187,13 +187,13 @@ public class Renderer {
                     }
                 }
                 imageView.setImage(writableImage);
-                /*
+
                 try {
                     saveFile(writableImage, "normalized");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                 */
+
             }
 
         });
@@ -231,7 +231,7 @@ public class Renderer {
                 // try {
                 //     sleep(20);
                 if (currentProgress != getProgress()) {
-                    //   System.out.println("Progress: " + currentProgress);
+                    System.out.println("Progress: " + currentProgress+ "%");
                     ImageView iv = renderBundle.imageViewGui;
                     if (iv != null) {
                         WritableImage wi = renderBundle.writeImage;
@@ -355,7 +355,7 @@ public class Renderer {
             }
             System.out.println(pixelsToRender.size());
 
-            /*
+
             if (threadsFinished.decrementAndGet() == 0) {
                 time = System.currentTimeMillis() - time;
                 try {
@@ -368,7 +368,7 @@ public class Renderer {
                 runningState = RunningState.Stopped;
 
             }
-             */
+
         }
 
         synchronized void savePixelConcurrent(int x, int y, double[] color, boolean update) {
