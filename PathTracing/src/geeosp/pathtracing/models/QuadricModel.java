@@ -10,22 +10,19 @@ public class QuadricModel extends Model {
     private double[] coeficients;
     private Material material;
     //F(x, y, z) = Ax2 + By2 + Cz2 + Dxy+ Exz + Fyz + Gx + Hy + Iz + J = 0
-    double A, B, C, D, E, F, G, H, I, J;
+    double[][] A;
 
-
+    //Ax2 + By2 + Cz2 + Dxy  + Exz + Fyz + Gx + Hy + Iz + J =0
     public QuadricModel(String name, double a, double b, double c, double d, double e, double f, double g, double h, double i, double j, double[] objectMaterial) {
         super(name, new double[3], new double[3], new double[]{1, 1, 1}, Type.OBJECT);
-        A = a;
-        B = b;
-        C = c;
-        D = d;
-        E = e;
-        F = f;
-        G = g;
-        H = h;
-        I = i;
-        J = j;
+        A = new double[][]{
+                {a, d, e, g},
+                {d, b, f, h},
+                {e, f, c, i},
+                {g, h, i, j}
 
+
+        };
 
 
         this.material = new Material(new double[]{
@@ -43,69 +40,44 @@ public class QuadricModel extends Model {
     }
 
     @Override
-    public Hit getNearestIntersectionPoint(double[] o, double[] d) {
+    public Hit getNearestIntersectionPoint(double[] C, double[] D) {
         Hit hit = new Hit();
-        double Aq, Bq, Cq;
-        Aq = A * d[0] * d[0]
-                + B * d[1] * d[1]
-                + C * d[2] * d[2]
-                + D * d[0] * d[1]
-                + E * d[0] * d[2]
-                + F * d[1] * d[2]
+        double a, b, c;
+        a = Algb.dot(D, Algb.matrixVectorProduct(A, D));
+        b =
+                Algb.dot(C, Algb.matrixVectorProduct(A, D))
+                        +
+                        Algb.dot(D, Algb.matrixVectorProduct(A, C))
         ;
-        Bq = 2 * A * o[0] * d[0]
-                + 2 * B * o[1] * d[1]
-                + 2 * C * o[2] * o[2]
-                + D * (o[0] * d[1] + d[0] * o[1])
-                + E * (o[0] * d[2] + d[0] * o[2])
-                + F * (o[1] * d[2] + d[1] * o[2])
-                + G * d[0]
-                + H * d[1]
-                + I * d[2]
-        ;
-        Cq = A * o[0] * o[0]
-                + B * o[1] * o[1]
-                + C * o[2] * o[2]
-                + D * o[0] * o[1]
-                + E * o[0] * o[2]
-                + F * o[1] * o[2]
-                + G * o[0]
-                + H * o[1]
-                + I * o[2]
-                + J
-        ;
+        c = Algb.dot(C, Algb.matrixVectorProduct(A, C));
         double t = 0;
-        double[] ts = Algb.solveQuadric(Aq, Bq, Cq);
-        if (ts != null) {
-            t = ts[0];
-            if (t < zeroDist) {
-                t = ts[1];
-            }
-
-
-            if (t >= zeroDist) {
-        System.out.println(t);
-                double[] p = Algb.soma(o, Algb.dotByScale(t, d));
-                double[] n = Algb.normalize(
-                        new double[]{
-                                2 * A * p[0] + D * p[1] + E * p[2] + G,
-                                2 * B * p[1] + D * p[0] + F * p[2] + H,
-                                2 * C * p[2] + E * p[0] + F * p[1] + I,
-                                0
-                        }
-
-
-                );
-
-                hit.point = p;
-                hit.model = this;
-                hit.color = getColor();
-                if (Algb.dot(n, d) > 0) {
-                    n = Algb.dotByScale(-1, n);
+        if (Math.abs(a) < zeroDist) {
+            t = -c / b;
+            System.out.println(t);
+        } else {
+            double[] ts = Algb.solveQuadric(a, b, c);
+            if (ts != null) {
+                t = ts[0];
+                if (t < zeroDist) {
+                    t = ts[1];
                 }
-                hit.normal = n;
-                System.out.println("hit");
+
+
             }
+
+        }
+        if (t >= zeroDist) {
+            double[] p = Algb.soma(C, Algb.dotByScale(t, D));
+            double[] n = new double[]{0, 0, -1, 0};
+
+            hit.point = p;
+            hit.model = this;
+            hit.color = getColor();
+            if (Algb.dot(n, D) > 0) {
+                n = Algb.dotByScale(-1, n);
+            }
+            hit.normal = n;
+
         }
 
 
@@ -145,6 +117,6 @@ public class QuadricModel extends Model {
     @Override
     public String toString() {
 
-        return super.toString()+" "+A+" "+B+" "+C+" "+D+" "+E+" "+F+" "+G+" " +H+" "+I+" "+J;
+        return Algb.MatrixToString(A);
     }
 }

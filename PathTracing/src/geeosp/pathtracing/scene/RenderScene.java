@@ -55,7 +55,7 @@ public class RenderScene {
                 + "\nthreads\n  " + nthreads
                 + "\n";
         for (int i = 0; i < models.size(); i++) {
-            ret += "\n" + models;
+            ret += "\n" + models.get(i);
         }
         return ret;
     }
