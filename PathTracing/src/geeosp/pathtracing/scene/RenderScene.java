@@ -263,6 +263,7 @@ public class RenderScene {
 
                 case "objectquadric":
                     double a,c,d,e,f,h,i,j;
+                    double minx, miny, minz, maxx, maxy, maxz;
                     a=arq.readDouble();
                     b=arq.readDouble();
                     c=arq.readDouble();
@@ -273,6 +274,12 @@ public class RenderScene {
                     h=arq.readDouble();
                     i=arq.readDouble();
                     j=arq.readDouble();
+                    minx=arq.readDouble();
+                    maxx=arq.readDouble();
+                    miny=arq.readDouble();
+                    maxy=arq.readDouble();
+                    minz = arq.readDouble();
+                    maxz=arq.readDouble();
 
 
                     objectMaterial = new double[]{
@@ -286,7 +293,7 @@ public class RenderScene {
                             arq.readDouble(),//q
                             arq.readDouble()//refractionindice
                     };
-                    QuadricModel  quadric = new QuadricModel("quadric "+ scene.models.size(),a,b,c,d,e,f,g,h,i,j, objectMaterial);
+                    QuadricModel  quadric = new QuadricModel("quadric "+ scene.models.size(),a,b,c,d,e,f,g,h,i,j,minx, maxx, miny,maxy, minz, maxz, objectMaterial);
                     scene.models.add(quadric);
                         System.err.println(quadric);
                     break;
