@@ -11,6 +11,8 @@ import geeosp.pathtracing.scene.RenderScene;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
@@ -46,21 +48,44 @@ public class Renderer {
     private double[][][] mappedPixels;
     private double[][][] rawPixels;
     private RenderAlgorithm algorithm;
+    ArrayList<Pixel> pixelsToRender;
+    Random rand;
 
     public Renderer() {
         this.runningState = RunningState.Stopped;
     }
 
+    class Pixel {
+
+        int x;
+        int y;
+
+        public Pixel(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+
+    }
+
     Renderer(RenderScene renderScene, ImageView imageView, RenderAlgorithm algorithm) {
         this.scene = renderScene;
         this.renderBundle = new RenderBundle(renderScene.getSizeWidth(), renderScene.getSizeHeight(), renderScene.getNpaths(), imageView);
-        this.renderThreads = new RenderThread[Math.max(1, renderScene.getNthreads())];
+        //   this.renderThreads = new RenderThread[Math.max(1, renderScene.getNthreads())];
+        this.renderThreads = new Thread[Math.max(1, renderScene.getNthreads())];
         this.pixelsRendered = new AtomicInteger(0);
         this.mappedPixels = new double[renderScene.getSizeWidth()][renderScene.getSizeHeight()][4];
         this.rawPixels = new double[renderScene.getSizeWidth()][renderScene.getSizeHeight()][4];
         this.threadsFinished = new AtomicInteger(renderScene.getNthreads());
         this.algorithm = algorithm;
         algorithm.set(renderScene);
+        pixelsToRender = new ArrayList<Pixel>();
+        for (int i = 0; i < renderScene.getSizeHeight(); i++) {
+            for (int j = 0; j < renderScene.getSizeHeight(); j++) {
+                pixelsToRender.add(new Pixel(i, j));
+            }
+
+        }
+        rand = new Random(3);
     }
 
     public int getProgress() {
@@ -97,7 +122,8 @@ public class Renderer {
         updateViewThread.setDaemon(false);
         updateViewThread.start();
         for (int i = 0; i < renderThreads.length; i++) {
-            renderThreads[i] = new RenderThread(i, renderThreads.length, this.renderBundle);
+            //renderThreads[i] = new RenderThread(i, renderThreads.length, this.renderBundle);
+            renderThreads[i] = new RenderThread2(this.renderBundle);
             renderThreads[i].setDaemon(false);
             renderThreads[i].start();
         }
@@ -128,7 +154,7 @@ public class Renderer {
             for (int y = 0; y < rawPixels[0].length; y++) {
                 for (int i = 0; i < 3; i++) {
 
-                    rawPixels[x][y][i] = Math.min(1, rawPixels[x][y][i]/(max));
+                    rawPixels[x][y][i] = Math.min(1, rawPixels[x][y][i] / (max));
                 }
                 rawPixels[x][y][3] = 1.0;
             }
@@ -167,7 +193,7 @@ public class Renderer {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                */
+                 */
             }
 
         });
@@ -176,7 +202,7 @@ public class Renderer {
     public static void saveFile(WritableImage wImage, String prefix) throws IOException {
         File dir = new File("out");
         dir.mkdir();
-        String name = "out/"+prefix+ " "+System.currentTimeMillis();//
+        String name = "out/" + prefix + " " + System.currentTimeMillis();//
 
         File file = new File(name + ".png");
         if (file != null) {
@@ -261,9 +287,9 @@ public class Renderer {
             if (threadsFinished.decrementAndGet() == 0) {
                 time = System.currentTimeMillis() - time;
                 try {
-               //     renderAfterFinish();
-                System.err.println("Finished: " + (time / 60000.0) + " minutes");
-                    saveFile(this.renderBundle.writeImage, "tm-" + scene.getTonemapping()+"_res_" + scene.getSizeWidth()+ "_rays_" + scene.getNpaths()+ "_rayDp_" + scene.getRayDepth()+ "_"+ time / 60000 + "_minutes" );
+                    renderAfterFinish();
+                    System.err.println("Finished: " + (time / 60000.0) + " minutes");
+                    saveFile(this.renderBundle.writeImage, "tm- " + scene.getTonemapping() + "_res_" + scene.getSizeWidth() + "_rays_" + scene.getNpaths() + "_rayDp_" + scene.getRayDepth() + "_" + time / 60000 + "_minutes");
                 } catch (IOException ex) {
                     Logger.getLogger(Renderer.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -274,7 +300,7 @@ public class Renderer {
 
         synchronized void savePixelConcurrent(int x, int y, double[] color, boolean update) {
             //System.err.println(Algeb.VectorToString(color));
-            color = Algb.dotByScale(1.0/scene.getNpaths(), color);
+            color = Algb.dotByScale(1.0 / scene.getNpaths(), color);
             rawPixels[x][y] = new double[]{color[0], color[1], color[2], color[3]};
             double[] c = toneMapp(color, scene.getTonemapping());
             mappedPixels[x][y] = c;
@@ -290,6 +316,93 @@ public class Renderer {
                 pixelsRendered.incrementAndGet();
 
             }
+        }
+
+    }
+
+    class RenderThread2 extends Thread {
+
+        private final RenderBundle renderBundle;
+
+        public RenderBundle getRenderBundle() {
+            return renderBundle;
+        }
+
+        public RenderThread2(RenderBundle renderBundle) {
+
+            this.renderBundle = renderBundle;
+        }
+
+        public void run() {
+
+            Pixel pixelToRender = null;
+
+            pixelToRender = getANewPixel();
+
+            while (pixelToRender != null) {
+                int i = pixelToRender.x;
+                int j = pixelToRender.y;
+                double[] color = new double[4];
+                color = algorithm.calulatePixel(i, j, scene);
+                try {
+                    this.savePixelConcurrent(i, j, color, true);
+                } catch (IllegalArgumentException e) {
+                    System.err.println("pixel: " + i + ", " + j + " " + e.getMessage());
+                }
+
+                pixelToRender = getANewPixel();
+
+            }
+            System.out.println(pixelsToRender.size());
+
+            /*
+            if (threadsFinished.decrementAndGet() == 0) {
+                time = System.currentTimeMillis() - time;
+                try {
+                    renderAfterFinish();
+                    System.err.println("Finished: " + (time / 60000.0) + " minutes");
+                    saveFile(this.renderBundle.writeImage, "tm- " + scene.getTonemapping() + "_res_" + scene.getSizeWidth() + "_rays_" + scene.getNpaths() + "_rayDp_" + scene.getRayDepth() + "_" + time / 60000 + "_minutes");
+                } catch (IOException ex) {
+                    Logger.getLogger(Renderer.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                runningState = RunningState.Stopped;
+
+            }
+             */
+        }
+
+        synchronized void savePixelConcurrent(int x, int y, double[] color, boolean update) {
+            //System.err.println(Algeb.VectorToString(color));
+            color = Algb.dotByScale(1.0 / scene.getNpaths(), color);
+            rawPixels[x][y] = new double[]{color[0], color[1], color[2], color[3]};
+            double[] c = toneMapp(color, scene.getTonemapping());
+            mappedPixels[x][y] = c;
+
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    renderBundle.writeImage.getPixelWriter().setColor(x, mappedPixels[0].length - y - 1, new Color(mappedPixels[x][y][0], mappedPixels[x][y][1], mappedPixels[x][y][2], mappedPixels[x][y][3]));
+                }
+            });
+            if (update) {
+
+                pixelsRendered.incrementAndGet();
+
+            }
+        }
+
+        Pixel getANewPixel() {
+
+            Pixel pixel = null;
+            synchronized (lock) {
+                if (pixelsToRender.size() > 0) {
+                    int i = rand.nextInt(pixelsToRender.size());
+                    pixel = pixelsToRender.get(i);
+                    pixelsToRender.remove(i);
+                }
+            }
+            return pixel;
+
         }
 
     }
