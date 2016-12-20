@@ -14,7 +14,7 @@ import geeosp.pathtracing.Algb;
 public class ObjDifuseModel extends ObjModel {
 
     //private double[] color;
-    private Material material;
+    protected Material material;
 
     public double[] getColor() {
         return material.color;

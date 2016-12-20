@@ -5,8 +5,8 @@ package geeosp.pathtracing;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 /**
- *
  * @author geeo
  */
 public class AlgebTest {
@@ -22,7 +22,7 @@ public class AlgebTest {
         a = Algb.soma(e1, e2);
         assert (Algb.isEquals(a, new double[]{1, 1, 0, 0})) : "Algeb.sum is wrong" + Algb.VectorToString(a);
         a = Algb.soma(e1, e5);
-        assert (Algb.isEquals(a, new double[]{2, - 2, -1, 3})) : "Algeb.sum is wrong" + Algb.VectorToString(a);
+        assert (Algb.isEquals(a, new double[]{2, -2, -1, 3})) : "Algeb.sum is wrong" + Algb.VectorToString(a);
 
         a = Algb.sub(e1, e2);
         assert (Algb.isEquals(a, new double[]{1, -1, 0, 0})) : "Algeb.sub is wrong" + Algb.VectorToString(a);
@@ -38,9 +38,22 @@ public class AlgebTest {
         //incident = Algb.normalize(incident);
         System.out.println(Algb.VectorToString(incident));
         //double[] reflected = Algb.reflect(incident, Algb.normalize(Algb.soma(e1, e2)));
-       // System.out.println(Algb.VectorToString(reflected));
+        // System.out.println(Algb.VectorToString(reflected))
 
+        double x, y, z;
+
+        x = 1;
+        y =-4;
+        z = -8;
+        double[] resp = Algb.solveQuadric(x, y, z);
+        if (resp != null)
+        System.out.println(resp[0] + " " + resp[1]);
+    else{
+
+            System.out.println("noResponse");
+
+        }
     }
 
-    
+
 }

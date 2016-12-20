@@ -16,6 +16,13 @@ public class QuadricModel extends Model {
     //Ax2 + By2 + Cz2 + Dxy  + Exz + Fyz + Gx + Hy + Iz + J =0
     public QuadricModel(String name, double a, double b, double c, double d, double e, double f, double g, double h, double i, double j, double[] objectMaterial) {
         super(name, new double[3], new double[3], new double[]{1, 1, 1}, Type.OBJECT);
+        d = d/2;
+        e = e/2;
+        f = f/2;
+        g = g/2;
+        h = h/2;
+        i = i/2;
+
         A = new double[][]{
                 {a, d, e, g},
                 {d, b, f, h},
@@ -23,9 +30,9 @@ public class QuadricModel extends Model {
                 {g, h, i, j}
         };
         N = new double[][]{
-                {2 * a, d, e, g},
-                {d, 2 * b, f, h},
-                {e, f, 2 * c, i},
+                {2 * a, 2*d, 2*e, g},
+                {d, 2 * b, 2*f, 2*h},
+                {2*e, 2*f, 2 * c, 2*i},
                 {0, 0, 0, 0}
         };
 
@@ -47,8 +54,9 @@ public class QuadricModel extends Model {
     @Override
     public Hit getNearestIntersectionPoint(double[] C, double[] D) {
         Hit hit = new Hit();
-        D = Algb.normalize(D);
+        // D = Algb.normalize(D);
         double a, b, c;
+
         a = Algb.dot(D, Algb.matrixVectorProduct(A, D));
         b =
                 Algb.dot(C, Algb.matrixVectorProduct(A, D))
@@ -56,26 +64,25 @@ public class QuadricModel extends Model {
                         Algb.dot(D, Algb.matrixVectorProduct(A, C))
         ;
         c = Algb.dot(C, Algb.matrixVectorProduct(A, C));
+
         double t = 0;
-        if (Math.abs(a) < zeroDist) {
+        if (Math.abs(a) < .010) {
             t = -c / b;
-            System.out.println(t);
+            // System.out.println(t);
         } else {
             double[] ts = Algb.solveQuadric(a, b, c);
             if (ts != null) {
                 t = ts[0];
                 if (t < zeroDist) {
-                    t = ts[1];
+                  t = ts[1];
                 }
-
-
             }
-
         }
         if (t > zeroDist) {
             double[] p = Algb.soma(C, Algb.dotByScale(t, D));
             double[] n;
-
+            hit = new Hit();
+            //  System.out.println (Algb.VectorToString(p));
             hit.point = p;
             hit.model = this;
             hit.color = getColor();

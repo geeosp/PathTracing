@@ -286,8 +286,9 @@ public class RenderScene {
                             arq.readDouble(),//q
                             arq.readDouble()//refractionindice
                     };
-                    scene.models.add(new QuadricModel("quadric "+ scene.models.size(),a,b,c,d,e,f,g,h,i,j, objectMaterial));
-
+                    QuadricModel  quadric = new QuadricModel("quadric "+ scene.models.size(),a,b,c,d,e,f,g,h,i,j, objectMaterial);
+                    scene.models.add(quadric);
+                        System.err.println(quadric);
                     break;
 
                 default://ignore the rest of the line
@@ -298,7 +299,7 @@ public class RenderScene {
             }
         }
         arq.close();
-System.out.print(scene);
+//System.out.print(scene);
         return scene;
     }
 

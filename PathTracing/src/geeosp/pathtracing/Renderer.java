@@ -159,7 +159,8 @@ public class Renderer {
                 rawPixels[x][y][3] = 1.0;
             }
         }
-        System.out.print(max);
+       // System.out.print(max);
+
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
@@ -197,6 +198,7 @@ public class Renderer {
             }
 
         });
+
     }
 
     public static void saveFile(WritableImage wImage, String prefix) throws IOException {
@@ -231,7 +233,7 @@ public class Renderer {
                 // try {
                 //     sleep(20);
                 if (currentProgress != getProgress()) {
-                    System.out.println("Progress: " + currentProgress+ "%");
+                    //System.out.println("Progress: " + currentProgress+ "%");
                     ImageView iv = renderBundle.imageViewGui;
                     if (iv != null) {
                         WritableImage wi = renderBundle.writeImage;
@@ -353,7 +355,7 @@ public class Renderer {
                 pixelToRender = getANewPixel();
 
             }
-            System.out.println(pixelsToRender.size());
+       //     System.out.println(pixelsToRender.size());
 
 
             if (threadsFinished.decrementAndGet() == 0) {

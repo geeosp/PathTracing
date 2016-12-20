@@ -161,7 +161,7 @@ public class PathTracingRenderer extends RenderAlgorithm {
                         //nextDir=hit.normal;//test
 
                         color = Algb.soma(color,
-                                Algb.dotByScale(cosLN*decoyFactor,
+                                Algb.dotByScale(cosLN * decoyFactor,
                                         Algb.crossdot(hit.color,
                                                 tracePath(hit.point, nextDir, scene, deep - 1, n)
                                         )
@@ -203,6 +203,10 @@ public class PathTracingRenderer extends RenderAlgorithm {
 
                 }
 
+            } else {
+              //  if (deep == scene.getRayDepth()){
+                    color = scene.getBackgroundColor();
+                //}
             }
         }
         return color;
