@@ -261,7 +261,7 @@ public class Renderer {
             if (threadsFinished.decrementAndGet() == 0) {
                 time = System.currentTimeMillis() - time;
                 try {
-                    renderAfterFinish();
+               //     renderAfterFinish();
                 System.err.println("Finished: " + (time / 60000.0) + " minutes");
                     saveFile(this.renderBundle.writeImage, "tm-" + scene.getTonemapping()+"_res_" + scene.getSizeWidth()+ "_rays_" + scene.getNpaths()+ "_rayDp_" + scene.getRayDepth()+ "_"+ time / 60000 + "_minutes" );
                 } catch (IOException ex) {

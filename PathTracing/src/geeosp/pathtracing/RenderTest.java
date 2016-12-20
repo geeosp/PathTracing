@@ -31,7 +31,7 @@ public class RenderTest extends Application {
         //renderers.add(new PathTracingRenderer());
          renderers.add(new DistanceRenderer());
       renderers.add(new NormalRendererAlgorithm());
-        //renderers.add(new LightRenderer());
+       //renderers.add(new LightRenderer());
         AlgebTest.test();
         
         

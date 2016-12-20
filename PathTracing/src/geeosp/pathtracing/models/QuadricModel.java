@@ -42,6 +42,7 @@ public class QuadricModel extends Model {
     @Override
     public Hit getNearestIntersectionPoint(double[] C, double[] D) {
         Hit hit = new Hit();
+        D=Algb.normalize(D);
         double a, b, c;
         a = Algb.dot(D, Algb.matrixVectorProduct(A, D));
         b =
@@ -66,13 +67,16 @@ public class QuadricModel extends Model {
             }
 
         }
-        if (t >= zeroDist) {
+        if (t > zeroDist) {
             double[] p = Algb.soma(C, Algb.dotByScale(t, D));
-            double[] n = new double[]{0, 0, -1, 0};
+            double[] n;
 
             hit.point = p;
             hit.model = this;
             hit.color = getColor();
+            n= Algb.dotByScale(2, Algb.vectorMatrixProduct(p, A));
+            n = Algb.normalize(n);
+
             if (Algb.dot(n, D) > 0) {
                 n = Algb.dotByScale(-1, n);
             }

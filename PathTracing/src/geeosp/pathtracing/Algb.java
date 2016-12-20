@@ -132,6 +132,23 @@ public class Algb {
         }
         return ret;
     }
+    public static double[] vectorMatrixProduct(double[] a, double[][] b) {
+        if (a.length != b.length) {
+            throw new RuntimeException("Dimensões inconsistentes. Impossível multiplicar as matrizes");
+        }
+        double[] ret = new double[a.length];
+
+        for (int i = 0; i < a.length; i++) {
+            for (int j = 0; j < b[0].length; j++) {
+                double[] bcolumn = new double[b.length];
+                for (int k = 0; k < bcolumn.length; k++) {
+                    bcolumn[k] = b[j][i];
+                }
+                ret[j] = dot(a, bcolumn);
+            }
+        }
+        return ret;
+    }
 
     public static String VectorToString(double[] v) {
         String retorno = "  ";
@@ -285,8 +302,17 @@ public class Algb {
         }
 
 
-        return new double[]{t1, t2};
+        return new double[]{Math.min(t1, t2), Math.max(t1,t2)};
     }
 
+    public static double[][] transpose(double[][] A) {
+        double[][] At = new double[A[0].length][A.length];
+        for (int i = 0 ;i < A.length; i++) {
+            for (int j = 0; j < A[0].length; j++) {
+                At[j][i] = A[i][j];
+            }
+        }
 
+return At;
+    }
 }
