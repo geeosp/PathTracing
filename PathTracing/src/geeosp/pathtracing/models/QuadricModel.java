@@ -25,6 +25,9 @@ public class QuadricModel extends Model {
         H = h;
         I = i;
         J = j;
+
+
+
         this.material = new Material(new double[]{
                 objectMaterial[0],
                 objectMaterial[1],
@@ -72,44 +75,38 @@ public class QuadricModel extends Model {
                 + J
         ;
         double t = 0;
-        if (Aq == 0) {
-            t = -Cq / Bq;
-        } else {
-            if (Bq * Bq - 4 * Aq * Cq > 0) {
-                t = (-Bq - Math.sqrt(Bq*Bq-4*Aq*Cq))/(2*Aq);
-                if(t<zeroDist){
-                    t = (-Bq + Math.sqrt(Bq*Bq-4*Aq*Cq))/(2*Aq);
+        double[] ts = Algb.solveQuadric(Aq, Bq, Cq);
+        if (ts != null) {
+            t = ts[0];
+            if (t < zeroDist) {
+                t = ts[1];
+            }
+
+
+            if (t >= zeroDist) {
+        System.out.println(t);
+                double[] p = Algb.soma(o, Algb.dotByScale(t, d));
+                double[] n = Algb.normalize(
+                        new double[]{
+                                2 * A * p[0] + D * p[1] + E * p[2] + G,
+                                2 * B * p[1] + D * p[0] + F * p[2] + H,
+                                2 * C * p[2] + E * p[0] + F * p[1] + I,
+                                0
+                        }
+
+
+                );
+
+                hit.point = p;
+                hit.model = this;
+                hit.color = getColor();
+                if (Algb.dot(n, d) > 0) {
+                    n = Algb.dotByScale(-1, n);
                 }
+                hit.normal = n;
+                System.out.println("hit");
             }
         }
-
-        if(t>=zeroDist){
-            double []p=Algb.soma(o, Algb.dotByScale(t, d));
-            double []n= Algb.normalize(
-              new double[]{
-                     2*A*p[0]+D*p[1]+C*p[2]+G,
-                      2*B*p[0]+D*p[1]+F*p[2]+H,
-                      2*C*p[0]+E*p[1]+F*p[2]+I,
-                      1
-              }
-
-
-            );
-
-            hit.point=p;
-            hit.model=this;
-            hit.color=getColor();
-            if (Algb.dot(n,d)>0){
-                n=Algb.dotByScale(-1,n);
-            }
-            hit.normal=n;
-
-
-
-
-
-        }
-
 
 
         return hit;
@@ -143,5 +140,11 @@ public class QuadricModel extends Model {
         ret = Algb.dotByScale(scale, ret);
         ret[3] = 1;
         return ret;
+    }
+
+    @Override
+    public String toString() {
+
+        return super.toString()+" "+A+" "+B+" "+C+" "+D+" "+E+" "+F+" "+G+" " +H+" "+I+" "+J;
     }
 }

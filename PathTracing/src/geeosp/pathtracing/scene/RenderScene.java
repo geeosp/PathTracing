@@ -298,7 +298,7 @@ public class RenderScene {
             }
         }
         arq.close();
-
+System.out.print(scene);
         return scene;
     }
 

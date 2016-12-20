@@ -174,7 +174,7 @@ public class Algb {
     // recebe a matriz de mudanca de base(MMB) e a matriz de pontos(MP)
     // faz: [v]a = [M]a ^b * [v]b Multiplica a MMB pela (MP)
     public static double[][] mudancaDeCoordenada(double[][] pontos,
-            double[][] MM, double[] C) {
+                                                 double[][] MM, double[] C) {
         double[] V = new double[3];
         double[] R = new double[3];
         double[][] MatMud = new double[pontos.length][3];
@@ -250,27 +250,43 @@ public class Algb {
         return reflect;
 
     }
-    public static double[] refract (double[] incident, double[] normal, double n1, double n2){
-        double [] refract = null;
+
+    public static double[] refract(double[] incident, double[] normal, double n1, double n2) {
+        double[] refract = null;
         double[] proj = projection(incident, normal);
         double[] k = sub(incident, proj);
         double s1 = getNorma(k);
-        double s2 = s1*n1/n2;
-        if(s2<= 1){
-            double c2 = Math.sqrt( 1- s2*s2);
+        double s2 = s1 * n1 / n2;
+        if (s2 <= 1) {
+            double c2 = Math.sqrt(1 - s2 * s2);
             refract = new double[4];
-            refract = soma(refract, dotByScale(s2/s1,k));
+            refract = soma(refract, dotByScale(s2 / s1, k));
             refract = soma(refract, dotByScale(c2, normalize(proj)));
-        }else{
+        } else {
             //refract = reflect(incident, normal);
         }
-
-
 
 
         return refract;
     }
 
+    public static double[] solveQuadric(double a, double b, double c) {
+        double t1, t2;
+        double d = b * b - 4 * a * c;
+        if (d < 0)
+            return null;
+        else {
+            t1 = (-b - Math.sqrt(d)) / (2 * a);
+            if (d == 0) {
+                t2 = t1;
+            } else {
+                t2 = (-b + Math.sqrt(d)) / (2 * a);
+            }
+        }
+
+
+        return new double[]{t1, t2};
+    }
 
 
 }
