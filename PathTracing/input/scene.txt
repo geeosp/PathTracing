@@ -16,7 +16,7 @@ config 8
 
 # Luz branca retangulo no centro do teto
 light luzcornell.obj 1.0 1.0 1.0 1.0
-npaths 16
+npaths 1
 tonemapping .3
 seed 9
 
@@ -51,13 +51,14 @@ object cube2.obj 1.0 1.0 1.0 0.3 0.7 0 0 5 1
 object cube1.obj 1.0 1.0 1.0 1.0 0.7 0 0 5 1
 
 
-#objectquadric Ax2 + By2 + Cz2 + Dxy  + Exz + Fyz + Gx + Hy + Iz + J =0 minx max miny maxy, minz max    r     g    b   ka   kd   ks   kt   q   n
+#objectquadric Ax2 + By2 + Cz2 + Dxy  + Exz + Fyz + Gx + Hy + Iz + J =0 minx max miny maxy, minz maxZ    r     g    b   ka   kd   ks   kt   q   n
 #elipse
 #objectquadric   2     1   1     0      0     0     0    0  20    99  -20 20 -20 20 -20 20      0.7  0.0  0.0  0.0  1.0  0.0   1   5   2.5
 #paraboloide hiperbolico
 #objectquadric   -1   1  1     0      0     0     0    0    -1    0.0 -20 20 -20 20 -20 20       0.0  0.0  0.0  0.0  0.0  0    1   5   1.5
-
-objectquadric   0   0  0     0      0     0     0    1.0    1  20  -1 1 -20 20 -20 20         0.0  0.0  0.0  0.0  0.0  .5    0   2   1.5
+# cilindro
+#objectquadric   0   1  1     0      0     0     0    0   52  675  -2 2 -5 .5 -40 40         1.0  0.0  1.0  0.0  0.0  .0   1   2   1.5
+#objectquadric   0   0  0     0      0     0     0    1.0    1  20  -1 1 -20 20 -20 20         0.0  0.0  0.0  0.0  0.0  .5    0   2   1.5
 
 
 

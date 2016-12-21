@@ -29,7 +29,8 @@ public class RenderScene {
     private int[] size;
     private int nthreads;
     private int rayDepth;
-    private  double baseN;
+    private double baseN;
+
     public RenderScene() {
         models = new ArrayList<>();
         lights = new ArrayList<>();
@@ -262,24 +263,24 @@ public class RenderScene {
                     break;
 
                 case "objectquadric":
-                    double a,c,d,e,f,h,i,j;
+                    double a, c, d, e, f, h, i, j;
                     double minx, miny, minz, maxx, maxy, maxz;
-                    a=arq.readDouble();
-                    b=arq.readDouble();
-                    c=arq.readDouble();
-                    d=arq.readDouble();
-                    e=arq.readDouble();
-                    f=arq.readDouble();
-                    g=arq.readDouble();
-                    h=arq.readDouble();
-                    i=arq.readDouble();
-                    j=arq.readDouble();
-                    minx=arq.readDouble();
-                    maxx=arq.readDouble();
-                    miny=arq.readDouble();
-                    maxy=arq.readDouble();
+                    a = arq.readDouble();
+                    b = arq.readDouble();
+                    c = arq.readDouble();
+                    d = arq.readDouble();
+                    e = arq.readDouble();
+                    f = arq.readDouble();
+                    g = arq.readDouble();
+                    h = arq.readDouble();
+                    i = arq.readDouble();
+                    j = arq.readDouble();
+                    minx = arq.readDouble();
+                    maxx = arq.readDouble();
+                    miny = arq.readDouble();
+                    maxy = arq.readDouble();
                     minz = arq.readDouble();
-                    maxz=arq.readDouble();
+                    maxz = arq.readDouble();
 
 
                     objectMaterial = new double[]{
@@ -293,9 +294,9 @@ public class RenderScene {
                             arq.readDouble(),//q
                             arq.readDouble()//refractionindice
                     };
-                    QuadricModel  quadric = new QuadricModel("quadric "+ scene.models.size(),a,b,c,d,e,f,g,h,i,j,minx, maxx, miny,maxy, minz, maxz, objectMaterial);
+                    QuadricModel quadric = new QuadricModel("quadric " + scene.models.size(), a, b, c, d, e, f, g, h, i, j, minx, maxx, miny, maxy, minz, maxz, objectMaterial);
                     scene.models.add(quadric);
-                        System.err.println(quadric);
+                    System.err.println(quadric);
                     break;
 
                 default://ignore the rest of the line

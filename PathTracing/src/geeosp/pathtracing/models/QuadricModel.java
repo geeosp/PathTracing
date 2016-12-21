@@ -17,12 +17,7 @@ public class QuadricModel extends Model {
     //Ax2 + By2 + Cz2 + Dxy  + Exz + Fyz + Gx + Hy + Iz + J =0
     public QuadricModel(String name, double a, double b, double c, double d, double e, double f, double g, double h, double i, double j, double minX, double maxX, double minY, double maxY, double minZ, double maxZ, double[] objectMaterial) {
         super(name, new double[3], new double[3], new double[]{1, 1, 1}, Type.OBJECT);
-        d = d / 2;
-        e = e / 2;
-        f = f / 2;
-        g = g / 2;
-        h = h / 2;
-        i = i / 2;
+
         this.minx = minX;
         this.minY = minY;
         this.minZ = minZ;
@@ -30,15 +25,15 @@ public class QuadricModel extends Model {
         this.maxY = maxY;
         this.maxZ = maxZ;
         A = new double[][]{
-                {a, d, e, g},
-                {d, b, f, h},
-                {e, f, c, i},
-                {g, h, i, j}
+                {a, d * .5, e * .5, g * .5},
+                {d * .5, b, f * .5, h * .5},
+                {e * .5, f * .5, c, i * .5},
+                {g * .5, h * .5, i * .5, j}
         };
         N = new double[][]{
-                {2 * a, 2 * d, 2 * e, g},
-                {d, 2 * b, 2 * f, 2 * h},
-                {2 * e, 2 * f, 2 * c, 2 * i},
+                {2 * a, d, e, g},
+                {d, 2 * b, f, h},
+                {e, f, 2 * c, i},
                 {0, 0, 0, 0}
         };
 
@@ -114,11 +109,11 @@ public class QuadricModel extends Model {
         double x = p[0];
         double y = p[1];
         double z = p[2];
-        if((x >= minx && x <= maxX) && (y >= minY && y <= maxY) && (z >= minZ && z <= maxZ)) {
-         //  System.out.println(Algb.VectorToString(p));
+        if ((x >= minx && x <= maxX) && (y >= minY && y <= maxY) && (z >= minZ && z <= maxZ)) {
+            //  System.out.println(Algb.VectorToString(p));
             return true;
-        }else{
-            return  false;
+        } else {
+            return false;
         }
     }
 
