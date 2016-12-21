@@ -1,13 +1,13 @@
-nthreads 8
+nthreads 32
 # sphere cx cy cx r red green blue ka kd ks kt q n
 #sphere 2 2 -28 3 0.0 0.0 0.0 0.0 0.0 1 0 500 1
-#sphere  -2.5 -3 -20 1 0.0 0.0 0.0 0.0 0.0 0.0 1 500 1.2
+sphere  -2.5 -3 -20 1 0.0 0.0 0.0 0.0 0.0 0.0 1 500 1.2
 basen 1.0
 
 eye 0.0 0.0 5.7
-size 400 400
+size 200 200
 ortho -1 -1 1 1
-background 0.0 0.0 0.0
+background 0.0 0.0 0
 ambient 0.5
 
 #config depth
@@ -16,9 +16,8 @@ config 8
 
 # Luz branca retangulo no centro do teto
 light luzcornell.obj 1.0 1.0 1.0 1.0
-
-npaths 4
-tonemapping .1
+npaths 32
+tonemapping .4
 seed 9
 
 # Aqui comeca a definicao das geometrias
@@ -31,34 +30,39 @@ seed 9
 #object <name.obj> red green blue ka kd ks kt q n
 
 # left wall RED
-#object leftwall.obj 1.0 0.0 0.0 0.3 0.7 0 0 5 1
+object leftwall.obj 1.0 0.0 0.0 0.3 0.7 0 0 5 1
 
 # right wall GREEN
-#object rightwall.obj 0.0 1.0 0.0 0.3 0.7 0 0 5 1
+object rightwall.obj 0.0 1.0 0.0 0.3 0.7 0 0 5 1
 
 # floor WHITE
 object floor.obj 1.0 1.0 1.0 0.3 0.7 0 0 5 1
 
 # back wall WHITE
-#object back.obj 1.0 1.0 1.0 0.3 0.7 0 0 5 1
+object back.obj 1.0 1.0 1.0 0.3 0.7 0 0 5 1
 
 # ceiling WHITE
-#object ceiling.obj 1.0 1.0 1.0 0.3 0.7 0 0 5 1
+object ceiling.obj 1.0 1.0 1.0 0.3 0.7 0 0 5 1
 
 # cube 1 WHITE
-#object cube2.obj 1.0 1.0 1.0 0.3 0.7 0 0 5 1
+object cube2.obj 1.0 1.0 1.0 0.3 0.7 0 0 5 1
 
 # cube 2 WHITE
-#object cube1.obj 1.0 1.0 1.0 1.0 0.7 0 0 5 1
+object cube1.obj 1.0 1.0 1.0 1.0 0.7 0 0 5 1
 
 
-#objectquadric Ax2 + By2 + Cz2 + Dxy  + Exz + Fyz + Gx + Hy + Iz + J =0    r     g    b   ka   kd   ks  kt   q   n
-objectquadric   0     0     0     0      0     0     0    0    1  -4       1.0  1.0  1.0  1.0  1.0  0    0   5   1
-#elipse
-#objectquadric   1     1   1     0      0     0     0    0   400    -.25     0.0  0.0  0.0  0.0  0.0  0.0   1   5   1.5
+#objectquadric Ax2 + By2 + Cz2 + Dxy  + Exz + Fyz + Gx + Hy + Iz + J =0 minx max miny maxy, minz maxZ    r     g    b   ka   kd   ks   kt   q   n
+# elipse
+#objectquadric   2     1   1     0      0     0     0    0  20    99  -20 20 -20 20 -20 20      0.7  0.0  0.0  0.0  1.0  0.0   1   5   2.5
 #paraboloide hiperbolico
-#objectquadric   -1   1  1     0      0     0     0    0    -1    0.0        0.0  0.0  0.0  0.0  0.0  0    1   5   1.5
-#cilindo
-#objectquadric   1   0  1     0      0     0     0    0    600    899.98        0.0  0.0  0.0  0.0  0.0  0    1   5   1.5
-#objectquadric   0   0  0     0      0     0     0    0.0    1  45          0.0  0.0  0.0  0.0  0.0  0    1   500   1.5
+#objectquadric   -.5   1  1     0      0     0     0    0    -1    0.0 -20 20 -20 20 -20 20       0.0  0.0  0.0  0.0  0.0  0    1   5   1.5
+# cilindro
+#objectquadric   0   1  1     0      0     0     0    0   52  675  -2 2 -5 .5 -40 40         1.0  0.0  1.0  0.0  0.0  .0   1   2   1.5
+#plano
+#objectquadric   0   0  0     0      0     0     0    1.0    1  20  -1 1 -20 20 -20 20         0.0  0.0  0.0  0.0  0.0  .5    0   2   1.5
+
+
+
+
+#sphere  0 0 -20 .5 0.0 0.0 0.0 0.0 0.0 0.0 1 500 1.5
 output cornell.pnm

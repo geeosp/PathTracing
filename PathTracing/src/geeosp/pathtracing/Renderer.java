@@ -159,7 +159,7 @@ public class Renderer {
                 rawPixels[x][y][3] = 1.0;
             }
         }
-       // System.out.print(max);
+        // System.out.print(max);
 
         Platform.runLater(new Runnable() {
             @Override
@@ -355,7 +355,7 @@ public class Renderer {
                 pixelToRender = getANewPixel();
 
             }
-       //     System.out.println(pixelsToRender.size());
+            //     System.out.println(pixelsToRender.size());
 
 
             if (threadsFinished.decrementAndGet() == 0) {
@@ -363,7 +363,7 @@ public class Renderer {
                 try {
                     renderAfterFinish();
                     System.err.println("Finished: " + (time / 60000.0) + " minutes");
-                    saveFile(this.renderBundle.writeImage, "tm- " + scene.getTonemapping() + "_res_" + scene.getSizeWidth() + "_rays_" + scene.getNpaths() + "_rayDp_" + scene.getRayDepth() + "_" + time / 60000 + "_minutes");
+                    saveFile(this.renderBundle.writeImage, "tm- " + scene.getTonemapping() + "_res_" + scene.getSizeWidth() + "_rays_" + scene.getNpaths() + "_rayDp_" + scene.getRayDepth() + "_" + (time / 1000)/(60.0) + "_minutes" + "_" + scene.getNthreads() + "thrds");
                 } catch (IOException ex) {
                     Logger.getLogger(Renderer.class.getName()).log(Level.SEVERE, null, ex);
                 }
