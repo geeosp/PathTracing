@@ -21,7 +21,7 @@ import renderers.*;
  *
  * @author geeo
  */
-public class RenderTest extends Application {
+public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage1) throws IOException, InterruptedException {
